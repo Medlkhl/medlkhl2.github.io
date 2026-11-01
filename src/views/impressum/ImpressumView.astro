@@ -1,6 +1,13 @@
 ---
-import StubPage from '../../components/layout/StubPage.astro';
+/**
+ * Impressum (§ 5 DDG). /de/impressum/ is the binding version; /impressum/ is
+ * the English translation and says so. Name and postal address are
+ * placeholders until the owner supplies them (the only place the postal
+ * address will ever appear on the site).
+ */
 import type { Locale } from '../../i18n/config.ts';
+import LegalPage from './LegalPage.astro';
+import { impressumCopy } from './impressum.copy.ts';
 
 interface Props {
   locale: Locale;
@@ -9,4 +16,4 @@ interface Props {
 const { locale } = Astro.props;
 ---
 
-<StubPage locale={locale} routeKey="impressum" />
+<LegalPage locale={locale} routeKey="impressum" copy={impressumCopy[locale]} />

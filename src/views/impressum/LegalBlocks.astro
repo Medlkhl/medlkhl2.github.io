@@ -1,0 +1,142 @@
+---
+/**
+ * Renders the blocks of one legal section (see legal.ts). Strings go through
+ * <Rich> so placeholders such as [NAME: full legal name] stay visible.
+ * External links open in the same tab, carry the arrow icon and the visually
+ * hidden "(external link)", and send no referrer.
+ */
+import Icon from '../../components/ui/Icon.astro';
+import Rich from '../../components/ui/Rich.astro';
+import { profile } from '../../data/profile.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { formatYearMonth } from '../../i18n/format.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import { legalCopy } from './legal.copy.ts';
+import { PRIVACY_VERSION, type LegalBlock } from './legal.ts';
+
+interface Props {
+  blocks: LegalBlock[];
+  locale: Locale;
+}
+
+const { blocks, locale } = Astro.props;
+const t = legalCopy[locale];
+---
+
+{blocks.map((block) => {
+  switch (block.type) {
+    case 'p':
+      return (
+        <p>
+          <Rich text={block.text} />
+        </p>
+      );
+    case 'list':
+      return (
+        <ul class="legal-list">
+          {block.items.map((item) => (
+            <li>
+              <Rich text={item} />
+            </li>
+          ))}
+        </ul>
+      );
+    case 'address':
+      return (
+        <address class="legal-address">
+          {t.address.map((line) => (
+            <span class="legal-address__line">
+              <Rich text={line} />
+            </span>
+          ))}
+        </address>
+      );
+    case 'email':
+      return (
+        <p class="legal-field">
+          <span class="legal-field__term">{t.email}</span>
+          <a href={`mailto:${profile.email}`}>{profile.email}</a>
+        </p>
+      );
+    case 'link':
+      return (
+        <p class="legal-link">
+          <a href={block.href} rel="noreferrer">
+            {block.label}
+            <Icon name="arrow-up-right" size={14} />
+            <span class="visually-hidden"> {ui[locale].externalLink}</span>
+          </a>
+        </p>
+      );
+    case 'version':
+      return (
+        <p class="legal-field">
+          <span class="legal-field__term">{t.version}</span>
+          <time datetime={PRIVACY_VERSION}>{formatYearMonth(PRIVACY_VERSION, locale, 'long')}</time>
+        </p>
+      );
+    default:
+      return null;
+  }
+})}
+
+<style>
+  .legal-list {
+    padding-left: 1.25rem;
+  }
+
+  .legal-list li + li {
+    margin-top: var(--space-1);
+  }
+
+  .legal-list li::marker {
+    color: var(--color-text-subtle);
+  }
+
+  .legal-address {
+    display: grid;
+    gap: var(--space-half);
+    font-style: normal;
+  }
+
+  .legal-address__line {
+    display: block;
+  }
+
+  .legal-field {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-half) var(--space-2);
+  }
+
+  .legal-field__term {
+    min-width: 5rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .legal-field a {
+    overflow-wrap: anywhere;
+  }
+
+  .legal-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 1.75rem;
+    text-decoration-color: var(--color-accent);
+  }
+
+  .legal-link a :global(svg) {
+    flex: none;
+    color: var(--color-text-subtle);
+  }
+
+  .legal-link a:hover :global(svg) {
+    color: currentColor;
+  }
+</style>

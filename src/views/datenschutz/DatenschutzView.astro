@@ -1,6 +1,13 @@
 ---
-import StubPage from '../../components/layout/StubPage.astro';
+/**
+ * Datenschutzerklärung. /de/datenschutz/ is the binding version;
+ * /datenschutz/ is the English translation and says so. The sections are data
+ * (datenschutz.copy.ts); sections for features that are not live yet, such as
+ * the spatial view, stay hidden until their flag in LEGAL_FEATURES is on.
+ */
 import type { Locale } from '../../i18n/config.ts';
+import LegalPage from '../impressum/LegalPage.astro';
+import { datenschutzCopy } from './datenschutz.copy.ts';
 
 interface Props {
   locale: Locale;
@@ -9,4 +16,4 @@ interface Props {
 const { locale } = Astro.props;
 ---
 
-<StubPage locale={locale} routeKey="datenschutz" />
+<LegalPage locale={locale} routeKey="datenschutz" copy={datenschutzCopy[locale]} showVersion toc />
