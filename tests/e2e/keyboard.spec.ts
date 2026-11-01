@@ -38,4 +38,25 @@ test.describe('keyboard path', () => {
     expect(outline.style).not.toBe('none');
     expect(Number.parseFloat(outline.width)).toBeGreaterThanOrEqual(2);
   });
+
+  // Stretched links hide their own outline and ring the whole card instead.
+  test('stretched-link cards show the focus ring on the card', async ({ page }) => {
+    for (const [path, link, card] of [
+      ['', '.work-card__link', '.work-card'],
+      ['lab/', '.demo__link', '.demo'],
+    ] as const) {
+      await page.goto(path);
+      await page.keyboard.press('Tab');
+      await page.locator(link).first().focus();
+      const outline = await page
+        .locator(card)
+        .first()
+        .evaluate((el) => {
+          const style = getComputedStyle(el);
+          return { width: style.outlineWidth, style: style.outlineStyle };
+        });
+      expect(outline.style, card).toBe('solid');
+      expect(Number.parseFloat(outline.width), card).toBeGreaterThanOrEqual(2);
+    }
+  });
 });

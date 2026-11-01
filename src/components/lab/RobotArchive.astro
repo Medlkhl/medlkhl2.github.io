@@ -178,7 +178,8 @@ const project = experience.find((entry) => entry.id === 'dot-it');
     outline: none;
   }
 
-  .demo:has(:global(.demo__link:focus-visible)) {
+  /* Astro leaves selectors inside :has() unscoped, so this matches ExternalLink's <a>. */
+  .demo:has(.demo__link:focus-visible) {
     outline: var(--focus-width) solid var(--color-accent);
     outline-offset: var(--focus-offset);
   }
