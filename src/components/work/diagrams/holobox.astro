@@ -37,7 +37,7 @@ const end = arrow('holobox');
 
   <!-- The app and its two runtimes -->
   <rect class="d-frame" x="8" y="72" width="344" height="448"></rect>
-  <text class="d-frame-label" x="20" y="90">
+  <text class="d-frame-label" x="340" y="509" text-anchor="end">
     {t.app}
   </text>
   <rect class="d-frame" x="14" y="104" width="160" height="340"></rect>
@@ -66,32 +66,35 @@ const end = arrow('holobox');
 
   <g class="d-step" data-step="project-view">
     <path class="d-edge" d="M94 180V236" marker-end={end}></path>
-    <text class="d-note" x="104" y="211">
+    <text class="d-note" x="104" y="204">
       {t.headPosition}
+    </text>
+    <text class="d-note" x="104" y="216">
+      {t.headPosition2}
     </text>
     <DBalloon x={74} y={208} n={no('project-view')} />
   </g>
 
   <g class="d-step" data-step="listen">
-    <path class="d-edge" d="M268 48V132" marker-end={end}></path>
-    <DBalloon x={248} y={88} n={no('listen')} />
+    <path class="d-edge" d="M314 48V132" marker-end={end}></path>
+    <DBalloon x={294} y={92} n={no('listen')} />
   </g>
 
   <g class="d-step" data-step="generate">
-    <path class="d-edge" d="M268 180V232" marker-end={end}></path>
-    <text class="d-note" x="278" y="195">
+    <path class="d-edge" d="M314 180V232" marker-end={end}></path>
+    <text class="d-note" x="280" y="195" text-anchor="end">
       {t.text}
     </text>
-    <DBalloon x={248} y={192} n={no('generate')} />
+    <DBalloon x={294} y={192} n={no('generate')} />
   </g>
 
   <g class="d-step" data-step="speak">
-    <path class="d-edge" d="M268 288V340" marker-end={end}></path>
+    <path class="d-edge" d="M314 288V340" marker-end={end}></path>
     <path class="d-edge" d="M200 364H162" marker-end={end}></path>
-    <text class="d-note" x="278" y="327">
+    <text class="d-note" x="280" y="327" text-anchor="end">
       {t.reply}
     </text>
-    <DBalloon x={248} y={324} n={no('speak')} />
+    <DBalloon x={294} y={324} n={no('speak')} />
   </g>
 
   <g class="d-step" data-step="render">

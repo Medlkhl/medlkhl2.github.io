@@ -75,11 +75,11 @@ const height = outY + 48 + 12;
   ))}
 
   <!-- Controller to actuators -->
-  <path class="d-edge" d={`M292 ${controllerBottom}V${busY}M60 ${busY}H300`}></path>
-  <path class="d-edge" d={`M60 ${busY}V${outY}`} marker-end={end}></path>
+  <path class="d-edge" d={`M292 ${controllerBottom}V${busY}M62 ${busY}H298`}></path>
+  <path class="d-edge" d={`M62 ${busY}V${outY}`} marker-end={end}></path>
   <path class="d-edge" d={`M180 ${busY}V${outY}`} marker-end={end}></path>
-  <path class="d-edge" d={`M300 ${busY}V${outY}`} marker-end={end}></path>
-  <DNode x={8} y={outY} w={104} h={48} title={t.head} />
-  <DNode x={128} y={outY} w={104} h={48} title={t.arms} />
-  <DNode x={248} y={outY} w={104} h={48} title={t.body} />
+  <path class="d-edge" d={`M298 ${busY}V${outY}`} marker-end={end}></path>
+  <DNode x={8} y={outY} w={108} h={48} title={t.head} />
+  <DNode x={126} y={outY} w={108} h={48} title={t.arms} />
+  <DNode x={244} y={outY} w={108} h={48} title={t.body} />
 </DiagramFrame>

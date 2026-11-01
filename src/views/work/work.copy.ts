@@ -32,7 +32,7 @@ export const workCopy = defineCopy({
       problems: { label: 'Hard problems solved', title: 'The difficult parts' },
       results: { label: 'Results', title: 'Outcomes and next steps' },
       proof: { label: 'Proof', title: 'References and evidence' },
-      confidentiality: { label: 'Confidentiality', title: 'What this case study leaves out' },
+      confidentiality: { label: 'Confidentiality' },
     },
     context: {
       constraints: 'What made it hard',
@@ -100,7 +100,7 @@ export const workCopy = defineCopy({
       problems: { label: 'Gelöste Herausforderungen', title: 'Die schwierigen Stellen' },
       results: { label: 'Ergebnisse', title: 'Was erreicht wurde und was folgt' },
       proof: { label: 'Belege', title: 'Referenzen und Nachweise' },
-      confidentiality: { label: 'Vertraulichkeit', title: 'Was diese Fallstudie auslässt' },
+      confidentiality: { label: 'Vertraulichkeit' },
     },
     context: {
       constraints: 'Was es schwierig machte',

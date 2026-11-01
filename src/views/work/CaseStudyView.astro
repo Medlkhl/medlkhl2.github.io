@@ -92,10 +92,12 @@ const index = all.findIndex((item) => workSlug(item) === slug);
 const previous = index > 0 ? all[index - 1] : undefined;
 const next = index >= 0 ? all[index + 1] : undefined;
 
-/** "Legacy code: a React Native app…" → bold lead-in plus the rest. */
+/** "Legacy code: a React Native app…" → bold lead-in plus the rest, which now starts a sentence. */
 function leadIn(text: string): { lead?: string; rest: string } {
   const match = /^([^:[\]]{2,48}):\s+([\s\S]+)$/.exec(text);
-  return match?.[1] && match[2] ? { lead: match[1], rest: match[2] } : { rest: text };
+  if (!match?.[1] || !match[2]) return { rest: text };
+  const rest = match[2];
+  return { lead: match[1], rest: rest.charAt(0).toLocaleUpperCase(locale) + rest.slice(1) };
 }
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -437,51 +439,57 @@ const pad = (n: number) => String(n).padStart(2, '0');
       </Section>
     )}
 
-    <!-- 8 · Confidentiality -->
+    <!-- 8 · Confidentiality: a compact note under its own mono heading -->
     {data.confidentiality && (
-      <Section
-        id="confidentiality"
-        index={8}
-        label={t.sections.confidentiality.label}
-        title={t.sections.confidentiality.title}
-      >
-        <p class="note">
-          <Rich text={data.confidentiality} />
-        </p>
-      </Section>
+      <section id="confidentiality" class="confidential" aria-labelledby="confidentiality-title">
+        <div class="container confidential__inner">
+          <SectionLabel as="h2" id="confidentiality-title" index={8}>
+            {t.sections.confidentiality.label}
+          </SectionLabel>
+          <p class="confidential__text">
+            <Rich text={data.confidentiality} />
+          </p>
+        </div>
+      </section>
     )}
   </article>
 
-  <nav class="container pager" aria-label={t.pager.label}>
-    <ul role="list" class="pager__list">
-      {previous && (
-        <li class="pager__item pager__item--prev">
-          <a class="pager__link" href={workHref(locale, workSlug(previous))} rel="prev">
-            <span class="pager__dir">
-              <Icon name="arrow-right" class="pager__back" />
-              {t.pager.previous}
-            </span>
-            <span class="pager__title">{previous.data.title}</span>
-          </a>
-        </li>
-      )}
-      <li class="pager__item pager__item--all">
-        <a class="btn" href={routeHref(locale, 'work')}>
-          {u.cta.allWork}
-        </a>
-      </li>
-      {next && (
-        <li class="pager__item pager__item--next">
-          <a class="pager__link" href={workHref(locale, workSlug(next))} rel="next">
-            <span class="pager__dir">
-              {t.pager.next}
-              <Icon name="arrow-right" />
-            </span>
-            <span class="pager__title">{next.data.title}</span>
-          </a>
-        </li>
-      )}
-    </ul>
+  <nav class="container pager" aria-labelledby="pager-title">
+    <div class="pager__head">
+      <p class="case-kicker pager__kicker" id="pager-title">
+        {t.pager.label}
+      </p>
+      <a class="pager__all" href={routeHref(locale, 'work')}>
+        {u.cta.allWork}
+        <Icon name="arrow-right" />
+      </a>
+    </div>
+    {(previous || next) && (
+      <ul role="list" class="pager__list">
+        {previous && (
+          <li class="pager__item pager__item--prev">
+            <a class="pager__link" href={workHref(locale, workSlug(previous))} rel="prev">
+              <span class="pager__dir">
+                <Icon name="arrow-right" class="pager__back" />
+                {t.pager.previous}
+              </span>
+              <span class="pager__title">{previous.data.title}</span>
+            </a>
+          </li>
+        )}
+        {next && (
+          <li class="pager__item pager__item--next">
+            <a class="pager__link" href={workHref(locale, workSlug(next))} rel="next">
+              <span class="pager__dir">
+                {t.pager.next}
+                <Icon name="arrow-right" />
+              </span>
+              <span class="pager__title">{next.data.title}</span>
+            </a>
+          </li>
+        )}
+      </ul>
+    )}
   </nav>
 </BaseLayout>
 
@@ -608,8 +616,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .case-header__outcome {
     max-width: 38ch;
     margin-top: var(--space-3);
-    font-size: var(--step-2);
-    line-height: 1.35;
+    font-size: var(--step-1);
+    line-height: 1.4;
     letter-spacing: -0.01em;
     text-wrap: pretty;
   }
@@ -754,6 +762,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
     gap: var(--space-4);
     padding-top: var(--space-4);
     border-top: var(--hairline) solid var(--color-line-strong);
+  }
+
+  .problem__text,
+  .problem__evidence {
+    min-width: 0;
   }
 
   .problem__title {
@@ -925,7 +938,17 @@ const pad = (n: number) => String(n).padStart(2, '0');
   }
 
   /* ---- 8 · Confidentiality ------------------------------------------------ */
-  .note {
+  .confidential {
+    padding-block: var(--space-8);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .confidential__inner {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .confidential__text {
     max-width: var(--measure);
     padding-left: var(--space-3);
     border-left: var(--hairline) solid var(--color-line-strong);
@@ -937,15 +960,34 @@ const pad = (n: number) => String(n).padStart(2, '0');
     padding-top: var(--space-6);
   }
 
-  .pager__list {
-    display: grid;
-    gap: var(--space-2);
-    padding-top: var(--space-6);
+  .pager__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-3);
+    padding-top: var(--space-3);
     border-top: var(--hairline) solid var(--color-line);
   }
 
-  .pager__item--all {
-    order: 3;
+  .pager__kicker {
+    margin: 0;
+  }
+
+  .pager__all {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 2.75rem;
+    font-size: var(--step--1);
+    font-weight: var(--weight-medium);
+    text-decoration: none;
+  }
+
+  .pager__list {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
   }
 
   .pager__link {
@@ -995,25 +1037,23 @@ const pad = (n: number) => String(n).padStart(2, '0');
       column-gap: var(--grid-gutter);
     }
 
+    .case-header__outcome {
+      font-size: var(--step-2);
+      line-height: 1.35;
+    }
+
     .pager__list {
-      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
       align-items: stretch;
     }
 
     .pager__item--prev {
       grid-column: 1;
-      grid-row: 1;
-    }
-
-    .pager__item--all {
-      grid-column: 2;
-      grid-row: 1;
-      align-self: center;
     }
 
     .pager__item--next {
-      grid-column: 3;
-      grid-row: 1;
+      grid-column: 2;
       text-align: right;
     }
 
@@ -1096,6 +1136,20 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
     .proof__links {
       grid-column: 9 / -1;
+    }
+
+    .confidential__inner {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      align-items: baseline;
+    }
+
+    .confidential__inner > :first-child {
+      grid-column: 1 / span 4;
+    }
+
+    .confidential__text {
+      grid-column: 5 / -1;
     }
   }
 
