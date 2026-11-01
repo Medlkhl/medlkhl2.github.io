@@ -1,54 +1,137 @@
 ---
 title: 'Smart Humanoid Robot'
-summary: '[TODO: one-sentence summary of Smart Humanoid Robot for cards and meta descriptions]'
-outcome: '[TODO: one-line outcome]'
+summary: 'My graduation project: the modules that let a humanoid robot follow a person’s head, imitate an operator’s hands, respond to speech and be operated remotely through VR.'
+outcome: 'Gave a humanoid robot head tracking, hand-imitation teleoperation, speech and VR-driven remote operation, each shown in a public demo.'
 status: 'completed'
-role: '[TODO: role]'
+role: 'Graduation project at Dot it'
 team: '[CONFIRM: team size]'
 timeframe:
-  start: '[CONFIRM: start date]'
-  end: null
-platforms: ['[TODO: platforms]']
-stack: ['[TODO: stack]']
+  start: '2019-02'
+  end: '2020-01'
+platforms: ['Raspberry Pi', 'Windows desktop']
+stack:
+  [
+    'Python',
+    'OpenCV',
+    'C#',
+    'WPF',
+    'Kinect',
+    'Firebase',
+    'Raspberry Pi',
+    'Inverse kinematics',
+    'IMU data',
+    'Motion capture',
+  ]
 order: 3
 featured: true
-layers: ['ui']
-context: '[TODO: context]'
+layers: ['ui', 'data']
+context: 'My graduation project at Dot it in Tunisia was a set of modules that let a humanoid robot interact with its environment and act autonomously. The robot had to notice people and follow them with its head, understand speech, imitate an operator’s movements and be operated remotely, even at a distant event. The work spanned computer vision, skeletal tracking, inverse kinematics, speech and remote control over the internet.'
 constraints:
-  - '[TODO: constraint]'
-  - '[TODO: constraint]'
+  - 'Real time: a robot that imitates a person has to follow their movements without a noticeable lag.'
+  - 'Physical limits: tracked human poses have to map onto the robot’s own joints and range of motion.'
+  - 'Remote operation: control had to work over the internet, for a robot at a distant event.'
+  - 'Many inputs, one body: camera, Kinect, VR headset, microphone and desktop app all drive the same robot.'
 responsibilities:
-  - '[TODO: responsibility]'
-  - '[TODO: responsibility]'
+  - 'Built the modules that let the robot interact with its environment and act autonomously.'
+  - 'Head tracking with OpenCV and Python, so the robot follows a person’s head.'
+  - 'Hand-imitation teleoperation with Kinect skeletal tracking and inverse kinematics.'
+  - 'Speech recognition with hotword detection.'
+  - 'VR-driven head movement to operate the robot remotely at a distant event, and an upper-body motion-control interface.'
+  - 'A C#/WPF desktop app that controls the robot over the internet through Firebase.'
 architecture:
   diagram: 'humanoid-robot'
-  summary: '[TODO: architecture summary]'
+  summary: 'Six modules feed the robot’s controller, which moves the head, the arms and hands, and the upper body. Some modules sense the people around the robot; others carry an operator’s movements to it, nearby or over the internet.'
   steps:
-    - { id: 'step-1', label: '[TODO: step]', detail: '[TODO: detail]' }
-    - { id: 'step-2', label: '[TODO: step]', detail: '[TODO: detail]' }
-    - { id: 'step-3', label: '[TODO: step]', detail: '[TODO: detail]' }
+    - id: 'head-tracking'
+      label: 'Head tracking'
+      detail: 'OpenCV and Python detect a person’s head and track its position, so the robot can follow it accurately.'
+    - id: 'teleoperation'
+      label: 'Hand-imitation teleoperation'
+      detail: 'Kinect skeletal tracking captures the operator’s hands; inverse kinematics turns their positions into joint angles for the robot’s hands.'
+    - id: 'speech'
+      label: 'Speech'
+      detail: 'Hotword detection wakes speech recognition, so people can talk to the robot.'
+    - id: 'vr-head'
+      label: 'VR head control'
+      detail: 'A virtual-reality headset carries the operator’s head movements over to the robot’s head, to operate it remotely at a distant event.'
+    - id: 'upper-body'
+      label: 'Upper-body motion control'
+      detail: 'A motion-control interface drives the robot’s upper body.'
+    - id: 'remote-control'
+      label: 'Remote control over the internet'
+      detail: 'A C#/WPF desktop app sends commands to the robot over the internet through Firebase.'
   decisions:
-    - { title: '[TODO: decision]', choice: '[TODO: choice]', tradeoff: '[TODO: trade-off]' }
-    - { title: '[TODO: decision]', choice: '[TODO: choice]', tradeoff: '[TODO: trade-off]' }
+    - title: 'Independent modules'
+      choice: 'Each capability is its own module: head tracking, teleoperation, speech, VR head control, motion control and the remote app.'
+      tradeoff: 'The modules share one robot and must not send it conflicting commands; in return, each one could be built, tested and demonstrated on its own.'
+    - title: 'Imitation through inverse kinematics'
+      choice: 'The operator’s tracked hand positions are converted into the robot’s joint angles with inverse kinematics.'
+      tradeoff: 'The solution has to respect joint limits that a human arm does not share; in return, the operator steers the robot’s hands simply by moving their own.'
+    - title: 'Firebase as the remote link'
+      choice: 'The desktop app and the robot exchange commands through Firebase, over the internet.'
+      tradeoff: 'Control depends on an internet connection and a hosted service; in return, there is no server to build or run, and it works across networks.'
 problems:
-  - title: '[TODO: problem]'
-    challenge: '[TODO: challenge]'
-    approach: '[TODO: approach]'
-    evidence: { type: 'placeholder', text: '[ASSET: code excerpt or clip]' }
-  - title: '[TODO: problem]'
-    challenge: '[TODO: challenge]'
-    approach: '[TODO: approach]'
-    evidence: { type: 'placeholder', text: '[ASSET: code excerpt or clip]' }
+  - title: 'Hands that imitate the operator'
+    challenge: 'Carry an operator’s hand motions over to the robot’s hands, live, although human and robot joints differ.'
+    approach: 'Kinect skeletal tracking captures the operator’s joints; inverse kinematics converts the hand positions into joint angles the robot can reach.'
+    evidence:
+      type: 'link'
+      label: 'Hand-imitation teleoperation'
+      href: 'https://youtu.be/_JGYox5_IY8'
+  - title: 'Being present at a distant event'
+    challenge: 'Make the robot move its head like a person, driven by an operator who is not at the event.'
+    approach: 'A VR headset carries the operator’s head movements over to the robot’s head, so the robot can be operated remotely at a distant event.'
+    evidence:
+      type: 'link'
+      label: 'VR-driven remote head movement'
+      href: 'https://www.youtube.com/watch?v=uJDjwlhpj1g'
+  - title: 'Following a person’s head'
+    challenge: 'Detect a person’s head in the camera image and keep the robot turned towards it as the person moves.'
+    approach: 'OpenCV in Python detects the head and tracks its position frame by frame, and the robot turns to follow it.'
+    evidence:
+      type: 'link'
+      label: 'Head tracking'
+      href: 'https://youtu.be/Tbja_HpTQHE'
 results:
   metrics:
-    - { label: '[TODO: metric]', value: '[METRIC: value]' }
-  outcomes: ['[TODO: outcome]']
-  next: '[TODO: what comes next]'
+    - { label: 'Modules', value: '6' }
+    - { label: 'Public demo videos', value: '5' }
+    - { label: 'Duration', value: '12 months' }
+  outcomes:
+    - 'The robot follows a person’s head, imitates an operator’s hands and responds to speech.'
+    - 'It can be operated remotely through VR at a distant event, and from a desktop app over the internet.'
+    - 'Five of the six modules are documented in public videos.'
+  next: '[DETAIL: what you would do differently today]'
 proof:
-  placeholder: '[RECOMMENDATION: someone involved]'
+  recommendation: 'naoufel-khayati'
+  links:
+    - label: 'Main demo: VR-driven remote head movement'
+      href: 'https://www.youtube.com/watch?v=uJDjwlhpj1g'
+    - label: 'Speech recognition with hotword detection'
+      href: 'https://youtu.be/j74jeWoHeEo'
+    - label: 'Upper-body motion control'
+      href: 'https://youtu.be/0VcOwU8_J2A'
 scene:
   shot: 'cam_work_humanoid_robot'
   layer: 'layer_ui'
 ---
 
-[TODO: case-study story for Smart Humanoid Robot]
+### Seeing people
+
+OpenCV and Python detect a person’s head in the camera image and track its position, so the robot can follow it accurately. [Head tracking on video](https://youtu.be/Tbja_HpTQHE)
+
+### Moving like the operator
+
+For teleoperation, a Kinect tracks the operator’s skeleton, and inverse kinematics turns the hand positions into joint angles for the robot, which imitates the operator’s hands. A separate interface controls the movements of the upper body. [Teleoperation on video](https://youtu.be/_JGYox5_IY8) · [Upper-body control on video](https://youtu.be/0VcOwU8_J2A)
+
+### Listening
+
+Speech recognition with hotword detection lets people talk to the robot: it waits for its hotword, then listens. [Speech interaction on video](https://youtu.be/j74jeWoHeEo)
+
+### Being there remotely
+
+With a virtual-reality headset, an operator’s head movements are carried over to the robot’s head, so it can be operated remotely at a distant event. A C#/WPF desktop app controls the robot over the internet through Firebase. [The main demo on video](https://www.youtube.com/watch?v=uJDjwlhpj1g)
+
+### Looking back
+
+This project sits early on the thread that runs through my work: software that connects people and machines. The head tracking from 2019 comes back in HoloBox.

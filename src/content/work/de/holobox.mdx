@@ -1,54 +1,100 @@
 ---
 title: 'HoloBox'
-summary: '[TODO: one-sentence summary of HoloBox for cards and meta descriptions]'
-outcome: '[TODO: one-line outcome]'
+summary: 'Ein 3D-Avatar zum Sprechen, der in einem flachen Bildschirm zu stehen scheint: kopfgekoppelte Off-Axis-Projektion, Sprache und ein lokales LLM direkt in einer .NET-MAUI-App.'
+outcome: 'Ein sprechender 3D-Avatar, der in einem flachen Bildschirm zu stehen scheint – ausgelegt auf Offline-Betrieb und kurze Antwortzeiten.'
 status: 'in-development'
-role: '[TODO: role]'
-team: '[CONFIRM: team size]'
+role: 'Architektur und Entwicklung'
+team: '[CONFIRM: Teamgröße]'
 timeframe:
   start: '[CONFIRM: start date]'
   end: null
-platforms: ['[TODO: platforms]']
-stack: ['[TODO: stack]']
+platforms: ['Windows (erstes Ziel)']
+stack: ['.NET MAUI', 'Blazor Hybrid', 'Three.js', 'MediaPipe', 'LLamaSharp', 'Gemma (GGUF)', 'C#']
 order: 2
 featured: true
-layers: ['ui']
-context: '[TODO: context]'
+layers: ['ui', 'domain']
+context: 'HoloBox ist mein aktuelles Projekt im Bereich angewandte KI. Ein flacher Bildschirm zeigt einen 3D-Avatar, mit dem man sprechen kann – so, als stünde er in einem echten Kasten: Eine Webcam verfolgt den Kopf des Betrachters, und die Szene wird mit einer Off-Axis-Projektion passend zu seinem Blickwinkel gerendert. Man spricht, ein lokales Sprachmodell formuliert die Antwort, und der Avatar spricht sie lippensynchron aus. Alles läuft auf dem Gerät – offline und mit kurzen Antwortzeiten.'
 constraints:
-  - '[TODO: constraint]'
-  - '[TODO: constraint]'
+  - 'Offline als Prinzip: Spracherkennung, Sprachmodell und Rendering laufen vollständig auf dem Gerät, ohne Cloud-Dienst.'
+  - 'Kurze Antwortzeiten: Ein Gespräch wirkt nur natürlich, wenn die Antwort schnell kommt – nichts darf auf ein Netzwerk warten.'
+  - 'Zwei Laufzeitumgebungen: 3D-Rendering und Gesichtstracking laufen in JavaScript in einer WebView, das Sprachmodell in .NET.'
+  - 'Windows zuerst: Erstes Ziel ist ein Windows-PC, das Modell läuft im Prozess der App.'
 responsibilities:
-  - '[TODO: responsibility]'
-  - '[TODO: responsibility]'
+  - 'Entwurf der Architektur: eine .NET-MAUI-Blazor-Hybrid-App mit Three.js und MediaPipe in der WebView und einem lokalen Modell in .NET.'
+  - 'Umsetzung der kopfgekoppelten Off-Axis-Projektion, die den flachen Bildschirm zum Fenster in einen Kasten macht.'
+  - 'Einbindung eines Gemma-Modells im GGUF-Format direkt im Prozess über LLamaSharp, damit Gespräche auf dem Gerät bleiben.'
+  - 'Aufbau der Gesprächsschleife: Spracheingabe, Antwort des Modells, Sprachausgabe mit Lippensynchronisation.'
 architecture:
   diagram: 'holobox'
-  summary: '[TODO: architecture summary]'
+  summary: 'Eine .NET-MAUI-Blazor-Hybrid-App betreibt zwei Schleifen. Sehen: Die Webcam steuert Gesichtstracking und eine kopfgekoppelte Kamera. Sprechen: Sprache wird zu Text, ein lokales Modell antwortet im Prozess, und die Antwort wird zu Sprache mit Lippensynchronisation. Beide treffen sich im Avatar.'
   steps:
-    - { id: 'step-1', label: '[TODO: step]', detail: '[TODO: detail]' }
-    - { id: 'step-2', label: '[TODO: step]', detail: '[TODO: detail]' }
-    - { id: 'step-3', label: '[TODO: step]', detail: '[TODO: detail]' }
+    - id: 'track-head'
+      label: 'Kopf verfolgen'
+      detail: 'MediaPipe läuft in der WebView und schätzt aus dem Webcam-Bild die Position des Kopfes.'
+    - id: 'project-view'
+      label: 'Für diesen Blickwinkel projizieren'
+      detail: 'Die Kopfposition steuert eine Off-Axis-Kamera: ein asymmetrisches Frustum durch das Rechteck des Bildschirms, sodass der Bildschirm wie ein Fenster in einen Kasten wirkt.'
+    - id: 'listen'
+      label: 'Zuhören'
+      detail: 'Das Mikrofon speist die Spracherkennung auf dem Gerät. [CONFIRM: Spracherkennung]'
+    - id: 'generate'
+      label: 'Lokal antworten'
+      detail: 'Der erkannte Text geht an ein Gemma-Modell, das aus einer GGUF-Datei geladen wird und über LLamaSharp im Prozess läuft. Kein Umweg über das Netzwerk.'
+    - id: 'speak'
+      label: 'Sprechen'
+      detail: 'Die Antwort wird in Sprache umgewandelt, und die Lippen des Avatars bewegen sich mit. [CONFIRM: Sprachsynthese und Lip-Sync-Verfahren]'
+    - id: 'render'
+      label: 'Rendern'
+      detail: 'Three.js rendert den Avatar durch die kopfgekoppelte Kamera auf den flachen Bildschirm, sodass er im Display zu stehen scheint.'
   decisions:
-    - { title: '[TODO: decision]', choice: '[TODO: choice]', tradeoff: '[TODO: trade-off]' }
-    - { title: '[TODO: decision]', choice: '[TODO: choice]', tradeoff: '[TODO: trade-off]' }
+    - title: 'Ein lokales Modell, im Prozess'
+      choice: 'Ein Gemma-Modell im GGUF-Format läuft über LLamaSharp direkt im Prozess der App.'
+      tradeoff: 'Modellgröße und Antwortqualität sind durch die Hardware begrenzt; dafür funktioniert alles offline, Gespräche bleiben auf dem Gerät, und es gibt keinen Umweg über das Netzwerk.'
+    - title: 'Blazor Hybrid mit 3D in der WebView'
+      choice: 'Eine .NET-MAUI-Blazor-Hybrid-App betreibt Three.js und MediaPipe in ihrer WebView, Modell und App-Hülle laufen in .NET.'
+      tradeoff: 'Zwei Laufzeitumgebungen und eine Interop-Grenze zwischen JavaScript und .NET, die schnell bleiben muss; dafür ausgereifte Web-Bibliotheken für 3D und Gesichtstracking neben .NET für das Modell.'
+    - title: 'Kopfgekoppelte Perspektive auf einem normalen Bildschirm'
+      choice: 'Eine Webcam verfolgt den Kopf des Betrachters, und eine Off-Axis-Projektion lässt einen normalen flachen Bildschirm Tiefe zeigen.'
+      tradeoff: 'Die Illusion stimmt jeweils nur für eine Person und hängt von der Qualität des Trackings ab; dafür braucht es weder ein Spezialdisplay noch eine Brille.'
 problems:
-  - title: '[TODO: problem]'
-    challenge: '[TODO: challenge]'
-    approach: '[TODO: approach]'
-    evidence: { type: 'placeholder', text: '[ASSET: code excerpt or clip]' }
-  - title: '[TODO: problem]'
-    challenge: '[TODO: challenge]'
-    approach: '[TODO: approach]'
-    evidence: { type: 'placeholder', text: '[ASSET: code excerpt or clip]' }
+  - title: 'Ein flacher Bildschirm, der sich wie ein Kasten verhält'
+    challenge: 'Eine normale perspektivische Kamera erzeugt ein flaches Bild. Damit der Avatar im Display zu stehen scheint, muss das Bild dazu passen, wo die Augen des Betrachters gerade sind – und ihnen folgen, wenn er sich bewegt.'
+    approach: 'MediaPipe schätzt in der WebView die Kopfposition aus dem Webcam-Bild. Die Three.js-Kamera nutzt daraus eine Off-Axis-Projektion: ein asymmetrisches Frustum vom Auge durch die Ränder des physischen Bildschirms, nachgeführt mit jeder Kopfbewegung.'
+    evidence:
+      type: 'placeholder'
+      text: '[CODE: Auszug der Off-Axis-Projektion]'
+  - title: 'Ein Gespräch ohne Cloud'
+    challenge: 'Spracheingabe, die Antwort eines Sprachmodells und die Sprachausgabe müssen sich unmittelbar anfühlen und ohne Internetverbindung funktionieren.'
+    approach: 'Das Sprachmodell läuft lokal: ein Gemma-Modell im GGUF-Format, über LLamaSharp im Prozess geladen, sodass keine Anfrage das Gerät verlässt. [DETAIL: Verkettung von Spracherkennung, Modell und Sprachausgabe]'
+    evidence:
+      type: 'placeholder'
+      text: '[ASSET: kurzes Demo-Video eines Gesprächs]'
 results:
   metrics:
-    - { label: '[TODO: metric]', value: '[METRIC: value]' }
-  outcomes: ['[TODO: outcome]']
-  next: '[TODO: what comes next]'
+    - { label: 'Cloud-Dienste', value: 'Keine' }
+    - { label: 'Antwortzeit', value: '[METRIC: Sprache bis Sprache]' }
+    - { label: 'Bildrate', value: '[METRIC: fps auf dem Ziel-PC]' }
+    - { label: 'Modellgröße', value: '[METRIC: GGUF-Größe und Quantisierung]' }
+    - { label: 'Speicherbedarf', value: '[METRIC: maximaler Speicherbedarf]' }
+  outcomes:
+    - 'Eine Offline-first-Architektur: Tracking, Rendering und Sprachmodell laufen vollständig auf dem Gerät.'
+    - '[DETAIL: aktueller Stand des Prototyps]'
+  next: '[DETAIL: nächste Meilensteine]'
 proof:
-  placeholder: '[RECOMMENDATION: someone involved]'
+  placeholder: '[LINK: Demo-Video oder Repository]'
 scene:
   shot: 'cam_work_holobox'
   layer: 'layer_ui'
 ---
 
-[TODO: case-study story for HoloBox]
+### Die Idee
+
+Ein Bildschirm ist flach – Tiefe erkennen wir aber auch daran, wie sich eine Szene verschiebt, wenn wir den Kopf bewegen. HoloBox verfolgt den Kopf des Betrachters und zeichnet die Szene genau aus diesem Blickwinkel neu. So scheint der Avatar in einem Kasten hinter dem Glas zu stehen statt auf seiner Oberfläche.
+
+### Wie alles zusammenspielt
+
+Die App ist eine .NET-MAUI-Blazor-Hybrid-Anwendung. In ihrer WebView laufen Three.js für den Avatar und MediaPipe für das Gesichtstracking. Auf der .NET-Seite läuft ein Gemma-Modell über LLamaSharp direkt im Prozess, geladen aus einer GGUF-Datei. Die Spracherkennung macht aus dem Gesagten Text, das Modell antwortet, und die Sprachsynthese gibt dem Avatar eine Stimme, lippensynchron. [CONFIRM: Engines für Spracherkennung und Sprachausgabe]
+
+### Warum alles lokal bleibt
+
+Weil das Modell in der App läuft, bleibt das ganze Gespräch auf dem Gerät. Es gibt keinen Umweg über das Netzwerk, alles funktioniert offline, und nichts, was gesagt wird, muss den Rechner verlassen. HoloBox ist in Entwicklung, zuerst für Windows.

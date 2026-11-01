@@ -1,54 +1,129 @@
 ---
 title: 'HAPP'
-summary: '[TODO: one-sentence summary of HAPP for cards and meta descriptions]'
-outcome: '[TODO: one-line outcome]'
+summary: 'Die interne Unternehmens-App von Anton-Haering: Ich habe sie von React Native auf Xamarin migriert und danach ihre Entwicklung geleitet – von ASP.NET-APIs bis zu Keycloak.'
+outcome: 'Die interne Unternehmens-App von React Native auf Xamarin migriert, die Befunde der Sicherheitsaudits behoben und ihre Wartbarkeit langfristig gesichert.'
 status: 'internal'
-role: '[TODO: role]'
-team: '[CONFIRM: team size]'
+role: 'Softwareentwickler → Senior-Softwareentwickler'
+team: '[CONFIRM: Teamgröße]'
 timeframe:
-  start: '[CONFIRM: start date]'
-  end: null
-platforms: ['[TODO: platforms]']
-stack: ['[TODO: stack]']
+  start: '2021-08'
+  end: '2025-12'
+platforms: ['iOS', 'Android']
+stack:
+  [
+    'C#',
+    'Xamarin',
+    '.NET MAUI',
+    'ASP.NET REST APIs',
+    'Keycloak',
+    'OIDC',
+    'OAuth2',
+    'MVVM',
+    'Clean Architecture',
+  ]
 order: 1
 featured: true
-layers: ['api']
-context: '[TODO: context]'
+layers: ['ui', 'viewmodels', 'domain', 'api', 'identity', 'cicd']
+context: 'HAPP ist die interne Unternehmens-App der Anton-Haering GmbH in Bubsheim, im Einsatz auf iOS und Android. Ursprünglich basierte sie auf React Native – abseits der Technologiestandards des Unternehmens. Die App musste auf eine neue Plattform umziehen, interne Unternehmensdienste anbinden und später Sicherheitsaudits standhalten. Ab 2024 habe ich ihre Entwicklung geleitet, mit einem klaren Ziel: langfristige Stabilität und Wartbarkeit.'
 constraints:
-  - '[TODO: constraint]'
-  - '[TODO: constraint]'
+  - 'Altlast: eine React-Native-Codebasis, die im Einklang mit den Technologiestandards des Unternehmens abgelöst werden sollte.'
+  - 'Sicherheitsaudits: Die festgestellten Schwachstellen mussten behoben werden – mit Authentifizierung und Autorisierung nach einem prüfbaren Standard.'
+  - 'Integration: Die App hängt von internen Unternehmensdiensten ab, und die Kommunikation zwischen den Systemen muss zuverlässig bleiben.'
+  - 'Zwei Plattformen: iOS und Android aus einer plattformübergreifenden .NET-Codebasis, reibungslos ausgeliefert.'
 responsibilities:
-  - '[TODO: responsibility]'
-  - '[TODO: responsibility]'
+  - 'Leitete die strategische Plattformmigration von React Native zu Xamarin und richtete die Architektur an den Technologiestandards des Unternehmens aus.'
+  - 'Entwarf und implementierte Integrationen mit internen Unternehmensdiensten, die den Funktionsumfang erweiterten und die systemübergreifende Kommunikation sicherstellten.'
+  - 'Leitete ab Juli 2024 die Entwicklung von HAPP und sicherte ihre langfristige Stabilität und Wartbarkeit.'
+  - 'Entwickelte und pflegte skalierbare ASP.NET-REST-APIs, integriert in die .NET-MAUI- und Xamarin-Apps – mit reibungsloser Auslieferung für iOS und Android.'
+  - 'Behob die in Sicherheitsaudits festgestellten Schwachstellen und implementierte Authentifizierung und Autorisierung mit Keycloak (OIDC, OAuth2).'
+  - 'Überführte die Codebasis in MVVM und Clean Architecture und etablierte verbindliche Regeln und Abläufe für Code-Reviews.'
+  - 'Coachte das Team durch strukturierte Code-Reviews und Einzel-Coachings, administrierte die Bereitstellungsumgebungen und unterstützte die Anwender bei der Fehleranalyse.'
 architecture:
   diagram: 'happ'
-  summary: '[TODO: architecture summary]'
+  summary: 'Eine plattformübergreifende Mobile App, gegliedert nach MVVM und Clean Architecture, meldet Nutzer über einen Identity Provider an und spricht mit einer ASP.NET-REST-API, die interne Unternehmensdienste anbindet. Alle Bezeichnungen sind neutral; interne Systeme werden nicht gezeigt.'
   steps:
-    - { id: 'step-1', label: '[TODO: step]', detail: '[TODO: detail]' }
-    - { id: 'step-2', label: '[TODO: step]', detail: '[TODO: detail]' }
-    - { id: 'step-3', label: '[TODO: step]', detail: '[TODO: detail]' }
+    - id: 'sign-in'
+      label: 'Anmelden'
+      detail: 'Die App meldet den Nutzer über OpenID Connect beim Identity Provider (Keycloak) an und erhält die nötigen Tokens.'
+    - id: 'call-api'
+      label: 'API aufrufen'
+      detail: 'Die App ruft die ASP.NET-REST-API auf und sendet bei jeder Anfrage das OAuth2-Access-Token mit.'
+    - id: 'authorise'
+      label: 'Autorisieren'
+      detail: 'Die API prüft das vom Identity Provider ausgestellte Token und klärt, was der Nutzer darf, bevor sie die Anfrage bearbeitet.'
+    - id: 'integrate'
+      label: 'Interne Dienste anbinden'
+      detail: 'Die API spricht mit den internen Unternehmensdiensten und hält die Kommunikation zwischen den Systemen zuverlässig.'
+    - id: 'present'
+      label: 'Zurück auf den Bildschirm'
+      detail: 'Die Ergebnisse fließen über die Infrastrukturschicht, den Clean-Architecture-Kern und die MVVM-View-Models zurück in die Oberfläche.'
+    - id: 'release'
+      label: 'Ausliefern'
+      detail: 'Neue Versionen gehen über die Bereitstellungsumgebungen an iOS und Android.'
   decisions:
-    - { title: '[TODO: decision]', choice: '[TODO: choice]', tradeoff: '[TODO: trade-off]' }
-    - { title: '[TODO: decision]', choice: '[TODO: choice]', tradeoff: '[TODO: trade-off]' }
+    - title: 'Identität über Keycloak und OpenID Connect'
+      choice: 'Authentifizierung und Autorisierung laufen über Keycloak mit OpenID Connect und OAuth2 – gemeinsam für App und API.'
+      tradeoff: 'Ein weiterer kritischer Dienst, der betrieben, gepatcht und verfügbar gehalten werden muss; dafür Standardabläufe, die Auditoren kennen und nachprüfen können.'
+    - title: 'MVVM und Clean Architecture in der App'
+      choice: 'View-Models halten Präsentationslogik aus den Views heraus; ein Clean-Architecture-Kern hält die Geschäftsregeln unabhängig von UI-Framework und Infrastruktur.'
+      tradeoff: 'Mehr Schichten, Schnittstellen und Mapping-Code am Anfang; dafür isoliert testbares Verhalten und ein Kern, der weder von Xamarin noch von .NET MAUI abhängt.'
+    - title: 'Ein .NET-Stack von der App bis zur API'
+      choice: 'Der Wechsel von React Native zu Xamarin brachte die App in Einklang mit den Technologiestandards des Unternehmens; App und API teilen sich C# und .NET.'
+      tradeoff: 'Eine Plattformmigration kostet Zeit, die nicht in neue Funktionen fließt; dafür eine Sprache und eine Toolchain von der App bis ins Backend.'
 problems:
-  - title: '[TODO: problem]'
-    challenge: '[TODO: challenge]'
-    approach: '[TODO: approach]'
-    evidence: { type: 'placeholder', text: '[ASSET: code excerpt or clip]' }
-  - title: '[TODO: problem]'
-    challenge: '[TODO: challenge]'
-    approach: '[TODO: approach]'
-    evidence: { type: 'placeholder', text: '[ASSET: code excerpt or clip]' }
+  - title: 'Eine produktive App auf eine neue Plattform bringen'
+    challenge: 'HAPP lief produktiv auf React Native. Die App musste auf Xamarin und auf die Technologiestandards des Unternehmens umziehen und weiter mit den internen Unternehmensdiensten zusammenarbeiten.'
+    approach: 'Ich habe die Migration zu Xamarin geleitet, die Architektur an den Standards des Unternehmens ausgerichtet und die Integrationen mit internen Unternehmensdiensten entworfen. Die Migration wurde erfolgreich abgeschlossen. [DETAIL: Ablauf der Migration]'
+    evidence:
+      type: 'placeholder'
+      text: '[ASSET: anonymisierter Vorher-nachher-Vergleich der Migration, nach Freigabe]'
+  - title: 'Befunde aus Sicherheitsaudits beheben'
+    challenge: 'Sicherheitsaudits deckten Schwachstellen auf, die behoben werden mussten; Authentifizierung und Autorisierung brauchten eine sichere Umsetzung nach Standard.'
+    approach: 'Ich habe die Befunde behoben und Authentifizierung und Autorisierung mit Keycloak über OpenID Connect und OAuth2 umgesetzt: Die App meldet Nutzer über den Identity Provider an, und die API autorisiert jede Anfrage anhand ihres Access Tokens. [DETAIL: verwendeter OIDC-Flow]'
+    evidence:
+      type: 'placeholder'
+      text: '[CODE: anonymisierter Auszug der Token-Prüfung in der API]'
+  - title: 'Die Codebasis wartbar halten'
+    challenge: 'Langfristige Stabilität und Wartbarkeit verlangten Struktur im Code und einen gemeinsamen Maßstab für jede Änderung.'
+    approach: 'Ich habe die Codebasis in MVVM und Clean Architecture überführt und verbindliche Regeln und Abläufe für Code-Reviews etabliert, begleitet von strukturierten Reviews und Einzel-Coachings im Team.'
+    evidence:
+      type: 'placeholder'
+      text: '[ASSET: anonymisierte Checkliste für Code-Reviews]'
 results:
   metrics:
-    - { label: '[TODO: metric]', value: '[METRIC: value]' }
-  outcomes: ['[TODO: outcome]']
-  next: '[TODO: what comes next]'
+    - { label: 'Plattformmigration', value: 'Abgeschlossen' }
+    - { label: 'Behobene Auditbefunde', value: '[METRIC: Anzahl behobener Befunde]' }
+    - { label: 'Release-Takt', value: '[METRIC: vorher und nachher]' }
+    - { label: 'Absturzfreie Sitzungen', value: '[METRIC: Quote absturzfreier Sitzungen]' }
+    - { label: 'Review-Durchlaufzeit', value: '[METRIC: Median bis zum Review]' }
+  outcomes:
+    - 'Die Migration von React Native zu Xamarin ist abgeschlossen, die Architektur folgt den Technologiestandards des Unternehmens.'
+    - 'Die in Sicherheitsaudits festgestellten Schwachstellen sind behoben; Anmeldung und Zugriffskontrolle laufen über Keycloak mit OIDC und OAuth2.'
+    - 'Die Codebasis folgt MVVM und Clean Architecture, verbindliche Regeln und Abläufe für Code-Reviews sind etabliert.'
+    - 'APIs und Apps erreichten iOS und Android reibungslos; die langfristige Stabilität und Wartbarkeit von HAPP ist gesichert.'
+  next: '[DETAIL: nächste Schritte]'
 proof:
-  placeholder: '[RECOMMENDATION: someone involved]'
+  placeholder: '[RECOMMENDATION: Empfehlung aus dem Umfeld von Anton-Haering]'
+confidentiality: 'HAPP ist eine interne Anwendung. Diese Fallstudie verwendet neutrale Bezeichnungen und zeigt keine Screenshots, internen Namen oder Zahlen. Kennzahlen folgen, sobald sie freigegeben sind.'
 scene:
   shot: 'cam_work_happ'
-  layer: 'layer_api'
+  layer: 'layer_identity'
 ---
 
-[TODO: case-study story for HAPP]
+### Kapitel eins: von React Native zu Xamarin (2021–2024)
+
+HAPP basierte ursprünglich auf React Native. Als Softwareentwickler habe ich die strategische Plattformmigration auf Xamarin geleitet und die Architektur der App an den Technologiestandards des Unternehmens ausgerichtet. Die Migration wurde erfolgreich abgeschlossen.
+
+In derselben Rolle habe ich Integrationen mit internen Unternehmensdiensten entworfen und umgesetzt. Sie erweiterten den Funktionsumfang der App und stellten eine zuverlässige Kommunikation zwischen den Systemen sicher.
+
+[DETAIL: Ablauf und Umfang der Migration]
+
+### Kapitel zwei: die Entwicklung von HAPP leiten (2024–2025)
+
+Im Juli 2024 habe ich als Senior-Softwareentwickler die Leitung der Entwicklung von HAPP übernommen – mit einem klaren Ziel: langfristige Stabilität und Wartbarkeit.
+
+- **APIs und Apps.** Ich habe skalierbare ASP.NET-REST-APIs entwickelt und gepflegt und sie in die plattformübergreifenden .NET-MAUI- und Xamarin-Apps integriert – mit reibungsloser Auslieferung für iOS und Android.
+- **Sicherheit.** Ich habe die in Sicherheitsaudits festgestellten Schwachstellen behoben und Authentifizierung und Autorisierung mit Keycloak über OpenID Connect und OAuth2 umgesetzt.
+- **Architektur.** Ich habe die Codebasis in MVVM und Clean Architecture überführt: Präsentationslogik liegt in den View-Models, die Geschäftsregeln bleiben unabhängig von UI-Framework und Infrastruktur.
+- **Betrieb und Support.** Ich habe die Bereitstellungsumgebungen administriert und gewartet und die Anwender von HAPP bei Fehleranalyse und Problemlösung unterstützt.
+- **Team.** Ich habe verbindliche Regeln und Abläufe für Code-Reviews etabliert und das Team durch strukturierte Code-Reviews und Einzel-Coachings begleitet.

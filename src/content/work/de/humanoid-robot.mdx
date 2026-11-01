@@ -1,54 +1,137 @@
 ---
 title: 'Smart Humanoid Robot'
-summary: '[TODO: one-sentence summary of Smart Humanoid Robot for cards and meta descriptions]'
-outcome: '[TODO: one-line outcome]'
+summary: 'Mein Abschlussprojekt: die Module, mit denen ein humanoider Roboter dem Kopf einer Person folgt, die Hände eines Bedieners nachahmt, auf Sprache reagiert und per VR fernsteuerbar ist.'
+outcome: 'Kopf-Tracking, Teleoperation per Handnachahmung, Sprachinteraktion und VR-Fernsteuerung für einen humanoiden Roboter – jeweils in einem öffentlichen Video dokumentiert.'
 status: 'completed'
-role: '[TODO: role]'
-team: '[CONFIRM: team size]'
+role: 'Abschlussprojekt bei Dot it'
+team: '[CONFIRM: Teamgröße]'
 timeframe:
-  start: '[CONFIRM: start date]'
-  end: null
-platforms: ['[TODO: platforms]']
-stack: ['[TODO: stack]']
+  start: '2019-02'
+  end: '2020-01'
+platforms: ['Raspberry Pi', 'Windows-Desktop']
+stack:
+  [
+    'Python',
+    'OpenCV',
+    'C#',
+    'WPF',
+    'Kinect',
+    'Firebase',
+    'Raspberry Pi',
+    'Inverse kinematics',
+    'IMU data',
+    'Motion capture',
+  ]
 order: 3
 featured: true
-layers: ['ui']
-context: '[TODO: context]'
+layers: ['ui', 'data']
+context: 'Mein Abschlussprojekt bei Dot it in Tunesien bestand aus Modulen, mit denen ein humanoider Roboter mit seiner Umgebung interagiert und autonom handelt. Der Roboter sollte Menschen bemerken und ihnen mit dem Kopf folgen, Sprache verstehen, die Bewegungen eines Bedieners nachahmen und sich fernsteuern lassen – selbst bei einer entfernten Veranstaltung. Die Arbeit reichte von Computer Vision über Skeletttracking und inverse Kinematik bis zu Sprache und Fernsteuerung über das Internet.'
 constraints:
-  - '[TODO: constraint]'
-  - '[TODO: constraint]'
+  - 'Echtzeit: Ein Roboter, der einen Menschen nachahmt, muss dessen Bewegungen ohne spürbare Verzögerung folgen.'
+  - 'Physische Grenzen: Erfasste menschliche Posen müssen auf die Gelenke und den Bewegungsspielraum des Roboters passen.'
+  - 'Fernsteuerung: Die Steuerung musste über das Internet funktionieren, für einen Roboter bei einer entfernten Veranstaltung.'
+  - 'Viele Eingaben, ein Körper: Kamera, Kinect, VR-Headset, Mikrofon und Desktop-App steuern denselben Roboter.'
 responsibilities:
-  - '[TODO: responsibility]'
-  - '[TODO: responsibility]'
+  - 'Entwickelte die Module, mit denen der Roboter mit seiner Umgebung interagiert und autonom handelt.'
+  - 'Kopf-Tracking mit OpenCV und Python, damit der Roboter dem Kopf einer Person folgt.'
+  - 'Teleoperation durch Handnachahmung mit Kinect-Skeletttracking und inverser Kinematik.'
+  - 'Spracherkennung mit Hotword-Erkennung.'
+  - 'VR-gesteuerte Kopfbewegung für die Fernsteuerung bei einer entfernten Veranstaltung sowie eine Steuerungsoberfläche für den Oberkörper.'
+  - 'Eine Desktop-App in C#/WPF, die den Roboter über Firebase via Internet steuert.'
 architecture:
   diagram: 'humanoid-robot'
-  summary: '[TODO: architecture summary]'
+  summary: 'Sechs Module speisen die Steuerung des Roboters, die Kopf, Arme und Hände sowie den Oberkörper bewegt. Manche Module nehmen die Menschen in der Umgebung wahr, andere übertragen die Bewegungen eines Bedieners – aus der Nähe oder über das Internet.'
   steps:
-    - { id: 'step-1', label: '[TODO: step]', detail: '[TODO: detail]' }
-    - { id: 'step-2', label: '[TODO: step]', detail: '[TODO: detail]' }
-    - { id: 'step-3', label: '[TODO: step]', detail: '[TODO: detail]' }
+    - id: 'head-tracking'
+      label: 'Kopf-Tracking'
+      detail: 'OpenCV und Python erkennen den Kopf einer Person und verfolgen seine Position, damit der Roboter ihm präzise folgt.'
+    - id: 'teleoperation'
+      label: 'Teleoperation durch Handnachahmung'
+      detail: 'Kinect-Skeletttracking erfasst die Hände des Bedieners; inverse Kinematik macht aus ihren Positionen Gelenkwinkel für die Hände des Roboters.'
+    - id: 'speech'
+      label: 'Sprache'
+      detail: 'Die Hotword-Erkennung aktiviert die Spracherkennung, damit Menschen mit dem Roboter sprechen können.'
+    - id: 'vr-head'
+      label: 'VR-Kopfsteuerung'
+      detail: 'Ein VR-Headset überträgt die Kopfbewegungen des Bedieners auf den Kopf des Roboters, um ihn bei einer entfernten Veranstaltung fernzusteuern.'
+    - id: 'upper-body'
+      label: 'Bewegungssteuerung des Oberkörpers'
+      detail: 'Eine Steuerungsoberfläche bewegt den Oberkörper des Roboters.'
+    - id: 'remote-control'
+      label: 'Fernsteuerung über das Internet'
+      detail: 'Eine Desktop-App in C#/WPF sendet über Firebase Befehle an den Roboter – über das Internet.'
   decisions:
-    - { title: '[TODO: decision]', choice: '[TODO: choice]', tradeoff: '[TODO: trade-off]' }
-    - { title: '[TODO: decision]', choice: '[TODO: choice]', tradeoff: '[TODO: trade-off]' }
+    - title: 'Unabhängige Module'
+      choice: 'Jede Fähigkeit ist ein eigenes Modul: Kopf-Tracking, Teleoperation, Sprache, VR-Kopfsteuerung, Bewegungssteuerung und die Fernsteuer-App.'
+      tradeoff: 'Die Module teilen sich einen Roboter und dürfen ihm keine widersprüchlichen Befehle senden; dafür ließ sich jedes für sich entwickeln, testen und vorführen.'
+    - title: 'Nachahmung über inverse Kinematik'
+      choice: 'Die erfassten Handpositionen des Bedieners werden per inverser Kinematik in Gelenkwinkel des Roboters umgerechnet.'
+      tradeoff: 'Die Lösung muss Gelenkgrenzen einhalten, die ein menschlicher Arm nicht hat; dafür steuert der Bediener die Hände des Roboters einfach mit seinen eigenen Bewegungen.'
+    - title: 'Firebase als Verbindung für die Fernsteuerung'
+      choice: 'Desktop-App und Roboter tauschen Befehle über Firebase aus, über das Internet.'
+      tradeoff: 'Die Steuerung hängt von einer Internetverbindung und einem gehosteten Dienst ab; dafür muss kein eigener Server gebaut oder betrieben werden, und es funktioniert über Netzgrenzen hinweg.'
 problems:
-  - title: '[TODO: problem]'
-    challenge: '[TODO: challenge]'
-    approach: '[TODO: approach]'
-    evidence: { type: 'placeholder', text: '[ASSET: code excerpt or clip]' }
-  - title: '[TODO: problem]'
-    challenge: '[TODO: challenge]'
-    approach: '[TODO: approach]'
-    evidence: { type: 'placeholder', text: '[ASSET: code excerpt or clip]' }
+  - title: 'Hände, die den Bediener nachahmen'
+    challenge: 'Die Handbewegungen eines Bedieners live auf die Hände des Roboters übertragen, obwohl sich die Gelenke von Mensch und Roboter unterscheiden.'
+    approach: 'Kinect-Skeletttracking erfasst die Gelenke des Bedieners; inverse Kinematik rechnet die Handpositionen in Gelenkwinkel um, die der Roboter erreichen kann.'
+    evidence:
+      type: 'link'
+      label: 'Teleoperation durch Handnachahmung'
+      href: 'https://youtu.be/_JGYox5_IY8'
+  - title: 'Präsent bei einer entfernten Veranstaltung'
+    challenge: 'Den Kopf des Roboters wie einen menschlichen bewegen – gesteuert von einem Bediener, der nicht vor Ort ist.'
+    approach: 'Ein VR-Headset überträgt die Kopfbewegungen des Bedieners auf den Kopf des Roboters, sodass er sich bei einer entfernten Veranstaltung fernsteuern lässt.'
+    evidence:
+      type: 'link'
+      label: 'VR-gesteuerte Kopfbewegung aus der Ferne'
+      href: 'https://www.youtube.com/watch?v=uJDjwlhpj1g'
+  - title: 'Dem Kopf einer Person folgen'
+    challenge: 'Den Kopf einer Person im Kamerabild erkennen und den Roboter ihr zugewandt halten, während sie sich bewegt.'
+    approach: 'OpenCV in Python erkennt den Kopf und verfolgt seine Position Bild für Bild, und der Roboter dreht sich mit.'
+    evidence:
+      type: 'link'
+      label: 'Kopf-Tracking'
+      href: 'https://youtu.be/Tbja_HpTQHE'
 results:
   metrics:
-    - { label: '[TODO: metric]', value: '[METRIC: value]' }
-  outcomes: ['[TODO: outcome]']
-  next: '[TODO: what comes next]'
+    - { label: 'Module', value: '6' }
+    - { label: 'Öffentliche Demovideos', value: '5' }
+    - { label: 'Dauer', value: '12 Monate' }
+  outcomes:
+    - 'Der Roboter folgt dem Kopf einer Person, ahmt die Hände eines Bedieners nach und reagiert auf Sprache.'
+    - 'Er lässt sich per VR bei einer entfernten Veranstaltung fernsteuern und über eine Desktop-App via Internet bedienen.'
+    - 'Fünf der sechs Module sind in öffentlichen Videos dokumentiert.'
+  next: '[DETAIL: Rückblick aus heutiger Sicht]'
 proof:
-  placeholder: '[RECOMMENDATION: someone involved]'
+  recommendation: 'naoufel-khayati'
+  links:
+    - label: 'Hauptdemo: VR-gesteuerte Kopfbewegung aus der Ferne'
+      href: 'https://www.youtube.com/watch?v=uJDjwlhpj1g'
+    - label: 'Spracherkennung mit Hotword-Erkennung'
+      href: 'https://youtu.be/j74jeWoHeEo'
+    - label: 'Bewegungssteuerung des Oberkörpers'
+      href: 'https://youtu.be/0VcOwU8_J2A'
 scene:
   shot: 'cam_work_humanoid_robot'
   layer: 'layer_ui'
 ---
 
-[TODO: case-study story for Smart Humanoid Robot]
+### Menschen wahrnehmen
+
+OpenCV und Python erkennen den Kopf einer Person im Kamerabild und verfolgen seine Position, damit der Roboter ihm präzise folgt. [Kopf-Tracking im Video](https://youtu.be/Tbja_HpTQHE)
+
+### Bewegen wie der Bediener
+
+Für die Teleoperation erfasst eine Kinect das Skelett des Bedieners, und inverse Kinematik rechnet die Handpositionen in Gelenkwinkel für den Roboter um – so ahmt er die Hände des Bedieners nach. Eine eigene Oberfläche steuert die Bewegungen des Oberkörpers. [Teleoperation im Video](https://youtu.be/_JGYox5_IY8) · [Oberkörpersteuerung im Video](https://youtu.be/0VcOwU8_J2A)
+
+### Zuhören
+
+Spracherkennung mit Hotword-Erkennung macht es möglich, mit dem Roboter zu sprechen: Er wartet auf sein Hotword und hört dann zu. [Sprachinteraktion im Video](https://youtu.be/j74jeWoHeEo)
+
+### Aus der Ferne dabei sein
+
+Mit einem VR-Headset werden die Kopfbewegungen eines Bedieners auf den Kopf des Roboters übertragen, sodass er sich bei einer entfernten Veranstaltung fernsteuern lässt. Eine Desktop-App in C#/WPF steuert den Roboter über Firebase via Internet. [Die Hauptdemo im Video](https://www.youtube.com/watch?v=uJDjwlhpj1g)
+
+### Rückblick
+
+Das Projekt liegt früh auf dem roten Faden meiner Arbeit: Software, die Menschen und Maschinen verbindet. Das Kopf-Tracking von 2019 kehrt in HoloBox wieder.
