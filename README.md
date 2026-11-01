@@ -30,7 +30,7 @@ pnpm test:e2e       # Playwright: every route in both locales, keyboard, theme, 
                     #   privacy, no-JS, mobile, SEO and CV; SCREENSHOTS=1 adds the gate screenshots
 pnpm size           # JavaScript per page (gzip) against the 90 KB budget
 pnpm lhci           # Lighthouse CI, mobile and desktop, reports in reports/lighthouse/
-pnpm content:check  # list remaining [PLACEHOLDER: …] content (never fails)
+pnpm content:check  # list remaining [PLACEHOLDER: …] content, after a build also per page (never fails)
 pnpm verify         # lint, check, test, build, linkcheck, e2e
 ```
 

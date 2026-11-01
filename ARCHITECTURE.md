@@ -139,8 +139,8 @@ tests/e2e/                Playwright: smoke, keyboard, theme, language, axe, pri
 
 ```mermaid
 flowchart LR
-  Q["quality<br/>ESLint, Prettier, astro check,<br/>Vitest, content:check"]
-  B["build<br/>astro build, PDF CVs,<br/>link check, JS budget"]
+  Q["quality<br/>ESLint, Prettier, astro check,<br/>Vitest"]
+  B["build<br/>astro build, PDF CVs,<br/>content:check, link check, JS budget"]
   E["e2e<br/>Playwright: smoke, keyboard, theme,<br/>language, axe, privacy, no-JS,<br/>mobile, SEO, CV, screenshots"]
   L["lighthouse<br/>mobile + desktop, ≥ 95,<br/>LCP, CLS and TBT summary"]
   D["deploy<br/>GitHub Pages<br/>(default branch only)"]

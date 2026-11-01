@@ -22,7 +22,7 @@ env:
 
 jobs:
   quality:
-    name: Lint, types, unit tests, content check
+    name: Lint, types, unit tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -39,17 +39,9 @@ jobs:
         run: pnpm check
       - name: Vitest (schemas, EN/DE parity, formatting, tokens)
         run: pnpm test
-      - name: Content placeholders (warning only)
-        run: pnpm content:check
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: placeholders
-          path: reports/placeholders.*
-          if-no-files-found: ignore
 
   build:
-    name: Build, PDF CVs, link check, JS budget
+    name: Build, PDF CVs, placeholders, link check, JS budget
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -64,6 +56,15 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
       - name: Build site and print PDF CVs
         run: pnpm build
+      # After the build, so the report also lists the pages that show placeholders.
+      - name: Content placeholders (warning only)
+        run: pnpm content:check
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: placeholders
+          path: reports/placeholders.*
+          if-no-files-found: ignore
       - name: Internal link check
         run: pnpm linkcheck
       - name: JavaScript per page (gzip budget)

@@ -3,6 +3,9 @@
  * Lists every remaining content placeholder ([METRIC: …], [CONFIRM: …], …).
  * Always exits 0: placeholders are a warning, not a failure. Writes
  * reports/placeholders.{json,md} and, in GitHub Actions, a job summary.
+ * Comment lines (JSDoc examples), the placeholder legend and the samples on
+ * the internal /tokens/ page are not missing content and are not counted.
+ * Run it after a build to also list the pages that show placeholders.
  */
 import { existsSync } from 'node:fs';
 import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -11,8 +14,15 @@ import { PLACEHOLDER_PATTERN } from '../src/lib/placeholders.ts';
 import { DIST, listFiles } from './lib/dist.mjs';
 
 const SOURCE_DIRS = ['src'];
-const SKIP = new Set(['src/lib/placeholders.ts']);
+/** The placeholder module itself and the internal /tokens/ page, whose placeholders are samples. */
+const SKIP = new Set(['src/lib/placeholders.ts', 'src/views/tokens/TokensView.astro']);
+const SKIP_PAGES = new Set(['tokens/index.html']);
+/** Placeholders that explain placeholders: the legend under every case study. */
+const ALLOW = new Set(['[METRIC: …]']);
 const pattern = () => new RegExp(PLACEHOLDER_PATTERN, 'g');
+/** JSDoc and line comments: '*', '//', '/*' or '/**' at the start of the trimmed line. */
+const isComment = (line) => /^(\*|\/\/|\/\*)/.test(line.trim());
+const missing = (text) => [...text.matchAll(pattern())].filter((match) => !ALLOW.has(match[0]));
 
 const items = [];
 for (const dir of SOURCE_DIRS) {
@@ -22,7 +32,8 @@ for (const dir of SOURCE_DIRS) {
     if (SKIP.has(file)) continue;
     const lines = (await readFile(file, 'utf8')).split('\n');
     lines.forEach((line, index) => {
-      for (const match of line.matchAll(pattern())) {
+      if (isComment(line)) return;
+      for (const match of missing(line)) {
         items.push({ file, line: index + 1, kind: match[1], label: match[2], raw: match[0] });
       }
     });
@@ -33,9 +44,10 @@ for (const dir of SOURCE_DIRS) {
 const rendered = new Map();
 if (existsSync(DIST)) {
   for (const rel of await listFiles(DIST, (file) => file.endsWith('.html'))) {
+    if (SKIP_PAGES.has(rel)) continue;
     const html = await readFile(join(DIST, rel), 'utf8');
     const text = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ');
-    const count = [...text.matchAll(pattern())].length;
+    const count = missing(text).length;
     if (count) rendered.set(rel, count);
   }
 }
