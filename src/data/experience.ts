@@ -120,7 +120,7 @@ export const experience = z.array(experienceSchema).parse([
     end: '2021-08',
     summary: {
       en: 'Took a product from design through hardware, software and prototyping to production.',
-      de: 'Ein Produkt von der Konstruktion über Hard- und Software und Prototyping bis zur Produktion.',
+      de: 'Entwicklung eines Produkts vom Entwurf über Hard- und Software und Prototyping bis zur Produktion.',
     },
     highlights: [
       {
@@ -158,7 +158,7 @@ export const experience = z.array(experienceSchema).parse([
     end: '2020-01',
     summary: {
       en: 'Built the modules that let a humanoid robot sense its environment and act on its own.',
-      de: 'Module, mit denen ein humanoider Roboter seine Umgebung wahrnimmt und selbstständig handelt.',
+      de: 'Entwicklung von Modulen, mit denen ein humanoider Roboter seine Umgebung wahrnimmt und selbstständig handelt.',
     },
     highlights: [
       {
@@ -198,7 +198,7 @@ export const experience = z.array(experienceSchema).parse([
     end: '2018-09',
     summary: {
       en: 'Turned a projected video into a touch interface with a Kinect.',
-      de: 'Eine projizierte Fläche per Kinect in eine Touch-Oberfläche verwandelt.',
+      de: 'Entwicklung einer Kinect-Anwendung, die eine projizierte Fläche in eine Touch-Oberfläche verwandelt.',
     },
     highlights: [
       {
