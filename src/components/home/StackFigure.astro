@@ -5,6 +5,10 @@
  * evenly spaced, top (UI) to bottom (CI/CD). Numbered balloons and leader
  * lines label the slabs; on small screens only the balloons remain.
  *
+ * Wide, the title sits in the drawing's title block. Narrow, where the drawing
+ * scales down too far for legible SVG text, the title is an HTML label above
+ * the drawing instead, at the type scale's smallest step.
+ *
  * Decorative: the SVG is aria-hidden and its meaning lives in the HTML parts
  * list (StackLegend). Hovering or focusing a list item highlights its slab and
  * hovering a slab highlights its list item, with :has() and no JavaScript.
@@ -50,6 +54,9 @@ const sizes = `--fig-w:${geometry.width};--fig-h:${geometry.height};--fig-cw:${g
 ---
 
 <div class:list={['fig-wrap', className]} style={sizes} data-stack-poster {...rest}>
+  <p class="fig__caption" aria-hidden="true">
+    {figure} — {title}
+  </p>
   <svg
     class="fig"
     viewBox={`0 0 ${geometry.width} ${geometry.height}`}
@@ -115,20 +122,11 @@ const sizes = `--fig-w:${geometry.width};--fig-h:${geometry.height};--fig-cw:${g
     <g class="fig__title fig__title--wide">
       <rect x={tb.x} y={tb.y} width={tb.width} height={tb.height} />
       <path d={`M${tb.x} ${tb.y + tb.height / 2} H${tb.x + tb.width}`} />
-      <text class="fig__title-main" x={tb.x + 10} y={tb.y + tb.height / 4} dy="0.36em">
+      <text class="fig__title-main" x={tb.x + 11} y={tb.y + tb.height / 4} dy="0.36em">
         {figure} — {title}
       </text>
-      <text class="fig__title-note" x={tb.x + 10} y={tb.y + (tb.height * 3) / 4} dy="0.36em">
+      <text class="fig__title-note" x={tb.x + 11} y={tb.y + (tb.height * 3) / 4} dy="0.36em">
         {note}
-      </text>
-    </g>
-
-    <g class="fig__title fig__title--compact">
-      <text class="fig__title-main" x="20" y="26">
-        {figure}
-      </text>
-      <text class="fig__title-note" x="20" y="44">
-        {title}
       </text>
     </g>
   </svg>
@@ -234,16 +232,17 @@ const sizes = `--fig-w:${geometry.width};--fig-h:${geometry.height};--fig-cw:${g
     stroke: var(--hl, var(--fig-line));
   }
 
+  /* SVG sizes are user units: at 1440 the drawing renders at about 0.95, so 12 → 11.4px. */
   .fig__balloon text {
     fill: var(--hl, var(--color-text-subtle));
-    font-size: 10.5px;
+    font-size: 12px;
     font-weight: var(--weight-medium);
     text-anchor: middle;
   }
 
   .fig__name {
     fill: var(--hl, var(--color-text-muted));
-    font-size: 12px;
+    font-size: 12.5px;
     letter-spacing: 0.02em;
   }
 
@@ -260,20 +259,27 @@ const sizes = `--fig-w:${geometry.width};--fig-h:${geometry.height};--fig-cw:${g
 
   .fig__title-main {
     fill: var(--color-text-muted);
-    font-size: 9.5px;
+    font-size: 13px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   .fig__title-note {
     fill: var(--color-text-subtle);
-    font-size: 9px;
+    font-size: 12px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
-  .fig__title--compact {
+  /* The narrow title: a mono label above the drawing (hidden while the title block shows). */
+  .fig__caption {
     display: none;
+    margin-bottom: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
   }
 
   /* Narrow containers: crop the label column and keep the balloons, enlarged on phones. */
@@ -283,25 +289,20 @@ const sizes = `--fig-w:${geometry.width};--fig-h:${geometry.height};--fig-cw:${g
     }
 
     .fig__name,
-    .fig__title--wide {
+    .fig__title {
       display: none;
     }
 
-    .fig__title--compact,
+    .fig__caption {
+      display: block;
+    }
+
     .fig__guides .fig__compact-mark {
       display: inline;
     }
 
     .fig__balloon {
       transform: scale(1.15);
-    }
-
-    .fig__title--compact .fig__title-main {
-      font-size: 13px;
-    }
-
-    .fig__title--compact .fig__title-note {
-      font-size: 11px;
     }
   }
 

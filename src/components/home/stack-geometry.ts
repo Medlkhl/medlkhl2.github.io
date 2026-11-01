@@ -138,7 +138,8 @@ const LABEL_GAP = 9;
 const LABEL_ROOM = 194;
 const DIMENSION_OFFSET = 30;
 const MARGIN = 8;
-const TITLE_BLOCK = { width: 250, height: 44, inset: 6 } as const;
+/** Sized for 13- and 12-unit labels (about 12px at 1440), German included. */
+const TITLE_BLOCK = { width: 290, height: 50, inset: 6 } as const;
 
 export interface SlabGeometry {
   /** 0 = top of the stack. */
