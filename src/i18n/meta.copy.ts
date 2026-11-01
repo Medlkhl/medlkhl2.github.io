@@ -145,19 +145,19 @@ export const metaTemplates = defineCopy({
     caseStudyTitle: '{title} · Case study',
     /** Used while a case study's summary still contains a placeholder (never put "[TODO: …]" in a snippet). */
     caseStudyDescription:
-      '{title}: a case study by {name}, {role}, covering the context, my role, the architecture, the hard problems and the results.',
+      '{title}: a case study by {name}, {role}, from the context and my role to the architecture and the results.',
     /** Same rule for any other page whose description still contains a placeholder. */
     pageDescription:
-      '{title}: a page from the portfolio of {name}, {role} in Germany, with case studies, experience, the CV and contact details.',
+      '{title}: part of the portfolio of {name}, {role} in Germany, with case studies, experience, CV and contact.',
     /** og:image:alt and twitter:image:alt; {title} is the full page title. */
     imageAlt: '{title}: title card with a drawing of stacked architecture layers',
   },
   de: {
     caseStudyTitle: '{title} · Fallstudie',
     caseStudyDescription:
-      '{title}: eine Fallstudie von {name}, {role}, mit Kontext, meiner Rolle, der Architektur, den schwierigsten Problemen und den Ergebnissen.',
+      '{title}: eine Fallstudie von {name}, {role} – vom Kontext und meiner Rolle bis zur Architektur und den Ergebnissen.',
     pageDescription:
-      '{title}: eine Seite aus dem Portfolio von {name}, {role} in Deutschland, mit Fallstudien, Werdegang, Lebenslauf und Kontakt.',
+      '{title}: Teil des Portfolios von {name}, {role} in Deutschland – mit Fallstudien, Werdegang, Lebenslauf und Kontakt.',
     imageAlt: '{title}: Titelkarte mit einer Zeichnung gestapelter Architekturschichten',
   },
 });
