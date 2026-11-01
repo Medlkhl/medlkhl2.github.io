@@ -52,8 +52,8 @@ export const recommendations = z.array(recommendationSchema).parse([
       de: 'Von jemandem, den ich gecoacht habe',
     },
     placeholder: {
-      en: '[RECOMMENDATION: developer you coached]',
-      de: '[RECOMMENDATION: von dir gecoachte Person]',
+      en: '[RECOMMENDATION: developer I coached]',
+      de: '[RECOMMENDATION: gecoachte Entwicklerin oder gecoachter Entwickler]',
     },
   },
 ]);
