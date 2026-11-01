@@ -91,11 +91,17 @@ const facts = [
   /* Narrow cards: terms above values, so the values get the full width. */
   @container quick-facts (max-width: 26rem) {
     .facts-card__inner {
-      padding-inline: var(--space-2);
+      padding: var(--space-2) var(--space-2) var(--space-2);
     }
 
+    .facts-card__header {
+      row-gap: 0;
+    }
+
+    /* Negative margins on both sides: aligned right when it shares the row
+       with the title, aligned with the title when a long label wraps. */
     .facts-card__cv {
-      margin-right: calc(-1 * var(--space-1));
+      margin-inline: calc(-1 * var(--space-1));
       padding-inline: var(--space-1);
     }
 
