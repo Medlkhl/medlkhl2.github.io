@@ -75,12 +75,12 @@ export const labCopy = defineCopy({
       label: 'Vorschau',
       title: 'HoloBox',
       paragraphs: [
-        'Ein flacher Bildschirm zeigt einen 3D-Avatar, mit dem man sprechen kann, als stünde er in einem echten Raum hinter dem Glas – möglich macht das eine kopfgesteuerte Off-Axis-Projektion. Sie sprechen, ein lokales Sprachmodell antwortet, und der Avatar spricht die Antwort lippensynchron aus.',
+        'Ein flacher Bildschirm zeigt einen 3D-Avatar, mit dem man sprechen kann, als stünde er in einem echten Raum hinter dem Glas – möglich macht das eine kopfgekoppelte Off-Axis-Projektion. Sie sprechen, ein lokales Sprachmodell antwortet, und der Avatar spricht die Antwort lippensynchron aus.',
         'Technisch ist HoloBox eine .NET-MAUI-Blazor-Hybrid-App mit Three.js und MediaPipe in der WebView und einem lokalen Gemma-Modell, das über LLamaSharp (GGUF) direkt im App-Prozess läuft – offline, mit geringer Latenz und zuerst für Windows.',
       ],
       spatial: {
         title: 'Räumliche Ansicht',
-        text: 'Eine kopfgesteuerte räumliche Ansicht wird dieselbe Technik auf dieser Seite vorführen: Die Szene folgt per Webcam Ihrem Kopf, als wäre der Bildschirm ein Fenster. Sie ist als Opt-in geplant: Die Kamera startet erst nach einem Klick, das Video verlässt Ihr Gerät nie, und ohne Kamera übernimmt eine Parallaxe per Maus oder Neigung.',
+        text: 'Eine kopfgekoppelte räumliche Ansicht wird dieselbe Technik auf dieser Seite vorführen: Die Szene folgt per Webcam Ihrem Kopf, als wäre der Bildschirm ein Fenster. Sie ist als Opt-in geplant: Die Kamera startet erst nach einem Klick, das Video verlässt Ihr Gerät nie, und ohne Kamera übernimmt eine Parallaxe per Maus oder Neigung.',
       },
     },
     robot: {
@@ -92,7 +92,7 @@ export const labCopy = defineCopy({
       demoText:
         'Das Hauptvideo des Roboters, wie es schon auf meinem früheren Portfolio zu sehen war.',
       modulesLabel: 'Module',
-      stackLabel: 'Tech-Stack',
+      stackLabel: 'Technologien',
       organisation: 'Organisation',
       period: 'Zeitraum',
     },
@@ -104,7 +104,7 @@ export const labCopy = defineCopy({
       items: [
         {
           title: 'Räumliche Ansicht für HoloBox',
-          text: 'Die oben beschriebene kopfgesteuerte Ansicht: nur auf Wunsch aktiv und vollständig auf Ihrem Gerät verarbeitet.',
+          text: 'Die oben beschriebene kopfgekoppelte Ansicht: nur auf Wunsch aktiv und vollständig auf Ihrem Gerät verarbeitet.',
         },
         {
           title: 'Kleine WebGPU-Experimente',

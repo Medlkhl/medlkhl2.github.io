@@ -43,7 +43,7 @@ export const experienceCopy = defineCopy({
       label: 'Werdegang',
       listLabel: 'Stationen, die neueste zuerst',
       duration: 'Dauer',
-      stack: 'Tech-Stack',
+      stack: 'Technologien',
     },
     education: {
       label: 'Ausbildung',
@@ -51,7 +51,7 @@ export const experienceCopy = defineCopy({
     cv: {
       label: 'Lebenslauf',
       text: 'Derselbe Werdegang als PDF, aus diesen Daten erzeugt – auf Deutsch und auf Englisch.',
-      otherLanguage: 'Englische Version (PDF)',
+      otherLanguage: 'Englische Fassung (PDF)',
     },
   },
 });

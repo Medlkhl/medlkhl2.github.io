@@ -85,7 +85,7 @@ export const aboutCopy = defineCopy({
       steps: {
         holobox: {
           title: 'Konversations-KI direkt auf dem Gerät',
-          text: 'Bei HoloBox steht ein sprechender 3D-Avatar scheinbar im Inneren eines flachen Bildschirms. Die Tiefe entsteht durch eine kopfgesteuerte Off-Axis-Projektion; das Gespräch tragen Spracheingabe, ein lokales Sprachmodell direkt im Prozess einer .NET-MAUI-App und Sprachausgabe mit Lippensynchronisation – offline und mit geringer Latenz.',
+          text: 'Bei HoloBox steht ein sprechender 3D-Avatar scheinbar im Inneren eines flachen Bildschirms. Die Tiefe entsteht durch eine kopfgekoppelte Off-Axis-Projektion; das Gespräch tragen Spracheingabe, ein lokales Sprachmodell direkt im Prozess einer .NET-MAUI-App und Sprachausgabe mit Lippensynchronisation – offline und mit geringer Latenz.',
         },
         happ: {
           title: 'Eine Unternehmens-App, migriert und dann geleitet',
