@@ -1,12 +1,154 @@
 ---
-import StubPage from '../../components/layout/StubPage.astro';
+/**
+ * The HTML CV (/cv/, /de/cv/), built from the same typed data as the rest of
+ * the site, and the source of the PDF CVs: scripts/build-pdf.mjs prints this
+ * page with the A4 sheet in src/styles/print.css after the build.
+ *
+ * Layout: one 12-column grid. Keys (portrait, section labels) sit in columns
+ * 1–3; everything else starts on column 4, on screen and on paper.
+ */
+import CvEntry from '../../components/cv/CvEntry.astro';
+import CvHeader from '../../components/cv/CvHeader.astro';
+import CvInlineList from '../../components/cv/CvInlineList.astro';
+import CvLanguages from '../../components/cv/CvLanguages.astro';
+import CvSection from '../../components/cv/CvSection.astro';
+import CvSkills from '../../components/cv/CvSkills.astro';
+import Rich from '../../components/ui/Rich.astro';
+import { education, experience } from '../../data/experience.ts';
+import { NAME } from '../../data/identity.ts';
+import { profile } from '../../data/profile.ts';
 import type { Locale } from '../../i18n/config.ts';
+import { pageMeta } from '../../i18n/meta.copy.ts';
+import { ROUTES } from '../../i18n/routes.ts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ogImagePath } from '../../lib/og.ts';
+import { personJsonLd } from '../../lib/structured-data.ts';
+import '../../styles/print.css';
+import { cvCopy } from './cv.copy.ts';
 
 interface Props {
   locale: Locale;
 }
 
 const { locale } = Astro.props;
+const copy = cvCopy[locale];
+
+/** Page title and PDF title: "Mohamed Lakhel — CV" / "Mohamed Lakhel — Lebenslauf". */
+const title = `${NAME} — ${copy.documentName}`;
+
+/*
+ * The running footer of the printed pages (an @page margin box in print.css)
+ * reads this custom property. The page context inherits only from the root
+ * element, so it has to be declared on :root; a scoped style cannot do that.
+ */
+const runningTitle = `@media print{:root{--cv-running-title:${JSON.stringify(title)}}}`;
+
+const sections = copy.sections;
 ---
 
-<StubPage locale={locale} routeKey="cv" />
+<BaseLayout
+  locale={locale}
+  title={title}
+  description={pageMeta[locale].cv.description}
+  path={ROUTES.cv}
+  ogImage={ogImagePath(locale, 'cv')}
+  jsonLd={[personJsonLd(locale)]}
+>
+  <style is:inline set:html={runningTitle} />
+
+  <article class="cv container" aria-labelledby="cv-name">
+    <CvHeader locale={locale} copy={copy} />
+
+    <CvSection id="profile" index={1} label={sections.profile}>
+      <p class="cv__summary">
+        <Rich text={profile.cvSummary[locale]} />
+      </p>
+    </CvSection>
+
+    <CvSection id="experience" index={2} label={sections.experience}>
+      <ol role="list" class="cv__entries">
+        {experience.map((entry) => (
+          <CvEntry
+            locale={locale}
+            title={entry.role[locale]}
+            org={entry.org}
+            place={entry.location[locale]}
+            start={entry.start}
+            end={entry.end}
+            present={copy.present}
+            highlights={entry.highlights.map((highlight) => highlight[locale])}
+            details={entry.stack.length ? [{ term: copy.stack, items: entry.stack }] : []}
+          />
+        ))}
+      </ol>
+    </CvSection>
+
+    <CvSection id="education" index={3} label={sections.education}>
+      <ol role="list" class="cv__entries">
+        {education.map((entry) => (
+          <CvEntry
+            locale={locale}
+            title={entry.degree[locale]}
+            org={entry.institution[locale]}
+            place={entry.location[locale]}
+            start={entry.start}
+            end={entry.end}
+            note={`${copy.fieldOfStudy}: ${entry.field[locale]}`}
+          />
+        ))}
+      </ol>
+    </CvSection>
+
+    <CvSection id="skills" index={4} label={sections.skills}>
+      <CvSkills locale={locale} />
+    </CvSection>
+
+    <CvSection id="languages" index={5} label={sections.languages}>
+      <CvLanguages locale={locale} />
+    </CvSection>
+
+    <CvSection id="interests" index={6} label={sections.interests}>
+      <CvInlineList items={profile.interests.map((interest) => interest[locale])} />
+    </CvSection>
+  </article>
+</BaseLayout>
+
+<style>
+  .cv {
+    padding-bottom: var(--space-4);
+  }
+
+  .cv__summary {
+    text-wrap: pretty;
+  }
+
+  @media (min-width: 48rem) {
+    .cv__summary {
+      font-size: var(--step-1);
+    }
+  }
+
+  .cv__entries {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media print {
+    .cv {
+      padding: 0;
+    }
+
+    .cv__summary {
+      font-size: var(--step-0);
+      line-height: inherit;
+    }
+
+    .cv__entries {
+      display: block;
+    }
+
+    .cv__entries > :global(* + *) {
+      margin-top: var(--space-3);
+    }
+  }
+</style>
