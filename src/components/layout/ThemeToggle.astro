@@ -65,7 +65,7 @@ const t = ui[locale].theme;
 </style>
 
 <script>
-  import { getEffective, toggleTheme } from '../../lib/prefs.ts';
+  import { getEffective, onPrefsChange, toggleTheme, watchSystemPrefs } from '../../lib/prefs.ts';
 
   function syncLabel(button: HTMLButtonElement) {
     const label =
@@ -78,17 +78,31 @@ const t = ui[locale].theme;
     }
   }
 
-  function bindThemeToggle() {
-    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((button) => {
-      syncLabel(button);
-      if (button.dataset.bound === 'true') return;
-      button.dataset.bound = 'true';
-      button.addEventListener('click', () => {
-        toggleTheme();
-        syncLabel(button);
-      });
-    });
+  function syncLabels() {
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach(syncLabel);
   }
 
-  document.addEventListener('astro:page-load', bindThemeToggle);
+  /** Releases the current page's click listeners before ClientRouter swaps it out. */
+  let controller: AbortController | undefined;
+
+  document.addEventListener('astro:page-load', () => {
+    controller?.abort();
+    controller = new AbortController();
+    const { signal } = controller;
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((button) => {
+      syncLabel(button);
+      // toggleTheme() emits prefs:change, which relabels the button (below).
+      button.addEventListener('click', () => toggleTheme(), { signal });
+    });
+  });
+
+  document.addEventListener('astro:before-swap', () => {
+    controller?.abort();
+    controller = undefined;
+  });
+
+  // Registered once for the document's lifetime: every preference change, including
+  // a live OS colour-scheme switch while the theme follows the system, relabels it.
+  onPrefsChange(syncLabels);
+  watchSystemPrefs();
 </script>

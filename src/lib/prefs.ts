@@ -4,7 +4,8 @@ import type { Locale } from '../i18n/config.ts';
  * Visitor preferences: theme, motion, 3D and language.
  *
  * - Choices persist in localStorage (strictly for the feature the visitor asked for; no cookies).
- * - The effective state honours `prefers-color-scheme`, `prefers-reduced-motion` and `Save-Data`.
+ * - The effective state honours `prefers-color-scheme`, `prefers-reduced-motion` and `Save-Data`;
+ *   `watchSystemPrefs()` announces live OS changes while a preference follows the system.
  * - Every change is applied to <html> as data attributes and announced with a
  *   `prefs:change` CustomEvent on `document`, so later phases (motion layer,
  *   3D stage, command menu) subscribe instead of re-implementing this.
@@ -136,16 +137,41 @@ export function applyToDocument(effective: EffectivePrefs = getEffective()): voi
   root.setAttribute('data-3d', effective.threeD ? 'on' : 'off');
 }
 
-/** Persists one preference, applies it and emits `prefs:change`. */
-export function setPref<K extends keyof Prefs>(key: K, value: Prefs[K]): void {
-  const isDefault = value === DEFAULT_PREFS[key];
-  storageSet(PREF_KEYS[key], isDefault ? null : String(value));
+/** Applies the current state and emits `prefs:change` for one key. */
+function announce<K extends keyof Prefs>(key: K, value: Prefs[K]): void {
   const prefs = getPrefs();
   const effective = getEffective(prefs);
   applyToDocument(effective);
   document.dispatchEvent(
     new CustomEvent<PrefsChangeDetail>(PREFS_EVENT, { detail: { key, value, prefs, effective } }),
   );
+}
+
+/** Persists one preference, applies it and emits `prefs:change`. */
+export function setPref<K extends keyof Prefs>(key: K, value: Prefs[K]): void {
+  const isDefault = value === DEFAULT_PREFS[key];
+  storageSet(PREF_KEYS[key], isDefault ? null : String(value));
+  announce(key, value);
+}
+
+let watchingSystem = false;
+
+/**
+ * Applies and announces live OS changes (colour scheme, reduced motion) as
+ * `prefs:change` with the value 'system', while that preference follows the
+ * system. Listens for the lifetime of the document, so call it once at module
+ * level (repeat calls do nothing), not on `astro:page-load`.
+ */
+export function watchSystemPrefs(): void {
+  if (watchingSystem || typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return;
+  watchingSystem = true;
+  const watch = (query: string, key: 'theme' | 'motion') =>
+    window.matchMedia(query).addEventListener('change', () => {
+      if (getPrefs()[key] === 'system') announce(key, 'system');
+    });
+  watch('(prefers-color-scheme: light)', 'theme');
+  watch('(prefers-reduced-motion: reduce)', 'motion');
 }
 
 /** Subscribes to preference changes; returns an unsubscribe function. */

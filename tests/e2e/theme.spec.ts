@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { ui } from '../../src/i18n/ui.copy.ts';
 
 test.describe('theme', () => {
   test('first visit follows prefers-color-scheme', async ({ browser }) => {
@@ -43,5 +44,34 @@ test.describe('theme', () => {
     await page.locator('.site-nav a[href$="/lab/"]').first().click();
     await expect(page).toHaveURL(/\/lab\/$/);
     await expect(html).toHaveAttribute('data-save-data', /^(on|off)$/);
+  });
+
+  test('a live OS colour-scheme switch relabels the toggle and emits prefs:change', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.goto('');
+    const html = page.locator('html');
+    const toggle = page.locator('[data-theme-toggle]');
+    await expect(html).toHaveAttribute('data-theme', 'graphite');
+    await expect(toggle).toHaveAttribute('aria-label', ui.en.theme.toPaper);
+    await page.evaluate(() =>
+      document.addEventListener('prefs:change', (event) =>
+        Reflect.set(window, '__prefsChange', (event as CustomEvent<{ key: string }>).detail.key),
+      ),
+    );
+
+    await page.emulateMedia({ colorScheme: 'light' });
+    await expect(html).toHaveAttribute('data-theme', 'paper');
+    await expect(toggle).toHaveAttribute('aria-label', ui.en.theme.toGraphite);
+    await expect(toggle).toHaveAttribute('title', ui.en.theme.toGraphite);
+    await expect
+      .poll(() => page.evaluate(() => Reflect.get(window, '__prefsChange')))
+      .toBe('theme');
+
+    // The toggle does what its label says.
+    await toggle.click();
+    await expect(html).toHaveAttribute('data-theme', 'graphite');
+    await expect(toggle).toHaveAttribute('aria-label', ui.en.theme.toPaper);
   });
 });
