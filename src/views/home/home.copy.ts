@@ -20,7 +20,7 @@ export const homeCopy = defineCopy({
       location: 'Location',
     },
     stack: {
-      figure: 'Fig. 1',
+      figure: 'Fig.\u00a01',
       label: 'Parts list',
       title: 'Architecture, layer by layer',
       intro:
@@ -46,7 +46,7 @@ export const homeCopy = defineCopy({
     capabilities: {
       label: 'Capabilities',
       title: 'Five capabilities across the stack',
-      intro: 'Skills grouped by what they deliver, each mapped to its layers in Fig. 1.',
+      intro: 'Skills grouped by what they deliver, each mapped to its layers in Fig.\u00a01.',
       layers: 'Layers',
     },
     recommendations: {
@@ -80,7 +80,7 @@ export const homeCopy = defineCopy({
       location: 'Standort',
     },
     stack: {
-      figure: 'Abb. 1',
+      figure: 'Abb.\u00a01',
       label: 'Stückliste',
       title: 'Architektur, Schicht für Schicht',
       intro:
@@ -106,7 +106,8 @@ export const homeCopy = defineCopy({
     capabilities: {
       label: 'Kompetenzen',
       title: 'Fünf Kompetenzfelder über den gesamten Stack',
-      intro: 'Kenntnisse, gruppiert nach ihrem Beitrag und den Schichten aus Abb. 1 zugeordnet.',
+      intro:
+        'Kenntnisse, gruppiert nach ihrem Beitrag und den Schichten aus Abb.\u00a01 zugeordnet.',
       layers: 'Schichten',
     },
     recommendations: {

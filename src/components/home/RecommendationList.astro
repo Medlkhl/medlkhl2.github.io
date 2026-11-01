@@ -53,7 +53,7 @@ const slots = recommendations.filter((entry) => entry.kind === 'slot');
   <ul role="list" class="recs__slots">
     {slots.map((entry) => (
       <li>
-        <Quote recommendation={entry} locale={locale} class="recs__slot" />
+        <Quote recommendation={entry} locale={locale} />
       </li>
     ))}
   </ul>
