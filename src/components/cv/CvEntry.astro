@@ -13,7 +13,7 @@
 import Rich from '../ui/Rich.astro';
 import CvInlineList from './CvInlineList.astro';
 import type { Locale } from '../../i18n/config.ts';
-import { formatYearMonth, isYearMonth, toDateTimeAttribute } from '../../i18n/format.ts';
+import { formatRangeParts } from '../../i18n/format.ts';
 
 export interface CvEntryDetail {
   term: string;
@@ -27,9 +27,8 @@ interface Props {
   place?: string;
   /** ISO year-month ('2024-07') or year ('2015'). */
   start: string;
+  /** null for a role that has not ended ("Present" / "heute"). */
   end: string | null;
-  /** Label for an open end ("Present"). */
-  present?: string;
   highlights?: readonly string[];
   /** A one-line note under the organisation, e.g. the field of study. */
   note?: string;
@@ -44,16 +43,13 @@ const {
   place,
   start,
   end,
-  present = '',
   highlights = [],
   note,
   details = [],
   class: className,
 } = Astro.props;
 
-const date = (value: string) =>
-  isYearMonth(value) ? formatYearMonth(value, locale, 'numeric') : value;
-const datetime = (value: string) => toDateTimeAttribute(value) ?? value;
+const dates = formatRangeParts(start, end, locale, 'numeric');
 ---
 
 <li class:list={['cv-entry', className]}>
@@ -62,9 +58,9 @@ const datetime = (value: string) => toDateTimeAttribute(value) ?? value;
       <Rich text={title} />
     </h3>
     <p class="cv-entry__when">
-      <time datetime={datetime(start)}>{date(start)}</time>
+      <time datetime={dates.fromDateTime}>{dates.from}</time>
       <span>–</span>
-      {end === null ? <span>{present}</span> : <time datetime={datetime(end)}>{date(end)}</time>}
+      {end === null ? <span>{dates.to}</span> : <time datetime={dates.toDateTime}>{dates.to}</time>}
     </p>
   </div>
   <p class="cv-entry__org">

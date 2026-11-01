@@ -1,52 +1,49 @@
 ---
 /**
  * Condensed timeline for the home page: every entry of src/data/experience.ts,
- * newest first, with dates in <time>, role, organisation and the one-line
- * summary. The full timeline lives on /experience/.
+ * newest first, with each end of the dates in its own <time> (formatRangeParts),
+ * role, organisation and the one-line summary. The full timeline lives on /experience/.
  */
 import { experience } from '../../data/experience.ts';
 import type { Locale } from '../../i18n/config.ts';
-import { formatYearMonth, toDateTimeAttribute } from '../../i18n/format.ts';
-import type { HomeCopy } from '../../views/home/home.copy.ts';
+import { formatRangeParts } from '../../i18n/format.ts';
 
 interface Props {
   locale: Locale;
-  copy: HomeCopy['experience'];
   class?: string;
 }
 
-const { locale, copy, class: className, ...rest } = Astro.props;
+const { locale, class: className, ...rest } = Astro.props;
 ---
 
 <ol role="list" class:list={['timeline', className]} {...rest}>
-  {experience.map((entry) => (
-    <li class="timeline__item">
-      <p class="timeline__dates">
-        <time datetime={toDateTimeAttribute(entry.start)}>
-          {formatYearMonth(entry.start, locale)}
-        </time>
-        <span class="timeline__dash">–</span>
-        {entry.end === null ? (
-          <span>{copy.present}</span>
-        ) : (
-          <time datetime={toDateTimeAttribute(entry.end)}>
-            {formatYearMonth(entry.end, locale)}
-          </time>
-        )}
-      </p>
-      <div class="timeline__body">
-        <h3 class="timeline__role">{entry.role[locale]}</h3>
-        <p class="timeline__org">
-          {entry.org}
-          <span class="timeline__sep" aria-hidden="true">
-            ·
-          </span>
-          <span class="timeline__place">{entry.location[locale]}</span>
+  {experience.map((entry) => {
+    const dates = formatRangeParts(entry.start, entry.end, locale);
+    return (
+      <li class="timeline__item">
+        <p class="timeline__dates">
+          <time datetime={dates.fromDateTime}>{dates.from}</time>
+          <span class="timeline__dash">–</span>
+          {entry.end === null ? (
+            <span>{dates.to}</span>
+          ) : (
+            <time datetime={dates.toDateTime}>{dates.to}</time>
+          )}
         </p>
-        <p class="timeline__summary">{entry.summary[locale]}</p>
-      </div>
-    </li>
-  ))}
+        <div class="timeline__body">
+          <h3 class="timeline__role">{entry.role[locale]}</h3>
+          <p class="timeline__org">
+            {entry.org}
+            <span class="timeline__sep" aria-hidden="true">
+              ·
+            </span>
+            <span class="timeline__place">{entry.location[locale]}</span>
+          </p>
+          <p class="timeline__summary">{entry.summary[locale]}</p>
+        </div>
+      </li>
+    );
+  })}
 </ol>
 
 <style>

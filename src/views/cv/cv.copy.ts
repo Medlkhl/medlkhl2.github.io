@@ -38,8 +38,6 @@ export const cvCopy = defineCopy({
     },
     stack: 'Stack',
     fieldOfStudy: 'Field of study',
-    /** End of a role that has not ended. */
-    present: 'Present',
   },
   de: {
     documentName: 'Lebenslauf',
@@ -70,7 +68,6 @@ export const cvCopy = defineCopy({
     },
     stack: 'Technologien',
     fieldOfStudy: 'Fachrichtung',
-    present: 'heute',
   },
 });
 

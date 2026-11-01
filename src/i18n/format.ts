@@ -33,7 +33,48 @@ export function formatYearMonth(value: string, locale: Locale, style: DateStyle 
   return new Intl.DateTimeFormat(LOCALE_META[locale].intl, options).format(date);
 }
 
-const PRESENT: Record<Locale, string> = { en: 'Present', de: 'heute' };
+/** The open end of a range ("Jul 2024 – Present"). */
+export const PRESENT: Record<Locale, string> = { en: 'Present', de: 'heute' };
+
+/** Machine-readable value for <time datetime>. */
+export function toDateTimeAttribute(value: string): string | undefined {
+  return isYearMonth(value) ? value : undefined;
+}
+
+export interface RangeParts {
+  /** Formatted start: "Jul 2024", a year as is, or the placeholder itself. */
+  from: string;
+  /** Formatted end, or "Present" / "heute" for an open end. */
+  to: string;
+  /** <time datetime> of the start; undefined for a placeholder. */
+  fromDateTime: string | undefined;
+  /** <time datetime> of the end; undefined for an open end or a placeholder. */
+  toDateTime: string | undefined;
+}
+
+const YEAR = /^\d{4}$/;
+
+function rangeEnd(value: string, locale: Locale, style: DateStyle): [string, string | undefined] {
+  if (YEAR.test(value)) return [value, value];
+  return [formatYearMonth(value, locale, style), toDateTimeAttribute(value)];
+}
+
+/**
+ * Both ends of a range, for markup that puts each in its own <time> (one
+ * <time> cannot hold a range). Year-months are formatted, years ("2015") and
+ * placeholders pass through, an open end becomes "Present" / "heute".
+ */
+export function formatRangeParts(
+  start: string,
+  end: string | null,
+  locale: Locale,
+  style: DateStyle = 'short',
+): RangeParts {
+  const [from, fromDateTime] = rangeEnd(start, locale, style);
+  const [to, toDateTime] =
+    end === null ? [PRESENT[locale], undefined] : rangeEnd(end, locale, style);
+  return { from, to, fromDateTime, toDateTime };
+}
 
 /** "Jul 2024 – Dec 2025"; an open end renders as "Present" / "heute". */
 export function formatRange(
@@ -42,14 +83,8 @@ export function formatRange(
   locale: Locale,
   style: DateStyle = 'short',
 ): string {
-  const from = formatYearMonth(start, locale, style);
-  const to = end === null ? PRESENT[locale] : formatYearMonth(end, locale, style);
+  const { from, to } = formatRangeParts(start, end, locale, style);
   return `${from} – ${to}`;
-}
-
-/** Machine-readable value for <time datetime>. */
-export function toDateTimeAttribute(value: string): string | undefined {
-  return isYearMonth(value) ? value : undefined;
 }
 
 /** Whole months between two year-months, both inclusive (Jul–Dec = 6). */

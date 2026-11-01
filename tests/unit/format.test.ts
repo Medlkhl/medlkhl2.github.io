@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  PRESENT,
   formatDate,
   formatDuration,
   formatList,
   formatRange,
+  formatRangeParts,
   formatYearMonth,
   monthsBetween,
   parseYearMonth,
@@ -32,6 +34,42 @@ describe('locale date formatting', () => {
     expect(formatRange('2025-01', null, 'en')).toBe('Jan 2025 – Present');
     expect(formatRange('2025-01', null, 'de')).toBe('Jan. 2025 – heute');
     expect(formatYearMonth('[CONFIRM: start date]', 'en')).toBe('[CONFIRM: start date]');
+  });
+
+  it('splits ranges into two ends for two <time> elements', () => {
+    expect(PRESENT).toEqual({ en: 'Present', de: 'heute' });
+    expect(formatRangeParts('2024-07', '2025-12', 'en')).toEqual({
+      from: 'Jul 2024',
+      to: 'Dec 2025',
+      fromDateTime: '2024-07',
+      toDateTime: '2025-12',
+    });
+    expect(formatRangeParts('2025-01', null, 'de')).toEqual({
+      from: 'Jan. 2025',
+      to: 'heute',
+      fromDateTime: '2025-01',
+      toDateTime: undefined,
+    });
+    expect(formatRangeParts('2024-07', '2025-12', 'de', 'numeric')).toMatchObject({
+      from: '07/2024',
+      to: '12/2025',
+    });
+    expect(formatRangeParts('2015', '2019', 'en')).toEqual({
+      from: '2015',
+      to: '2019',
+      fromDateTime: '2015',
+      toDateTime: '2019',
+    });
+    expect(formatRangeParts('[CONFIRM: start date]', null, 'en')).toEqual({
+      from: '[CONFIRM: start date]',
+      to: 'Present',
+      fromDateTime: undefined,
+      toDateTime: undefined,
+    });
+    expect(() => formatRangeParts('07.2024', null, 'en')).toThrow();
+    // formatRange is the joined form of the same parts.
+    const parts = formatRangeParts('2021-08', '2024-06', 'de');
+    expect(formatRange('2021-08', '2024-06', 'de')).toBe(`${parts.from} – ${parts.to}`);
   });
 
   it('counts months inclusively and formats durations', () => {

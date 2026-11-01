@@ -41,7 +41,6 @@ export const homeCopy = defineCopy({
       title: 'From robotics to enterprise apps',
       intro:
         'Newest first: from the enterprise app whose development I led back to a Kinect-driven whiteboard in 2018.',
-      present: 'Present',
     },
     capabilities: {
       label: 'Capabilities',
@@ -101,7 +100,6 @@ export const homeCopy = defineCopy({
       title: 'Von der Robotik zur Unternehmens-App',
       intro:
         'Neueste Station zuerst: von der Unternehmens-App, deren Entwicklung ich geleitet habe, bis zurück zum Kinect-Whiteboard aus dem Jahr 2018.',
-      present: 'heute',
     },
     capabilities: {
       label: 'Kompetenzen',
