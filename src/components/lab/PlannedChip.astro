@@ -1,0 +1,24 @@
+---
+/**
+ * Status chip for things that do not exist yet ("Planned" / "Geplant"):
+ * a dashed outline and a hollow marker, in line with the dashed placeholders.
+ * The label comes from the page's copy. Shared by the Lab and Colophon views.
+ */
+interface Props {
+  label: string;
+  class?: string;
+}
+
+const { label, class: className } = Astro.props;
+---
+
+<span class:list={['chip', 'chip--status', 'planned-chip', className]} data-status="planned">
+  {label}
+</span>
+
+<style>
+  .planned-chip {
+    border-style: dashed;
+    border-color: var(--color-line-strong);
+  }
+</style>

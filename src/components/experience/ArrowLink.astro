@@ -1,0 +1,45 @@
+---
+/**
+ * An internal "go" link: accent text with an arrow, a 44px target, underlined
+ * on hover. Used for case-study and experience links and the CV band.
+ * Shared by the Experience, About and Lab views.
+ */
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  href: string;
+  class?: string;
+}
+
+const { href, class: className } = Astro.props;
+---
+
+<a class:list={['arrow-link', className]} href={href}>
+  <span class="arrow-link__label">
+    <slot />
+  </span>
+  <Icon name="arrow-right" />
+</a>
+
+<style>
+  .arrow-link {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    gap: var(--space-1);
+    min-height: 2.75rem; /* 44px target, as .btn */
+    color: var(--color-accent);
+    font-size: var(--step--1);
+    font-weight: var(--weight-medium);
+    text-decoration: none;
+  }
+
+  .arrow-link:hover {
+    color: var(--color-accent-hover);
+  }
+
+  .arrow-link:hover .arrow-link__label {
+    text-decoration: underline;
+    text-decoration-thickness: var(--hairline);
+  }
+</style>

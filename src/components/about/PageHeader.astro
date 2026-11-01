@@ -1,0 +1,122 @@
+---
+/**
+ * Page header shared by the Experience, About, Lab and Colophon views:
+ * mono label, the page's only h1, an optional intro (prop or "intro" slot)
+ * and actions (default slot).
+ *
+ * From 64rem the header is a 12-column grid: the text takes columns 1–8, or
+ * 1–7 when there is a figure (slot "figure", e.g. the portrait), which then
+ * takes 9–12 in its own grid area. Below 64rem the figure sits between the
+ * heading and the intro. The text never depends on it, so removing or hiding
+ * the figure leaves a complete header.
+ */
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  label: string;
+  title: string;
+  intro?: string;
+  /** id of the h1 (pages may point aria-labelledby at it). */
+  id?: string;
+  class?: string;
+}
+
+const { label, title, intro, id = 'page-title', class: className } = Astro.props;
+const hasFigure = Astro.slots.has('figure');
+const hasActions = Astro.slots.has('default');
+const hasIntroSlot = Astro.slots.has('intro');
+---
+
+<header class:list={['page-header', className]}>
+  <div class:list={['container', 'page-header__grid', { 'page-header__grid--figure': hasFigure }]}>
+    <SectionLabel>{label}</SectionLabel>
+    <h1 id={id} class="page-header__title">
+      {title}
+    </h1>
+    {hasFigure && (
+      <div class="page-header__figure">
+        <slot name="figure" />
+      </div>
+    )}
+    {intro && <p class="page-header__intro">{intro}</p>}
+    {hasIntroSlot && (
+      <div class="page-header__intro">
+        <slot name="intro" />
+      </div>
+    )}
+    {hasActions && (
+      <div class="page-header__actions">
+        <slot />
+      </div>
+    )}
+  </div>
+</header>
+
+<style>
+  .page-header {
+    padding-block: var(--section-gap) clamp(var(--space-6), 5vw, var(--space-8));
+  }
+
+  .page-header__grid {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-header__title {
+    margin-top: var(--space-2);
+    font-size: var(--step-5);
+  }
+
+  .page-header__intro {
+    max-width: var(--measure);
+    margin-top: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+
+  .page-header__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    margin-top: var(--space-4);
+  }
+
+  .page-header__figure {
+    width: 100%;
+  }
+
+  /* The gap belongs to the figure itself, so a hidden figure leaves no gap behind. */
+  .page-header__figure > :global(*) {
+    margin-top: var(--space-4);
+  }
+
+  @media (min-width: 64rem) {
+    /* The last row is 1fr, so a figure taller than the text never spreads the text apart. */
+    .page-header__grid {
+      display: grid;
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      grid-template-rows: repeat(4, auto) 1fr;
+      column-gap: var(--grid-gutter);
+      align-items: start;
+    }
+
+    .page-header__grid > * {
+      grid-column: 1 / span 8;
+    }
+
+    .page-header__grid--figure > * {
+      grid-column: 1 / span 7;
+    }
+
+    .page-header__grid--figure > .page-header__figure {
+      grid-column: 9 / -1;
+      grid-row: 1 / -1;
+    }
+
+    .page-header__figure > :global(*) {
+      margin-top: 0;
+    }
+  }
+</style>

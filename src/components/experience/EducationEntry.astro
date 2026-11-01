@@ -1,0 +1,90 @@
+---
+/**
+ * One education entry in the same two-column rhythm as the timeline:
+ * years on the left (from 48rem), then degree (h3), institution and location,
+ * and the field of study.
+ */
+import type { Locale } from '../../i18n/config.ts';
+import type { Education } from '../../schemas/data.ts';
+import DateRange from './DateRange.astro';
+
+interface Props {
+  entry: Education;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+---
+
+<li class="edu" id={entry.id}>
+  <p class="edu__when">
+    <DateRange start={entry.start} end={entry.end} locale={locale} />
+  </p>
+  <div class="edu__body">
+    <h3 class="edu__degree">{entry.degree[locale]}</h3>
+    {/* prettier-ignore */}
+    <p class="edu__org"><span class="edu__org-name">{entry.institution[locale]}</span><span class="visually-hidden">, </span><span class="edu__sep" aria-hidden="true">·</span><span>{entry.location[locale]}</span></p>
+    <p class="edu__field">{entry.field[locale]}</p>
+  </div>
+</li>
+
+<style>
+  .edu {
+    display: grid;
+    gap: var(--space-2);
+    padding-block: var(--space-5) var(--space-6);
+    border-top: var(--hairline) solid var(--color-line);
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .edu__when {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .edu__body {
+    display: grid;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+
+  .edu__degree {
+    font-size: var(--step-2);
+  }
+
+  .edu__org {
+    color: var(--color-text-muted);
+  }
+
+  .edu__org-name {
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+  }
+
+  .edu__sep {
+    margin-inline: var(--space-1);
+    color: var(--color-text-subtle);
+  }
+
+  .edu__field {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  @media (min-width: 48rem) {
+    .edu {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+    }
+
+    .edu__when {
+      grid-column: 1 / span 3;
+      padding-top: var(--space-1);
+    }
+
+    .edu__body {
+      grid-column: 4 / -1;
+    }
+  }
+</style>

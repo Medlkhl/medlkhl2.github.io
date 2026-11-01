@@ -1,12 +1,91 @@
 ---
-import StubPage from '../../components/layout/StubPage.astro';
+/**
+ * About page (/about/ and /de/about/), brief sections 4 and 5: the owner's
+ * story as the people-and-machines thread (newest first), how he works (four
+ * principles, each grounded in a CV fact), languages, interests, education and
+ * the portrait. The portrait has its own grid area in the header; the page is
+ * complete without it. Person JSON-LD. Static HTML, no client script.
+ */
+import AboutFacts from '../../components/about/AboutFacts.astro';
+import PageHeader from '../../components/about/PageHeader.astro';
+import Points from '../../components/about/Points.astro';
+import Portrait from '../../components/about/Portrait.astro';
+import Thread from '../../components/about/Thread.astro';
+import Icon from '../../components/ui/Icon.astro';
+import Section from '../../components/ui/Section.astro';
+import { experience } from '../../data/experience.ts';
+import { profile } from '../../data/profile.ts';
+import { SCENE_SHOTS } from '../../data/scene.ts';
 import type { Locale } from '../../i18n/config.ts';
+import { pageMeta } from '../../i18n/meta.copy.ts';
+import { ROUTES, routeHref } from '../../i18n/routes.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { cvPdfHref } from '../../lib/cv.ts';
+import { ogImagePath } from '../../lib/og.ts';
+import { personJsonLd } from '../../lib/structured-data.ts';
+import { getWork, workSlug } from '../../lib/work.ts';
+import { aboutCopy } from './about.copy.ts';
 
 interface Props {
   locale: Locale;
 }
 
 const { locale } = Astro.props;
+const t = aboutCopy[locale];
+const cta = ui[locale].cta;
+const meta = pageMeta[locale].about;
+const workTitles = new Map(
+  (await getWork(locale)).map((entry) => [workSlug(entry), entry.data.title]),
+);
+const firstYear =
+  experience
+    .map((entry) => entry.start.slice(0, 4))
+    .sort()
+    .at(0) ?? '';
+const threadCopy = { ...t.thread, intro: t.thread.intro.replace('{year}', firstYear) };
 ---
 
-<StubPage locale={locale} routeKey="about" />
+<BaseLayout
+  locale={locale}
+  title={meta.title}
+  description={meta.description}
+  path={ROUTES.about}
+  ogImage={ogImagePath(locale, 'about')}
+  sceneShot={SCENE_SHOTS.about}
+  jsonLd={[personJsonLd(locale)]}
+>
+  <PageHeader label={t.header.label} title={t.header.title} intro={profile.summary[locale]}>
+    <Portrait slot="figure" alt={t.header.portraitAlt.replace('{name}', profile.name)} />
+    <a class="btn btn--primary" href={cvPdfHref(locale)} download>
+      <Icon name="download" />
+      <span>{cta.downloadCv}</span>
+    </a>
+    <a class="btn" href={routeHref(locale, 'home', 'contact')}>
+      <span>{cta.contact}</span>
+      <Icon name="arrow-right" />
+    </a>
+  </PageHeader>
+
+  <Section
+    id="thread"
+    index={1}
+    label={threadCopy.label}
+    title={threadCopy.title}
+    intro={threadCopy.intro}
+  >
+    <Thread locale={locale} copy={threadCopy} workTitles={workTitles} />
+  </Section>
+
+  <Section
+    id="how-i-work"
+    index={2}
+    label={t.principles.label}
+    title={t.principles.title}
+    intro={t.principles.intro}
+  >
+    <Points items={t.principles.items} columns={2} />
+  </Section>
+
+  <AboutFacts locale={locale} copy={t} startIndex={3} />
+</BaseLayout>
