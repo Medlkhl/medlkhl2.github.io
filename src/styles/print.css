@@ -1,0 +1,122 @@
+/*
+ * A4 print sheet for the CV. Imported by src/views/cv/CvView.astro only, so
+ * nothing here reaches other pages. scripts/build-pdf.mjs prints /cv/ and
+ * /de/cv/ with it after the build; a visitor's own Ctrl+P gets the same sheet.
+ *
+ * - The paper palette on white, whatever the screen theme: near-black text,
+ *   grey hairlines, no accent colour (there is nothing to interact with).
+ * - The screen design at a 9.5pt root. Every rem-based token (type scale,
+ *   spacing, grid gutter) scales with it, so the printed CV keeps the site's
+ *   proportions; components only re-place things in their own @media print.
+ * - Site header, footer, navigation, buttons, #stage and the skip link are
+ *   hidden; links print as plain text; icons and hidden notes are dropped.
+ * - Entries and short sections never break inside; a section label shares a
+ *   grid row with its content, so the two cannot be separated (no
+ *   break-after on the labels: in a grid it would propagate to the whole
+ *   section and force breaks inside the next one).
+ * - Running footer: "<name> — CV" on the left, "page / pages" on the right.
+ *
+ * The palette and the print tokens are declared here because tokens.css has
+ * no print block yet; they repeat the paper values (keep them in sync).
+ */
+
+@media print {
+  html:root[data-theme],
+  html:root:not([data-theme]) {
+    color-scheme: light;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+
+    /* Paper palette (tokens.css), with the page itself white. */
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #eeeeea;
+    --color-text: #141619;
+    --color-text-muted: #454a52;
+    --color-text-subtle: #5c616a;
+    --color-line: #dcdcd6;
+    --color-line-strong: #7b8089;
+    --color-accent: #1f4bd8;
+    --color-accent-hover: #1738a6;
+    --color-accent-ink: #ffffff;
+    --color-accent-soft: rgb(31 75 216 / 0.09);
+    --color-grid: rgb(20 22 25 / 0.05);
+    --color-grid-major: rgb(20 22 25 / 0.085);
+    --color-hatch: rgb(20 22 25 / 0.08);
+    --color-header: rgb(246 246 243 / 0.88);
+    --shadow-1: none;
+
+    /* Print tokens. The root size is the unit every other size derives from. */
+    --print-font-size: 9.5pt;
+    --print-leading: 1.42;
+    --print-margin-top: 15mm;
+    --print-margin-side: 17mm;
+    --print-margin-bottom: 17mm;
+    --print-photo-size: 26mm;
+
+    font-size: var(--print-font-size);
+    line-height: var(--print-leading);
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  /* html-qualified: the order of the page's stylesheets is not guaranteed. */
+  html body {
+    display: block;
+    min-height: 0;
+    background: var(--color-bg);
+  }
+
+  html main {
+    flex: none;
+  }
+
+  /* Screen-only furniture. #stage, header, footer and skip link: global.css. */
+  .cv .btn,
+  .cv button,
+  .cv .visually-hidden {
+    display: none !important;
+  }
+
+  /* Links print as text; the PDF keeps them clickable. */
+  .cv a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .cv p,
+  .cv li,
+  .cv dd {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .cv img {
+    break-inside: avoid;
+  }
+}
+
+@page {
+  size: A4;
+  margin: var(--print-margin-top) var(--print-margin-side) var(--print-margin-bottom);
+
+  @bottom-left {
+    content: var(--cv-running-title, '');
+    vertical-align: top;
+    padding-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.02em;
+    color: var(--color-text-subtle);
+  }
+
+  @bottom-right {
+    content: counter(page) ' / ' counter(pages);
+    vertical-align: top;
+    padding-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-subtle);
+  }
+}

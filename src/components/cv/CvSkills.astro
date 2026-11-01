@@ -1,0 +1,86 @@
+---
+/**
+ * Skills grouped as on the site (the capability groups of src/data/skills.ts):
+ * group title, then its skills as an inline list. A definition list, so each
+ * group title names its skills for assistive technology too.
+ */
+import Rich from '../ui/Rich.astro';
+import CvInlineList from './CvInlineList.astro';
+import { capabilities } from '../../data/skills.ts';
+import type { Locale } from '../../i18n/config.ts';
+
+interface Props {
+  locale: Locale;
+  class?: string;
+}
+
+const { locale, class: className } = Astro.props;
+---
+
+<dl class:list={['cv-skills', className]}>
+  {capabilities.map((capability) => (
+    <div class="cv-skills__group">
+      <dt class="cv-skills__title">
+        <Rich text={capability.title[locale]} />
+      </dt>
+      <dd class="cv-skills__list">
+        <CvInlineList items={capability.skills} variant="mono" />
+      </dd>
+    </div>
+  ))}
+</dl>
+
+<style>
+  .cv-skills {
+    display: grid;
+  }
+
+  .cv-skills__group {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-half) var(--space-3);
+    padding-block: var(--space-2);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .cv-skills__group:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .cv-skills__title {
+    font-weight: var(--weight-medium);
+  }
+
+  .cv-skills__list {
+    margin: 0;
+    padding-top: 0.15em;
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 40rem) {
+    .cv-skills__group {
+      grid-template-columns: 13rem minmax(0, 1fr);
+    }
+  }
+
+  @media print {
+    /* Block flow fragments more predictably than a grid of groups. */
+    .cv-skills {
+      display: block;
+    }
+
+    .cv-skills__group {
+      grid-template-columns: 11.5rem minmax(0, 1fr);
+      gap: 0 var(--space-2);
+      padding-block: var(--space-half);
+      border-top: 0;
+      break-inside: avoid;
+    }
+
+    .cv-skills__list {
+      padding-top: 0.1em;
+      color: var(--color-text);
+    }
+  }
+</style>

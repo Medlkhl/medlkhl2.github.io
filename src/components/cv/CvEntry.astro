@@ -1,0 +1,254 @@
+---
+/**
+ * One dated CV entry (a role or a degree), rendered as the <li> of an <ol>:
+ *   Title (h3)                                   07/2024 – 12/2025
+ *   Organisation · Place
+ *   – Highlights
+ *   STACK  C# · .NET MAUI · …
+ * Dates are numeric ("07/2024", or a year for degrees) in <time> elements,
+ * right-aligned on the title line from 40rem and in print, under it on phones.
+ * Facts arrive untouched from src/data/*; strings render through <Rich> so a
+ * placeholder would stay visible.
+ */
+import Rich from '../ui/Rich.astro';
+import CvInlineList from './CvInlineList.astro';
+import type { Locale } from '../../i18n/config.ts';
+import { formatYearMonth, isYearMonth, toDateTimeAttribute } from '../../i18n/format.ts';
+
+export interface CvEntryDetail {
+  term: string;
+  items: readonly string[];
+}
+
+interface Props {
+  locale: Locale;
+  title: string;
+  org: string;
+  place?: string;
+  /** ISO year-month ('2024-07') or year ('2015'). */
+  start: string;
+  end: string | null;
+  /** Label for an open end ("Present"). */
+  present?: string;
+  highlights?: readonly string[];
+  /** A one-line note under the organisation, e.g. the field of study. */
+  note?: string;
+  details?: readonly CvEntryDetail[];
+  class?: string;
+}
+
+const {
+  locale,
+  title,
+  org,
+  place,
+  start,
+  end,
+  present = '',
+  highlights = [],
+  note,
+  details = [],
+  class: className,
+} = Astro.props;
+
+const date = (value: string) =>
+  isYearMonth(value) ? formatYearMonth(value, locale, 'numeric') : value;
+const datetime = (value: string) => toDateTimeAttribute(value) ?? value;
+---
+
+<li class:list={['cv-entry', className]}>
+  <div class="cv-entry__head">
+    <h3 class="cv-entry__title">
+      <Rich text={title} />
+    </h3>
+    <p class="cv-entry__when">
+      <time datetime={datetime(start)}>{date(start)}</time>
+      <span>–</span>
+      {end === null ? <span>{present}</span> : <time datetime={datetime(end)}>{date(end)}</time>}
+    </p>
+  </div>
+  <p class="cv-entry__org">
+    <span class="cv-entry__org-name">
+      <Rich text={org} />
+    </span>
+    {place && (
+      <span class="cv-entry__place">
+        <Rich text={place} />
+      </span>
+    )}
+  </p>
+  {note && (
+    <p class="cv-entry__note">
+      <Rich text={note} />
+    </p>
+  )}
+  {highlights.length > 0 && (
+    <ul role="list" class="cv-entry__highlights">
+      {highlights.map((highlight) => (
+        <li>
+          <Rich text={highlight} />
+        </li>
+      ))}
+    </ul>
+  )}
+  {details.length > 0 && (
+    <dl class="cv-entry__details">
+      {details.map((detail) => (
+        <div class="cv-entry__detail">
+          <dt class="cv-entry__term">{detail.term}</dt>
+          <dd class="cv-entry__value">
+            <CvInlineList items={detail.items} variant="mono" />
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )}
+</li>
+
+<style>
+  .cv-entry {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  /* Phones: dates under the title. From 40rem and in print: right-aligned on its line. */
+  .cv-entry__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half) var(--space-3);
+  }
+
+  .cv-entry__title {
+    font-size: var(--step-1);
+    line-height: var(--leading-snug);
+  }
+
+  .cv-entry__when {
+    display: inline-flex;
+    gap: 0.45em;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* Organisation · place; the middot sits in the gap and is clipped when the place wraps. */
+  .cv-entry__org {
+    --cv-entry-sep: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--cv-entry-sep);
+    overflow-x: clip;
+    color: var(--color-text-muted);
+  }
+
+  .cv-entry__org-name {
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+  }
+
+  .cv-entry__place {
+    position: relative;
+  }
+
+  .cv-entry__place::before {
+    content: '·' / '';
+    position: absolute;
+    right: 100%;
+    width: var(--cv-entry-sep);
+    text-align: center;
+    color: var(--color-text-subtle);
+  }
+
+  .cv-entry__note {
+    color: var(--color-text-muted);
+  }
+
+  .cv-entry__highlights {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+    color: var(--color-text-muted);
+  }
+
+  /* An en dash hangs in the indent; empty alt text keeps it out of speech. */
+  .cv-entry__highlights li {
+    position: relative;
+    padding-left: 1.25em;
+  }
+
+  .cv-entry__highlights li::before {
+    content: '–' / '';
+    position: absolute;
+    left: 0;
+    color: var(--color-text-subtle);
+  }
+
+  .cv-entry__details {
+    display: grid;
+    gap: var(--space-half);
+    margin-top: var(--space-1);
+  }
+
+  .cv-entry__detail {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-half);
+  }
+
+  .cv-entry__term {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .cv-entry__value {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 40rem), print {
+    .cv-entry__head {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .cv-entry__detail {
+      grid-template-columns: 8rem minmax(0, 1fr);
+      align-items: baseline;
+      gap: var(--space-2);
+    }
+  }
+
+  @media print {
+    .cv-entry {
+      gap: var(--space-half);
+      break-inside: avoid;
+    }
+
+    .cv-entry__title {
+      font-size: var(--step-1);
+      break-after: avoid;
+    }
+
+    .cv-entry__highlights {
+      gap: 0.15em;
+      margin-top: var(--space-half);
+      color: var(--color-text);
+    }
+
+    .cv-entry__details {
+      margin-top: var(--space-half);
+    }
+
+    .cv-entry__detail {
+      grid-template-columns: 7.5rem minmax(0, 1fr);
+      gap: var(--space-1);
+    }
+  }
+</style>
