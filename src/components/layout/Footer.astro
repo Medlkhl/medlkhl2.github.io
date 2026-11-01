@@ -129,6 +129,7 @@ const siteLinks = [
 
   .site-footer__col {
     grid-column: span 3;
+    min-width: 0;
   }
 
   .site-footer__col ul {
@@ -142,6 +143,7 @@ const siteLinks = [
     display: inline-block;
     padding-block: 0.3rem;
     color: var(--color-text-muted);
+    overflow-wrap: anywhere;
   }
 
   .site-footer__col a:hover,
@@ -171,6 +173,12 @@ const siteLinks = [
 
     .site-footer__col {
       grid-column: span 6;
+    }
+  }
+
+  @media (max-width: 479.98px) {
+    .site-footer__col {
+      grid-column: 1 / -1;
     }
   }
 </style>
