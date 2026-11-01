@@ -1,0 +1,30 @@
+---
+/**
+ * A date range in the site's single format (formatRange: "Jul 2024 – Dec 2025",
+ * "Juli 2024 – Dez. 2025", open ends as "Present" / "heute"), with each end in
+ * its own <time datetime>. Year-only values ("2015") are valid datetimes too.
+ */
+import type { Locale } from '../../i18n/config.ts';
+import { formatRange, isYearMonth } from '../../i18n/format.ts';
+
+interface Props {
+  start: string;
+  end: string | null;
+  locale: Locale;
+  class?: string;
+}
+
+const { start, end, locale, class: className } = Astro.props;
+const SEPARATOR = ' – ';
+const isYear = (value: string) => /^\d{4}$/.test(value);
+
+let from = start;
+let to = end ?? '';
+if (isYearMonth(start) && (end === null || isYearMonth(end))) {
+  [from = start, to = ''] = formatRange(start, end, locale).split(SEPARATOR);
+}
+const datetime = (value: string) => (isYearMonth(value) || isYear(value) ? value : undefined);
+---
+
+{/* prettier-ignore */}
+<span class:list={['date-range', className]}><time datetime={datetime(start)}>{from}</time>{SEPARATOR}{end === null ? <span>{to}</span> : <time datetime={datetime(end)}>{to}</time>}</span>

@@ -1,0 +1,47 @@
+---
+/**
+ * A link that leaves the site: same tab, the arrow-up-right icon and the
+ * visually hidden "(external link)" note. `context` adds hidden text after the
+ * visible label ("Watch on YouTube: Head tracking"), so repeated labels stay
+ * distinct while the accessible name still starts with what is on screen.
+ * Shared by the Lab, About and Colophon views.
+ */
+import Icon from '../ui/Icon.astro';
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+
+interface Props {
+  locale: Locale;
+  href: string;
+  context?: string;
+  class?: string;
+}
+
+const { locale, href, context, class: className } = Astro.props;
+// Kept on one line (prettier-ignore) and trimmed, so the accessible name reads
+// "Label: context (external link)" without stray spaces from formatting.
+const label = (await Astro.slots.render('default')).trim();
+const hidden = `${context ? `: ${context}` : ''} ${ui[locale].externalLink}`;
+---
+
+{/* prettier-ignore */}
+<a class:list={['ext-link', className]} href={href}><span class="ext-link__label" set:html={label} /><span class="visually-hidden">{hidden}</span><Icon name="arrow-up-right" size={14} class="ext-link__icon" /></a>
+
+<style>
+  .ext-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-half);
+    min-height: 1.5rem;
+  }
+
+  .ext-link :global(.ext-link__icon) {
+    flex: none;
+    color: var(--color-text-subtle);
+    transition: color var(--dur-micro) var(--ease-micro);
+  }
+
+  .ext-link:hover :global(.ext-link__icon) {
+    color: currentColor;
+  }
+</style>

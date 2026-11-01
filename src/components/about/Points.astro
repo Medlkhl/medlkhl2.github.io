@@ -1,0 +1,157 @@
+---
+/**
+ * A numbered set of short points (title + text), each under a hairline:
+ * the About principles, the Colophon principles and the Lab's planned
+ * experiments. The visible numbers are decorative (the list is ordered).
+ *
+ * layout "grid": two columns from 48rem (three from 64rem with columns={3}).
+ * layout "rows": one point per row, number | title | text from 48rem; reads
+ * like a rule book and never leaves an orphan in the last row.
+ * variant "planned": dashed rules and a "Planned" chip on every item.
+ */
+import PlannedChip from '../lab/PlannedChip.astro';
+
+interface Point {
+  title: string;
+  text: string;
+}
+
+interface Props {
+  items: Point[];
+  layout?: 'grid' | 'rows';
+  columns?: 2 | 3;
+  /** Label of the chip shown on every item in the "planned" variant. */
+  plannedLabel?: string;
+  variant?: 'default' | 'planned';
+  class?: string;
+}
+
+const {
+  items,
+  layout = 'grid',
+  columns = 2,
+  plannedLabel,
+  variant = 'default',
+  class: className,
+} = Astro.props;
+const pad = (value: number) => String(value).padStart(2, '0');
+---
+
+<ol
+  role="list"
+  class:list={[
+    'points',
+    `points--${layout}`,
+    layout === 'grid' && `points--cols-${columns}`,
+    `points--${variant}`,
+    className,
+  ]}
+>
+  {items.map((item, index) => (
+    <li class="point">
+      <div class="point__meta">
+        <span class="point__index" aria-hidden="true">
+          {pad(index + 1)}
+        </span>
+        {variant === 'planned' && plannedLabel && <PlannedChip label={plannedLabel} />}
+      </div>
+      <h3 class="point__title">{item.title}</h3>
+      <p class="point__text">{item.text}</p>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .points--grid {
+    display: grid;
+    gap: var(--space-6) var(--grid-gutter);
+  }
+
+  .point {
+    display: grid;
+    align-content: start;
+    gap: var(--space-1);
+    padding-top: var(--space-3);
+    border-top: var(--hairline) solid var(--color-line-strong);
+  }
+
+  .points--planned .point {
+    border-top-style: dashed;
+  }
+
+  .point__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-height: 1.75rem;
+  }
+
+  .point__index {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .point__title {
+    margin-top: var(--space-1);
+    font-size: var(--step-1);
+  }
+
+  .point__text {
+    max-width: 52ch;
+    color: var(--color-text-muted);
+  }
+
+  /* Rows: hairline between rows, one closing rule at the end. */
+  .points--rows {
+    display: grid;
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .points--rows .point {
+    padding-block: var(--space-3);
+    border-top-color: var(--color-line);
+  }
+
+  .points--rows .point:first-child {
+    border-top-color: var(--color-line-strong);
+  }
+
+  @media (min-width: 48rem) {
+    .points--cols-2,
+    .points--cols-3 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .points--rows .point {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      align-items: baseline;
+    }
+
+    /* Same columns as the timeline and the stack list: 1–3 | 4–7 | 8–12. */
+    .points--rows .point__meta {
+      grid-column: 1 / span 3;
+      min-height: 0;
+    }
+
+    .points--rows .point__title {
+      grid-column: 4 / span 4;
+      margin-top: 0;
+    }
+
+    .points--rows .point__text {
+      grid-column: 8 / -1;
+      max-width: var(--measure);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .points--cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>
