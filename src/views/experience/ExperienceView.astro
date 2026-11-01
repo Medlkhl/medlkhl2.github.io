@@ -5,12 +5,12 @@
  * the CV downloads. Static HTML, no client script. Team-lead title and team
  * size are deliberately absent until the owner confirms them (DECISIONS D-018).
  */
-import PageHeader from '../../components/about/PageHeader.astro';
-import ArrowLink from '../../components/experience/ArrowLink.astro';
-import CompactSection from '../../components/experience/CompactSection.astro';
 import EducationEntry from '../../components/experience/EducationEntry.astro';
 import TimelineEntry from '../../components/experience/TimelineEntry.astro';
+import ArrowLink from '../../components/ui/ArrowLink.astro';
+import CompactSection from '../../components/ui/CompactSection.astro';
 import Icon from '../../components/ui/Icon.astro';
+import PageHeader from '../../components/ui/PageHeader.astro';
 import { education, experience } from '../../data/experience.ts';
 import { SCENE_SHOTS } from '../../data/scene.ts';
 import { LOCALE_META, type Locale, otherLocale } from '../../i18n/config.ts';
