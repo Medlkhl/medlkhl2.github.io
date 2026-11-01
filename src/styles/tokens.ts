@@ -117,8 +117,11 @@ export const grid = {
 
 export const radii = { 0: 0, 1: 2, 2: 4, 3: 8, pill: 999 } as const;
 
-/** Target sizes in rem (WCAG 2.2 AA): 24px minimum for inline links, 44px for controls. */
-export const targets = { minRem: 1.5, controlRem: 2.75 } as const;
+/**
+ * Target sizes in rem (WCAG 2.2 AA): 24px minimum for inline links, 28px for
+ * links in dense lists, 44px for controls.
+ */
+export const targets = { minRem: 1.5, compactRem: 1.75, controlRem: 2.75 } as const;
 
 /**
  * Print (the A4 CV sheet): the paper palette on a white page (bg) without

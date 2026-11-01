@@ -76,6 +76,7 @@ describe('tokens.css and tokens.ts stay in sync', () => {
     for (const [name, rem] of Object.entries(space))
       expect(root[`--space-${name}`]).toBe(`${rem}rem`);
     expect(root['--target-min']).toBe(`${targets.minRem}rem`);
+    expect(root['--target-compact']).toBe(`${targets.compactRem}rem`);
     expect(root['--target']).toBe(`${targets.controlRem}rem`);
     expect(root['--dur-micro']).toBe(`${motion.micro.ms}ms`);
     expect(root['--dur-standard']).toBe(`${motion.standard.ms}ms`);

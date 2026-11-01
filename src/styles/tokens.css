@@ -82,6 +82,7 @@
 
   /* ---- Targets (WCAG 2.2: 24px for inline links, 44px for controls) ----- */
   --target-min: 1.5rem; /* 24px */
+  --target-compact: 1.75rem; /* 28px: links in dense lists (parts list, legal links) */
   --target: 2.75rem; /* 44px */
 
   /* ---- Motion (brief §7). Phase 1 ships no motion; Phase 2 consumes these. */
