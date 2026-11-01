@@ -55,7 +55,9 @@ const sections = copy.sections;
   ogImage={ogImagePath(locale, 'cv')}
   jsonLd={[personJsonLd(locale)]}
 >
-  <style is:inline set:html={runningTitle} />
+  <Fragment slot="head">
+    <style is:inline set:html={runningTitle} />
+  </Fragment>
 
   <article class="cv container" aria-labelledby="cv-name">
     <CvHeader locale={locale} copy={copy} />

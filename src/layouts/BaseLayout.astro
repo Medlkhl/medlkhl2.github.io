@@ -6,6 +6,7 @@
  * - <ClientRouter /> is the backbone of the persistent 3D canvas (Phase 3);
  *   transition:animate="none" keeps Phase 1 free of motion.
  * - #stage is the persistent, empty, decorative canvas container.
+ * - <slot name="head" /> takes page-specific head elements (after the SEO tags).
  * - <body data-scene-shot data-active-layer> exposes the scene hook of each page.
  */
 import { ClientRouter } from 'astro:transitions';
@@ -78,6 +79,7 @@ const {
       noindex={noindex}
       jsonLd={jsonLd}
     />
+    <slot name="head" />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <link rel="icon" href={withBase('/favicon-32.png')} sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
