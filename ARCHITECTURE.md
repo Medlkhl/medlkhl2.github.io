@@ -132,7 +132,7 @@ tests/e2e/                Playwright: smoke, keyboard, theme, language, axe, pri
 - Case-study diagrams: each step is `<g data-step="<id>">` in the SVG and `<li id="step-<id>" data-step="<id>">` in the step list, so Phase 2 can highlight the active step as its paragraph scrolls into view. The ids come from the frontmatter; the build fails on a mismatch.
 - `src/data/layers.ts`: layer ids, labels, skills and case studies; mesh names `layer_<id>` and label anchors `lbl_<id>` for the Blender scene.
 - `src/engine/`: module skeleton from brief §6 (README stubs).
-- Client scripts bind on `astro:page-load` and clean up on `astro:before-swap`, so the persistent canvas needs no rewrites.
+- Client scripts bind on `astro:page-load` and clean up on `astro:before-swap`, so the persistent canvas needs no rewrites. The pattern (see `Header.astro`): a module-level `AbortController`, renewed on every `astro:page-load`, whose `signal` goes to every listener on `document` or `window` and disconnects observers; `astro:before-swap` aborts it.
 
 ## Quality pipeline
 
@@ -167,7 +167,7 @@ flowchart LR
 | `tests/e2e/privacy.spec.ts`     | On every page: zero third-party requests, no cookies, no embeds, no `tel:` links or phone numbers                                                                       |
 | `tests/e2e/nojs.spec.ts`        | The home page's first screen without JavaScript at 1440 × 900 and 390 × 844, header links unclipped at 320 and 390 px, every page renders, the theme follows the system |
 | `tests/e2e/mobile.spec.ts`      | The menu at 390 px (tab order, steady row, Escape returns focus), 44 px controls, no horizontal scroll                                                                  |
-| `tests/e2e/header.spec.ts`      | The home page's section highlight (set, cleared, kept below the last section), `aria-current` on the Work link                                                          |
+| `tests/e2e/header.spec.ts`      | The home page's section highlight (set, cleared, kept below the last section), `aria-current` on the Work link, no listener build-up over soft navigations              |
 | `tests/e2e/seo.spec.ts`         | Head metadata, social images, JSON-LD, unique titles and descriptions, the sitemap's hreflang set, robots.txt, the 404, legal pages                                     |
 | `tests/e2e/cv.spec.ts`          | PDF downloads (file name, `application/pdf`, at most 2 pages), hreflang on the other-language link, the print sheet                                                     |
 | `tests/e2e/screenshots.spec.ts` | Gate screenshots of every route, both locales and themes, at 1440 × 900 and 390 × 844 (only with `SCREENSHOTS=1`)                                                       |

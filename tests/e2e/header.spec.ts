@@ -48,4 +48,28 @@ test.describe('header', () => {
     // Only the breadcrumb marks the case study itself as the page.
     await expect(page.locator('[aria-current="page"]')).toHaveCount(1);
   });
+
+  test('soft navigations release the header listeners of the previous page', async ({ page }) => {
+    await page.goto('');
+    const client = await page.context().newCDPSession(page);
+    const keydownListeners = async () => {
+      const { result } = await client.send('Runtime.evaluate', { expression: 'document' });
+      const { listeners } = await client.send('DOMDebugger.getEventListeners', {
+        objectId: result.objectId ?? '',
+      });
+      return listeners.filter((listener) => listener.type === 'keydown').length;
+    };
+    const before = await keydownListeners();
+    expect(before).toBeGreaterThan(0);
+    await page.evaluate(() => Reflect.set(window, '__sameDocument', true));
+
+    for (const target of ['lab/', 'about/', 'experience/']) {
+      await page.locator(`.site-nav a[href$="/${target}"]`).click();
+      await expect(page).toHaveURL(new RegExp(`/${target}$`));
+    }
+    // ClientRouter swapped the pages in the same document (no reload) ...
+    expect(await page.evaluate(() => Reflect.get(window, '__sameDocument'))).toBe(true);
+    // ... and each page's bindings replaced the previous ones instead of piling up.
+    await expect.poll(keydownListeners).toBe(before);
+  });
 });

@@ -348,14 +348,14 @@ const items: NavItem[] = [
 <script>
   import { setPref } from '../../lib/prefs.ts';
 
-  let observer: IntersectionObserver | undefined;
+  /** Releases everything bound for the current page (listeners, the observer). */
+  let controller: AbortController | undefined;
 
-  function bindMenu() {
+  function bindMenu(signal: AbortSignal) {
     const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
     const nav = document.querySelector<HTMLElement>('[data-site-nav]');
     const label = toggle?.querySelector<HTMLElement>('[data-menu-label]');
-    if (!toggle || !nav || toggle.dataset.bound === 'true') return;
-    toggle.dataset.bound = 'true';
+    if (!toggle || !nav) return;
 
     const setOpen = (open: boolean) => {
       toggle.setAttribute('aria-expanded', String(open));
@@ -364,30 +364,44 @@ const items: NavItem[] = [
         label.textContent = (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? '';
     };
 
-    toggle.addEventListener('click', () =>
-      setOpen(toggle.getAttribute('aria-expanded') !== 'true'),
+    toggle.addEventListener(
+      'click',
+      () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'),
+      { signal },
     );
-    nav.addEventListener('click', (event) => {
-      if ((event.target as HTMLElement).closest('a')) setOpen(false);
-    });
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
-        setOpen(false);
-        toggle.focus();
-      }
-    });
+    nav.addEventListener(
+      'click',
+      (event) => {
+        if ((event.target as HTMLElement).closest('a')) setOpen(false);
+      },
+      { signal },
+    );
+    document.addEventListener(
+      'keydown',
+      (event) => {
+        if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+          setOpen(false);
+          toggle.focus();
+        }
+      },
+      { signal },
+    );
   }
 
-  function bindLanguageSwitch() {
+  function bindLanguageSwitch(signal: AbortSignal) {
     document.querySelectorAll<HTMLAnchorElement>('[data-lang-switch]').forEach((link) => {
-      link.addEventListener('click', () => {
-        const target = link.dataset.langSwitch;
-        if (target === 'en' || target === 'de') setPref('lang', target);
-      });
+      link.addEventListener(
+        'click',
+        () => {
+          const target = link.dataset.langSwitch;
+          if (target === 'en' || target === 'de') setPref('lang', target);
+        },
+        { signal },
+      );
     });
   }
 
-  function bindSectionHighlight() {
+  function bindSectionHighlight(signal: AbortSignal) {
     const sections = [...document.querySelectorAll<HTMLElement>('[data-nav-target]')];
     if (!sections.length || !('IntersectionObserver' in window)) return;
     const links = document.querySelectorAll<HTMLElement>('[data-nav-section]');
@@ -396,7 +410,7 @@ const items: NavItem[] = [
     // whether the last section has scrolled above it (the footer is in view).
     const inBand = new Set<Element>();
     let pastLast = false;
-    observer = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) inBand.add(entry.target);
@@ -417,17 +431,21 @@ const items: NavItem[] = [
       },
       { rootMargin: '-45% 0px -50% 0px' },
     );
-    sections.forEach((section) => observer?.observe(section));
+    sections.forEach((section) => observer.observe(section));
+    signal.addEventListener('abort', () => observer.disconnect(), { once: true });
   }
 
   document.addEventListener('astro:page-load', () => {
-    bindMenu();
-    bindLanguageSwitch();
-    bindSectionHighlight();
+    controller?.abort();
+    controller = new AbortController();
+    bindMenu(controller.signal);
+    bindLanguageSwitch(controller.signal);
+    bindSectionHighlight(controller.signal);
   });
 
+  // ClientRouter keeps the document alive: release this page's bindings before the swap.
   document.addEventListener('astro:before-swap', () => {
-    observer?.disconnect();
-    observer = undefined;
+    controller?.abort();
+    controller = undefined;
   });
 </script>
