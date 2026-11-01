@@ -1,7 +1,8 @@
 ---
 /**
  * Sticky site header: name, main navigation, language switch and theme toggle.
- * - The current page is marked with aria-current="page".
+ * - The current page is marked with aria-current="page"; on a case study the
+ *   Work link gets aria-current="true" (its section, not the page itself).
  * - On the home page the link of the section in view is highlighted
  *   (IntersectionObserver; sections opt in with data-nav-target="<key>", and
  *   parts without a nav link carry an empty data-nav-target, which clears it).
@@ -28,35 +29,38 @@ const current = path ? unlocalizePath(path) : null;
 const other = otherLocale(locale);
 const switchHref = path ? withBase(localePath(other, path)) : null;
 
-type NavItem = { key: string; href: string; label: string; active: boolean; section?: string };
+/** 'page' when the link is this page, 'true' when this page sits in the link's section. */
+type NavCurrent = 'page' | 'true' | undefined;
+type NavItem = { key: string; href: string; label: string; current: NavCurrent; section?: string };
+const pageIf = (route: string): NavCurrent => (current === route ? 'page' : undefined);
 const items: NavItem[] = [
   {
     key: 'work',
     href: routeHref(locale, 'work'),
     label: t.nav.work,
-    active: current?.startsWith('/work/') ?? false,
+    current: current?.startsWith('/work/') ? (current === '/work/' ? 'page' : 'true') : undefined,
     section: 'work',
   },
   {
     key: 'experience',
     href: routeHref(locale, 'experience'),
     label: t.nav.experience,
-    active: current === '/experience/',
+    current: pageIf('/experience/'),
     section: 'experience',
   },
-  { key: 'lab', href: routeHref(locale, 'lab'), label: t.nav.lab, active: current === '/lab/' },
+  { key: 'lab', href: routeHref(locale, 'lab'), label: t.nav.lab, current: pageIf('/lab/') },
   {
     key: 'about',
     href: routeHref(locale, 'about'),
     label: t.nav.about,
-    active: current === '/about/',
+    current: pageIf('/about/'),
   },
-  { key: 'cv', href: routeHref(locale, 'cv'), label: t.nav.cv, active: current === '/cv/' },
+  { key: 'cv', href: routeHref(locale, 'cv'), label: t.nav.cv, current: pageIf('/cv/') },
   {
     key: 'contact',
     href: routeHref(locale, 'home', 'contact'),
     label: t.nav.contact,
-    active: false,
+    current: undefined,
     section: 'contact',
   },
 ];
@@ -102,7 +106,7 @@ const items: NavItem[] = [
             <a
               class="site-nav__link"
               href={item.href}
-              aria-current={item.active ? 'page' : undefined}
+              aria-current={item.current}
               data-nav-section={item.section}
             >
               {item.label}
@@ -205,12 +209,12 @@ const items: NavItem[] = [
   }
 
   .site-nav__link:hover,
-  .site-nav__link[aria-current='page'],
+  .site-nav__link[aria-current],
   .site-nav__link[data-active] {
     color: var(--color-text);
   }
 
-  .site-nav__link[aria-current='page']::after,
+  .site-nav__link[aria-current]::after,
   .site-nav__link[data-active]::after {
     transform: scaleX(1);
     background: var(--color-accent);
@@ -331,7 +335,7 @@ const items: NavItem[] = [
       display: none;
     }
 
-    :global(.js) .site-nav__link[aria-current='page'] {
+    :global(.js) .site-nav__link[aria-current] {
       color: var(--color-accent);
     }
   }

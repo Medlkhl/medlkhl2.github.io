@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { WORK_SLUGS } from '../../src/schemas/data.ts';
 
 /** Scrolls a part of the home page to the middle of the viewport. */
 async function centre(page: Page, selector: string) {
@@ -34,5 +35,17 @@ test.describe('header', () => {
     // Back at the hero nothing is highlighted.
     await page.evaluate(() => window.scrollTo(0, 0));
     await expect(active).toHaveCount(0);
+  });
+
+  test('the Work link is the current page on /work/ and the current section on a case study', async ({
+    page,
+  }) => {
+    const work = page.locator('.site-nav a[href$="/work/"]');
+    await page.goto('work/');
+    await expect(work).toHaveAttribute('aria-current', 'page');
+    await page.goto(`work/${WORK_SLUGS[0]}/`);
+    await expect(work).toHaveAttribute('aria-current', 'true');
+    // Only the breadcrumb marks the case study itself as the page.
+    await expect(page.locator('[aria-current="page"]')).toHaveCount(1);
   });
 });
