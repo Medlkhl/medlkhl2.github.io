@@ -9,6 +9,15 @@ export const nonEmpty = z.string().trim().min(1);
 export const l10n = z.strictObject({ en: nonEmpty, de: nonEmpty });
 export type L10n = z.infer<typeof l10n>;
 
+/**
+ * A skill or stack item. Product and tool names are plain strings, the same in
+ * both locales (".NET MAUI", "Keycloak", "Python"); descriptive phrases are
+ * localized ({ en: 'Image processing', de: 'Bildverarbeitung' }).
+ * Render with term() from src/i18n/term.ts.
+ */
+export const term = z.union([nonEmpty, l10n]);
+export type Term = z.infer<typeof term>;
+
 /** ISO year-month, e.g. "2024-07". Formatted per locale at render time. */
 export const yearMonth = z
   .string()

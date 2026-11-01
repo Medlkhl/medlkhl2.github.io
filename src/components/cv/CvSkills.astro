@@ -8,6 +8,7 @@ import Rich from '../ui/Rich.astro';
 import CvInlineList from './CvInlineList.astro';
 import { capabilities } from '../../data/skills.ts';
 import type { Locale } from '../../i18n/config.ts';
+import { term } from '../../i18n/term.ts';
 
 interface Props {
   locale: Locale;
@@ -24,7 +25,10 @@ const { locale, class: className } = Astro.props;
         <Rich text={capability.title[locale]} />
       </dt>
       <dd class="cv-skills__list">
-        <CvInlineList items={capability.skills} variant="mono" />
+        <CvInlineList
+          items={capability.skills.map((skill) => term(skill, locale))}
+          variant="mono"
+        />
       </dd>
     </div>
   ))}

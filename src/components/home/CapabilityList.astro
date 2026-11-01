@@ -8,6 +8,7 @@
 import { getLayer } from '../../data/layers.ts';
 import { capabilities } from '../../data/skills.ts';
 import type { Locale } from '../../i18n/config.ts';
+import { term } from '../../i18n/term.ts';
 import type { HomeCopy } from '../../views/home/home.copy.ts';
 
 interface Props {
@@ -47,7 +48,7 @@ const pad = (value: number) => String(value).padStart(2, '0');
           <p class="cap__summary">{capability.summary[locale]}</p>
           <ul role="list" class="cap__skills">
             {capability.skills.map((skill) => (
-              <li class="chip">{skill}</li>
+              <li class="chip">{term(skill, locale)}</li>
             ))}
           </ul>
         </div>

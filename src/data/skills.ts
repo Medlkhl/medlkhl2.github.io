@@ -1,7 +1,10 @@
 import { z } from 'astro/zod';
 import { capabilitySchema, languageSchema } from '../schemas/data.ts';
 
-/** Skills from the current Lebenslauf, grouped as capabilities. */
+/**
+ * Skills from the current Lebenslauf, grouped as capabilities. Product names
+ * are plain strings; descriptive skills carry both languages (see `term`).
+ */
 export const capabilities = z.array(capabilitySchema).parse([
   {
     id: 'cross-platform',
@@ -10,7 +13,15 @@ export const capabilities = z.array(capabilitySchema).parse([
       en: 'iOS and Android apps from a shared .NET codebase, structured with MVVM; web UIs with Blazor and Razor.',
       de: 'iOS- und Android-Apps aus einer gemeinsamen .NET-Codebasis, strukturiert mit MVVM; Web-Oberflächen mit Blazor und Razor.',
     },
-    skills: ['.NET MAUI', 'Xamarin', 'Blazor', 'Razor', 'MVVM', 'Native iOS', 'Android'],
+    skills: [
+      '.NET MAUI',
+      'Xamarin',
+      'Blazor',
+      'Razor',
+      'MVVM',
+      { en: 'Native iOS', de: 'Natives iOS' },
+      'Android',
+    ],
     layers: ['ui', 'viewmodels'],
   },
   {
@@ -24,7 +35,7 @@ export const capabilities = z.array(capabilitySchema).parse([
       'C#',
       '.NET',
       '.NET Framework',
-      'ASP.NET REST APIs',
+      { en: 'ASP.NET REST APIs', de: 'ASP.NET-REST-APIs' },
       'OpenAPI/Swagger',
       'Entity Framework',
     ],
@@ -37,7 +48,14 @@ export const capabilities = z.array(capabilitySchema).parse([
       en: 'Authentication and authorisation with Keycloak over OIDC and OAuth2, and fixes for the findings of security audits.',
       de: 'Authentifizierung und Autorisierung mit Keycloak über OIDC und OAuth2 sowie das Beheben von Befunden aus Sicherheitsaudits.',
     },
-    skills: ['Keycloak', 'OAuth2', 'OIDC', 'Authentication', 'Authorisation', 'Audit fixes'],
+    skills: [
+      'Keycloak',
+      'OAuth2',
+      'OIDC',
+      { en: 'Authentication', de: 'Authentifizierung' },
+      { en: 'Authorisation', de: 'Autorisierung' },
+      { en: 'Audit fixes', de: 'Behebung von Auditbefunden' },
+    ],
     layers: ['identity'],
   },
   {
@@ -47,7 +65,13 @@ export const capabilities = z.array(capabilitySchema).parse([
       en: 'CI/CD with GitLab, maintained deployment environments, structured code reviews and Agile/Scrum with Jira.',
       de: 'CI/CD mit GitLab, gepflegte Bereitstellungsumgebungen, strukturierte Code-Reviews und Agile/Scrum mit Jira.',
     },
-    skills: ['GitLab CI/CD', 'Deployment environments', 'Code reviews', 'Agile/Scrum', 'Jira'],
+    skills: [
+      'GitLab CI/CD',
+      { en: 'Deployment environments', de: 'Bereitstellungsumgebungen' },
+      { en: 'Code reviews', de: 'Code-Reviews' },
+      'Agile/Scrum',
+      'Jira',
+    ],
     layers: ['cicd'],
   },
   {

@@ -8,6 +8,7 @@ import { experience } from '../../data/experience.ts';
 import { ROBOT_DEMO_VIDEO, robotModules } from '../../data/lab.ts';
 import type { Locale } from '../../i18n/config.ts';
 import { workHref } from '../../i18n/routes.ts';
+import { term } from '../../i18n/term.ts';
 import { ui } from '../../i18n/ui.copy.ts';
 import type { LabCopy } from '../../views/lab/lab.copy.ts';
 import ArrowLink from '../experience/ArrowLink.astro';
@@ -80,7 +81,7 @@ const project = experience.find((entry) => entry.id === 'dot-it');
         <p class="module__desc">{module.description[locale]}</p>
         <ul role="list" class="module__stack" aria-label={t.stackLabel}>
           {module.stack.map((item) => (
-            <li class="chip">{item}</li>
+            <li class="chip">{term(item, locale)}</li>
           ))}
         </ul>
         {module.video && (

@@ -4,6 +4,7 @@ import { archiveProjectSchema, robotModuleSchema } from '../schemas/data.ts';
 /**
  * Lab content (classic version). Source: the old site (medlkhl.github.io, "Projects").
  * Videos are linked out, never embedded (no third-party requests, brief §11).
+ * Stack items: product names are plain strings, descriptive items carry both languages.
  */
 
 /** The featured robot demo video from the old site. */
@@ -27,7 +28,11 @@ export const robotModules = z.array(robotModuleSchema).parse([
       en: 'Kinect skeletal tracking and inverse kinematics carry the operator’s hand motions over to the robot’s hands.',
       de: 'Kinect-Skeletttracking und inverse Kinematik übertragen die Handbewegungen des Bedieners auf die Hände des Roboters.',
     },
-    stack: ['Kinect', 'Skeletal tracking', 'Inverse kinematics'],
+    stack: [
+      'Kinect',
+      { en: 'Skeletal tracking', de: 'Skeletttracking' },
+      { en: 'Inverse kinematics', de: 'Inverse Kinematik' },
+    ],
     video: 'https://youtu.be/_JGYox5_IY8',
   },
   {
@@ -37,7 +42,10 @@ export const robotModules = z.array(robotModuleSchema).parse([
       en: 'Simulates human head movement on the robot from a virtual-reality headset, to operate it remotely at a distant event.',
       de: 'Überträgt menschliche Kopfbewegungen per VR-Headset auf den Roboter, um ihn bei einer entfernten Veranstaltung fernzusteuern.',
     },
-    stack: ['Virtual reality', 'Remote operation'],
+    stack: [
+      { en: 'Virtual reality', de: 'Virtual Reality' },
+      { en: 'Remote operation', de: 'Fernsteuerung' },
+    ],
     video: ROBOT_DEMO_VIDEO,
   },
   {
@@ -47,7 +55,10 @@ export const robotModules = z.array(robotModuleSchema).parse([
       en: 'Speech recognition with hotword detection, so people can talk to the robot.',
       de: 'Spracherkennung mit Hotword-Erkennung, damit Menschen mit dem Roboter sprechen können.',
     },
-    stack: ['Speech recognition', 'Hotword detection'],
+    stack: [
+      { en: 'Speech recognition', de: 'Spracherkennung' },
+      { en: 'Hotword detection', de: 'Hotword-Erkennung' },
+    ],
     video: 'https://youtu.be/j74jeWoHeEo',
   },
   {
@@ -57,7 +68,7 @@ export const robotModules = z.array(robotModuleSchema).parse([
       en: 'A motion-control interface for the robot’s upper body.',
       de: 'Eine Steuerungsoberfläche für die Bewegungen des Oberkörpers.',
     },
-    stack: ['Motion control'],
+    stack: [{ en: 'Motion control', de: 'Bewegungssteuerung' }],
     video: 'https://youtu.be/0VcOwU8_J2A',
   },
   {
@@ -90,7 +101,10 @@ export const studentArchive = z.array(archiveProjectSchema).parse([
       en: 'Concept, design and prototype of a smart device and companion mobile app that keep the family informed about a baby’s health.',
       de: 'Konzept, Design und Prototyp eines smarten Geräts mit Mobile-App, das die Familie über die Gesundheit des Babys informiert.',
     },
-    stack: ['Embedded', 'Mobile'],
+    stack: [
+      { en: 'Embedded', de: 'Embedded-Systeme' },
+      { en: 'Mobile', de: 'Mobile Apps' },
+    ],
   },
   {
     id: 'omniwheel',
@@ -99,7 +113,7 @@ export const studentArchive = z.array(archiveProjectSchema).parse([
       en: 'Study project: a basket robot that follows the customer, reads its contents over RFID and recommends products.',
       de: 'Studienprojekt: ein Korb-Roboter, der Kundinnen und Kunden folgt, den Inhalt per RFID erkennt und Produkte empfiehlt.',
     },
-    stack: ['Robotics', 'RFID', 'Sensors'],
+    stack: [{ en: 'Robotics', de: 'Robotik' }, 'RFID', { en: 'Sensors', de: 'Sensorik' }],
   },
   {
     id: 'smart-thief',

@@ -6,6 +6,8 @@ import { layers } from '../../src/data/layers.ts';
 import { profile } from '../../src/data/profile.ts';
 import { recommendations } from '../../src/data/recommendations.ts';
 import { capabilities, languages } from '../../src/data/skills.ts';
+import { term } from '../../src/i18n/term.ts';
+import { term as termSchema } from '../../src/schemas/common.ts';
 import { LAYER_IDS, WORK_SLUGS } from '../../src/schemas/data.ts';
 import { workSchema } from '../../src/schemas/work.ts';
 import { WORK_DIR, readMdx, workFiles } from './helpers.ts';
@@ -68,6 +70,35 @@ describe('structured data validates against its schemas', () => {
     expect(blob, 'birth date').not.toMatch(/\b(?:born|birth|geboren|geburt)/i);
     expect(blob, 'Facebook link').not.toMatch(/facebook\.com/i);
     expect(blob, 'tel: link').not.toMatch(/tel:/i);
+  });
+});
+
+describe('skill and stack terms', () => {
+  it('a product name passes through, a descriptive phrase is localized', () => {
+    expect(term('Keycloak', 'de')).toBe('Keycloak');
+    expect(term({ en: 'Robotics', de: 'Robotik' }, 'en')).toBe('Robotics');
+    expect(term({ en: 'Robotics', de: 'Robotik' }, 'de')).toBe('Robotik');
+  });
+
+  it('the schema accepts a name or a complete pair, nothing else', () => {
+    expect(termSchema.safeParse('Python').success).toBe(true);
+    expect(termSchema.safeParse({ en: 'Robotics', de: 'Robotik' }).success).toBe(true);
+    expect(termSchema.safeParse({ en: 'Robotics' }).success).toBe(false);
+    expect(termSchema.safeParse({ en: 'Robotics', de: ' ' }).success).toBe(false);
+    expect(termSchema.safeParse('').success).toBe(false);
+  });
+
+  it('every skill and stack item renders as non-empty text in both locales', () => {
+    const items = [
+      ...capabilities.flatMap((capability) => capability.skills),
+      ...layers.flatMap((layer) => layer.skills.map((skill) => skill.name)),
+      ...experience.flatMap((entry) => entry.stack),
+      ...robotModules.flatMap((module) => module.stack),
+      ...studentArchive.flatMap((project) => project.stack),
+    ];
+    expect(items.length).toBeGreaterThan(40);
+    for (const item of items)
+      for (const locale of ['en', 'de'] as const) expect(term(item, locale).trim()).not.toBe('');
   });
 });
 

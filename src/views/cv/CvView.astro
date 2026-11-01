@@ -20,6 +20,7 @@ import { profile } from '../../data/profile.ts';
 import type { Locale } from '../../i18n/config.ts';
 import { pageMeta } from '../../i18n/meta.copy.ts';
 import { ROUTES } from '../../i18n/routes.ts';
+import { term } from '../../i18n/term.ts';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { ogImagePath } from '../../lib/og.ts';
 import { personJsonLd } from '../../lib/structured-data.ts';
@@ -77,7 +78,11 @@ const sections = copy.sections;
             end={entry.end}
             present={copy.present}
             highlights={entry.highlights.map((highlight) => highlight[locale])}
-            details={entry.stack.length ? [{ term: copy.stack, items: entry.stack }] : []}
+            details={
+              entry.stack.length
+                ? [{ term: copy.stack, items: entry.stack.map((item) => term(item, locale)) }]
+                : []
+            }
           />
         ))}
       </ol>

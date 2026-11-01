@@ -5,6 +5,7 @@ import {
   nonEmpty,
   placeholderString,
   source,
+  term,
   year,
   yearMonth,
   yearMonthLte,
@@ -65,7 +66,7 @@ export const experienceSchema = z
     /** One line for the condensed home timeline. */
     summary: l10n,
     highlights: z.array(l10n.extend({ source })).min(1),
-    stack: z.array(nonEmpty).default([]),
+    stack: z.array(term).default([]),
     /** Related case-study slugs. */
     work: z.array(z.enum(WORK_SLUGS)).default([]),
   })
@@ -89,7 +90,7 @@ export const capabilitySchema = z.strictObject({
   id: z.enum(CAPABILITY_IDS),
   title: l10n,
   summary: l10n,
-  skills: z.array(nonEmpty).min(1),
+  skills: z.array(term).min(1),
   layers: z.array(z.enum(LAYER_IDS)).min(1),
 });
 export type Capability = z.infer<typeof capabilitySchema>;
@@ -107,7 +108,7 @@ export const layerSchema = z.strictObject({
   index: z.number().int().min(1).max(7),
   label: l10n,
   description: l10n,
-  skills: z.array(z.strictObject({ name: nonEmpty, capability: z.enum(CAPABILITY_IDS) })).min(1),
+  skills: z.array(z.strictObject({ name: term, capability: z.enum(CAPABILITY_IDS) })).min(1),
   work: z.array(z.enum(WORK_SLUGS)),
   /** Names the Phase 3 scene loader expects from Blender (brief §9). */
   scene: z.strictObject({
@@ -142,7 +143,7 @@ export const robotModuleSchema = z.strictObject({
   id: nonEmpty,
   title: l10n,
   description: l10n,
-  stack: z.array(nonEmpty).min(1),
+  stack: z.array(term).min(1),
   video: httpsUrl.optional(),
 });
 export type RobotModule = z.infer<typeof robotModuleSchema>;
@@ -151,7 +152,7 @@ export const archiveProjectSchema = z.strictObject({
   id: nonEmpty,
   title: l10n,
   description: l10n,
-  stack: z.array(nonEmpty).default([]),
+  stack: z.array(term).default([]),
   video: httpsUrl.optional(),
 });
 export type ArchiveProject = z.infer<typeof archiveProjectSchema>;

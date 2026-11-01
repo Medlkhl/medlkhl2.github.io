@@ -10,6 +10,7 @@
 import { layers } from '../../data/layers.ts';
 import type { Locale } from '../../i18n/config.ts';
 import { workHref } from '../../i18n/routes.ts';
+import { term } from '../../i18n/term.ts';
 import type { HomeCopy } from '../../views/home/home.copy.ts';
 
 interface Props {
@@ -44,7 +45,7 @@ const pad = (value: number) => String(value).padStart(2, '0');
                 <ul role="list" class="legend__links">
                   {layer.skills.map((skill) => (
                     <li>
-                      <a href={`#cap-${skill.capability}`}>{skill.name}</a>
+                      <a href={`#cap-${skill.capability}`}>{term(skill.name, locale)}</a>
                     </li>
                   ))}
                 </ul>

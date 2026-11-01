@@ -4,6 +4,7 @@ import { capabilities, languages } from '../data/skills.ts';
 import type { Locale } from '../i18n/config.ts';
 import { LOCALE_META, LOCALES } from '../i18n/config.ts';
 import { localePath } from '../i18n/routes.ts';
+import { term } from '../i18n/term.ts';
 import { absoluteUrl } from './url.ts';
 
 /**
@@ -55,7 +56,9 @@ export function personJsonLd(locale: Locale): JsonLd {
     })),
     knowsAbout: unique([
       ...profile.coreStack,
-      ...capabilities.flatMap((capability) => capability.skills),
+      ...capabilities.flatMap((capability) =>
+        capability.skills.map((skill) => term(skill, locale)),
+      ),
     ]),
     alumniOf: education.map((entry) => ({
       '@type': 'CollegeOrUniversity',

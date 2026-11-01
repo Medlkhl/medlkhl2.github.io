@@ -8,6 +8,7 @@ import { educationSchema, experienceSchema } from '../schemas/data.ts';
  *   english-cv  = older English CV / old site (secondary)
  *   owner-brief = facts supplied by the owner for this build
  * Team-lead title and team size are deliberately absent until confirmed (OPEN_QUESTIONS.md).
+ * Stack items: product names are plain strings, descriptive items carry both languages.
  */
 export const experience = z.array(experienceSchema).parse([
   {
@@ -68,7 +69,7 @@ export const experience = z.array(experienceSchema).parse([
       'C#',
       '.NET MAUI',
       'Xamarin',
-      'ASP.NET REST APIs',
+      { en: 'ASP.NET REST APIs', de: 'ASP.NET-REST-APIs' },
       'Keycloak',
       'OIDC',
       'OAuth2',
@@ -101,7 +102,12 @@ export const experience = z.array(experienceSchema).parse([
         source: 'lebenslauf',
       },
     ],
-    stack: ['C#', 'Xamarin', 'REST APIs', 'Enterprise integration'],
+    stack: [
+      'C#',
+      'Xamarin',
+      { en: 'REST APIs', de: 'REST-APIs' },
+      { en: 'Enterprise integration', de: 'Anbindung von Unternehmenssystemen' },
+    ],
     work: ['happ'],
   },
   {
@@ -131,9 +137,9 @@ export const experience = z.array(experienceSchema).parse([
     stack: [
       'SolidWorks',
       'Python',
-      'Image processing',
-      'Sign recognition',
-      'Lane tracking',
+      { en: 'Image processing', de: 'Bildverarbeitung' },
+      { en: 'Sign recognition', de: 'Schilderkennung' },
+      { en: 'Lane tracking', de: 'Spurverfolgung' },
       'Blockly',
       'Node.js',
     ],
@@ -172,10 +178,10 @@ export const experience = z.array(experienceSchema).parse([
       'C#',
       'WPF',
       'Firebase',
-      'Kinect skeletal tracking',
-      'IMU data',
-      'Inverse kinematics',
-      'Motion capture',
+      { en: 'Kinect skeletal tracking', de: 'Kinect-Skeletttracking' },
+      { en: 'IMU data', de: 'IMU-Daten' },
+      { en: 'Inverse kinematics', de: 'Inverse Kinematik' },
+      { en: 'Motion capture', de: 'Motion Capture' },
     ],
     work: ['humanoid-robot'],
   },
@@ -201,7 +207,13 @@ export const experience = z.array(experienceSchema).parse([
         source: 'english-cv',
       },
     ],
-    stack: ['C#', 'WPF', 'Kinect', 'Image processing', 'Gesture guidance'],
+    stack: [
+      'C#',
+      'WPF',
+      'Kinect',
+      { en: 'Image processing', de: 'Bildverarbeitung' },
+      { en: 'Gesture guidance', de: 'Gestenführung' },
+    ],
     work: [],
   },
 ]);

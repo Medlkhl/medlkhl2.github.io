@@ -67,7 +67,7 @@ export const layers = z
         de: 'ASP.NET-REST-APIs, die die Apps mit Unternehmenssystemen verbinden, dokumentiert mit OpenAPI.',
       },
       skills: [
-        { name: 'ASP.NET REST APIs', capability: 'backend' },
+        { name: { en: 'ASP.NET REST APIs', de: 'ASP.NET-REST-APIs' }, capability: 'backend' },
         { name: 'OpenAPI/Swagger', capability: 'backend' },
         { name: 'Entity Framework', capability: 'backend' },
       ],
@@ -116,8 +116,11 @@ export const layers = z
       },
       skills: [
         { name: 'GitLab CI/CD', capability: 'delivery' },
-        { name: 'Deployment environments', capability: 'delivery' },
-        { name: 'Code reviews', capability: 'delivery' },
+        {
+          name: { en: 'Deployment environments', de: 'Bereitstellungsumgebungen' },
+          capability: 'delivery',
+        },
+        { name: { en: 'Code reviews', de: 'Code-Reviews' }, capability: 'delivery' },
       ],
       work: ['happ'],
       scene: { mesh: 'layer_cicd', anchor: 'lbl_cicd' },

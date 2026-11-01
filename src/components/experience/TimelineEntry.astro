@@ -8,6 +8,7 @@
 import type { Locale } from '../../i18n/config.ts';
 import { formatDuration } from '../../i18n/format.ts';
 import { workHref } from '../../i18n/routes.ts';
+import { term } from '../../i18n/term.ts';
 import type { Experience } from '../../schemas/data.ts';
 import type { ExperienceCopy } from '../../views/experience/experience.copy.ts';
 import ArrowLink from './ArrowLink.astro';
@@ -53,7 +54,7 @@ const links = entry.work.map((slug) => ({
     {entry.stack.length > 0 && (
       <ul role="list" class="entry__stack" aria-label={copy.stack}>
         {entry.stack.map((item) => (
-          <li class="chip">{item}</li>
+          <li class="chip">{term(item, locale)}</li>
         ))}
       </ul>
     )}
