@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { allPages, rel } from './utils.ts';
 
 test.describe('mobile navigation (390px)', () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
@@ -71,24 +72,19 @@ test.describe('mobile navigation (390px)', () => {
     }
   });
 
-  test('no page scrolls horizontally', async ({ page }) => {
-    for (const path of [
-      '',
-      'de/',
-      'work/',
-      'experience/',
-      'lab/',
-      'about/',
-      'cv/',
-      'colophon/',
-      'impressum/',
-      'datenschutz/',
-    ]) {
-      await page.goto(path);
-      const overflow = await page.evaluate(
-        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-      );
-      expect(overflow, path || 'home').toBeLessThanOrEqual(0);
+  // WCAG 1.4.10 (reflow): every page, including the internal tokens page and the 404, at 320 and 390.
+  test('no page scrolls horizontally at 320 or 390 px', async ({ page }) => {
+    test.slow();
+    const paths = [...allPages().map(({ path }) => rel(path)), 'tokens/', 'missing/'];
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      for (const path of paths) {
+        await page.goto(path);
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        );
+        expect(overflow, `${path || 'home'} at ${width}px`).toBeLessThanOrEqual(0);
+      }
     }
   });
 });

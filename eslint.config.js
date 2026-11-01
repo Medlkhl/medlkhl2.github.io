@@ -33,6 +33,11 @@ export default defineConfig(
       '@typescript-eslint/consistent-type-imports': 'error',
       // role="list" on styled lists is deliberate: Safari/VoiceOver drops list semantics with list-style: none.
       'astro/jsx-a11y/no-redundant-roles': ['error', { ul: ['list'], ol: ['list'] }],
+      // A scrolling region (role="region" plus a label) must take focus so keyboards can scroll it.
+      'astro/jsx-a11y/no-noninteractive-tabindex': [
+        'error',
+        { tags: [], roles: ['tabpanel', 'region'] },
+      ],
     },
   },
   {
