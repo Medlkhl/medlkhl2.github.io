@@ -13,7 +13,7 @@ export const experienceCopy = defineCopy({
       label: 'Experience',
       title: 'Building software and hardware since {year}',
       intro:
-        'Every role, newest first: what I was responsible for, what I delivered, the stack and the case study behind it. My CV is generated from the same data.',
+        'Every role, newest first: what I was responsible for, what I delivered, the stack and, where there is one, the case study behind it. My CV is generated from the same data.',
       cvOnline: 'Read the CV online',
     },
     timeline: {

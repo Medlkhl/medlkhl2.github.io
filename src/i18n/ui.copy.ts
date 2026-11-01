@@ -37,7 +37,7 @@ export const ui = defineCopy({
       contact: 'Contact',
       copyEmail: 'Copy email',
       emailCopied: 'Email copied',
-      copyFailed: 'Copy failed. The address is selected, press Ctrl+C.',
+      copyFailed: 'Copy failed. The address is selected; press Ctrl+C or ⌘C.',
       writeEmail: 'Write an email',
       readCaseStudy: 'Read the case study',
       /** Link to a named case study, e.g. from a timeline entry. */
@@ -104,7 +104,7 @@ export const ui = defineCopy({
       contact: 'Kontakt',
       copyEmail: 'E-Mail kopieren',
       emailCopied: 'E-Mail kopiert',
-      copyFailed: 'Kopieren fehlgeschlagen. Die Adresse ist markiert, bitte Strg+C drücken.',
+      copyFailed: 'Kopieren fehlgeschlagen. Die Adresse ist markiert; bitte Strg+C oder ⌘C drücken.',
       writeEmail: 'E-Mail schreiben',
       readCaseStudy: 'Zur Fallstudie',
       caseStudyFor: 'Fallstudie: {title}',

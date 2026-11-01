@@ -58,7 +58,7 @@ export const aboutCopy = defineCopy({
         },
         {
           title: 'Raise the level of the team',
-          text: 'Structured code reviews and 1:1 coaching are how a team levels up. I coached the development team through both and established a code-review governance framework.',
+          text: 'Structured code reviews and one-to-one coaching are how a team gets better. I coached the development team through both and established a code-review governance framework.',
         },
         {
           title: 'Stay close to the people who use it',
