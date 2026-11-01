@@ -18,17 +18,15 @@ test.describe('without JavaScript', () => {
       test(`${locale} home: first screen at ${viewport.width}px answers a recruiter`, async ({
         page,
       }) => {
-        // TODO(phase-1 integration): remove once the real home page is merged (the stub has no hero yet).
-        test.fixme(true, 'enabled when the home workstream is merged');
         await page.setViewportSize(viewport);
         await page.goto(path);
+        const main = page.locator('main');
         await expect(page.locator('h1')).toHaveText(profile.name);
         await expect(page.locator('h1')).toBeInViewport();
         await expect(
-          page.getByText(profile.role[locale], { exact: true }).first(),
+          main.getByText(profile.role[locale], { exact: true }).first(),
         ).toBeInViewport();
-        await expect(page.getByText(profile.positioning[locale]).first()).toBeInViewport();
-        const main = page.locator('main');
+        await expect(main.getByText(profile.positioning[locale]).first()).toBeInViewport();
         await expect(main.locator(`a[href$="${CV_PDF[locale]}"]`).first()).toBeInViewport();
         await expect(main.locator('a[href$="#contact"]').first()).toBeInViewport();
         await expect(main.locator('a[href$="#work"]').first()).toBeInViewport();
