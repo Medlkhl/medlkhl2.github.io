@@ -92,6 +92,9 @@ const sizes = `--fig-w:${geometry.width};--fig-h:${geometry.height};--fig-cw:${g
         <path class="fig__top" d={shape.top} />
         <path class="fig__tint" d={shape.top} />
         <path class="fig__inset" d={shape.inset} />
+        {shape.details.map((d) => (
+          <path class="fig__detail" d={d} />
+        ))}
         <path
           class="fig__leader"
           d={`M${round(shape.anchor.x)} ${round(shape.anchor.y)} H${round(shape.balloon.x - br)}`}
@@ -193,6 +196,7 @@ const sizes = `--fig-w:${geometry.width};--fig-h:${geometry.height};--fig-cw:${g
   }
 
   .fig__inset,
+  .fig__detail,
   .fig__island {
     fill: none;
     stroke: var(--fig-faint);
@@ -273,7 +277,7 @@ const sizes = `--fig-w:${geometry.width};--fig-h:${geometry.height};--fig-cw:${g
     display: none;
   }
 
-  /* Small screens: crop the label column, keep enlarged balloons. */
+  /* Narrow containers: crop the label column and keep the balloons, enlarged on phones. */
   @container stack-figure (max-width: 33rem) {
     .fig {
       aspect-ratio: calc(var(--fig-cw) / var(--fig-h));
@@ -290,7 +294,7 @@ const sizes = `--fig-w:${geometry.width};--fig-h:${geometry.height};--fig-cw:${g
     }
 
     .fig__balloon {
-      transform: scale(1.45);
+      transform: scale(1.15);
     }
 
     .fig__title--compact .fig__title-main {
@@ -299,6 +303,12 @@ const sizes = `--fig-w:${geometry.width};--fig-h:${geometry.height};--fig-cw:${g
 
     .fig__title--compact .fig__title-note {
       font-size: 11px;
+    }
+  }
+
+  @container stack-figure (max-width: 26rem) {
+    .fig__balloon {
+      transform: scale(1.45);
     }
   }
 </style>

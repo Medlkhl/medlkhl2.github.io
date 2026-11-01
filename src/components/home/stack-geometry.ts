@@ -152,6 +152,8 @@ export interface SlabGeometry {
   label: Point;
   /** Leftmost point of the top face (dimension ticks). */
   left: Point;
+  /** Screen wireframe, drawn on the topmost slab only (the surface people see). */
+  details: string[];
 }
 
 export interface StackGeometry {
@@ -190,6 +192,23 @@ export function stackGeometry(count: number): StackGeometry {
     y0: INSET,
   };
 
+  // A minimal screen on the top slab: search bar, a card, two tiles and a tab bar.
+  // The top of the screen is the far end (y = 0), where the phone's island sits.
+  const { a, b } = SLAB;
+  const screenParts: Footprint[] = [
+    { a: a - 32, b: 10, r: 5, x0: 16, y0: 24 },
+    { a: a - 32, b: 46, r: 4, x0: 16, y0: 46 },
+    { a: a / 2 - 19, b: 36, r: 4, x0: 16, y0: 104 },
+    { a: a / 2 - 19, b: 36, r: 4, x0: a / 2 + 3, y0: 104 },
+    ...[0, 1, 2].map((tab) => ({
+      a: 7,
+      b: 7,
+      r: 3.5,
+      x0: a / 2 - 3.5 + (tab - 1) * 22,
+      y0: b - 23,
+    })),
+  ];
+
   const slabRight = footprintExtremes(slabOrigin(0), SLAB).right.x;
   const balloonX = slabRight + LEADER_LENGTH;
 
@@ -206,6 +225,7 @@ export function stackGeometry(count: number): StackGeometry {
       balloon: { x: balloonX, y: anchor.y },
       label: { x: balloonX + BALLOON_RADIUS + LABEL_GAP, y: anchor.y },
       left,
+      details: position === 0 ? screenParts.map((part) => footprintPath(origin, part)) : [],
     };
   });
 
@@ -214,7 +234,7 @@ export function stackGeometry(count: number): StackGeometry {
     x: ORIGIN_X,
     y: ORIGIN_Y + (count - 1) * PITCH + PHONE_GAP,
   };
-  const island: Footprint = { a: 30, b: 7, r: 3.5, x0: SLAB.a / 2 - 15, y0: SLAB.b - 17 };
+  const island: Footprint = { a: 30, b: 7, r: 3.5, x0: SLAB.a / 2 - 15, y0: 10 };
   const wallX = (PHONE.x0 ?? 0) + PHONE.a;
   const midWall = -PHONE_THICKNESS / 2;
   const phone = {
