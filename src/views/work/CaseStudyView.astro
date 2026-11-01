@@ -884,6 +884,23 @@ function onlyPlaceholder(text: string): boolean {
     line-height: var(--leading-normal);
   }
 
+  /* One dashed box per pending value, not one per wrapped line. */
+  .metric--pending .metric__value :global(.ph) {
+    display: inline-block;
+    max-width: 100%;
+  }
+
+  /* Phones and tablets: two columns; with an odd count the first figure spans both (1+2+2). */
+  @media (max-width: 63.99rem) {
+    .metrics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metric:first-child:nth-last-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+
   .metric__label {
     letter-spacing: 0.06em;
   }
