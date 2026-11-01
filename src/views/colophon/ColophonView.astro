@@ -1,12 +1,114 @@
 ---
-import StubPage from '../../components/layout/StubPage.astro';
+/**
+ * Colophon page (/colophon/ and /de/colophon/), brief section 5: how the site
+ * is built (stack, later phases labelled as planned), the principles it keeps,
+ * the performance budget of brief section 10 with placeholders for the values
+ * measured at launch, and the credits. Static HTML, no client script.
+ */
+import Points from '../../components/about/Points.astro';
+import PageHeader from '../../components/about/PageHeader.astro';
+import BudgetTable from '../../components/colophon/BudgetTable.astro';
+import StackList from '../../components/colophon/StackList.astro';
+import CompactSection from '../../components/experience/CompactSection.astro';
+import ExternalLink from '../../components/lab/ExternalLink.astro';
+import Section from '../../components/ui/Section.astro';
+import { SCENE_SHOTS } from '../../data/scene.ts';
 import type { Locale } from '../../i18n/config.ts';
+import { pageMeta } from '../../i18n/meta.copy.ts';
+import { ROUTES } from '../../i18n/routes.ts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ogImagePath } from '../../lib/og.ts';
+import { colophonCopy } from './colophon.copy.ts';
 
 interface Props {
   locale: Locale;
 }
 
 const { locale } = Astro.props;
+const t = colophonCopy[locale];
+const meta = pageMeta[locale].colophon;
+
+const CREDIT_LINKS = {
+  geist: 'https://github.com/vercel/geist-font',
+  licence: 'https://openfontlicense.org/',
+} as const;
 ---
 
-<StubPage locale={locale} routeKey="colophon" />
+<BaseLayout
+  locale={locale}
+  title={meta.title}
+  description={meta.description}
+  path={ROUTES.colophon}
+  ogImage={ogImagePath(locale, 'colophon')}
+  sceneShot={SCENE_SHOTS.colophon}
+>
+  <PageHeader label={t.header.label} title={t.header.title} intro={t.header.intro} />
+
+  <Section id="stack" index={1} label={t.stack.label} title={t.stack.title} intro={t.stack.intro}>
+    <StackList copy={t} />
+  </Section>
+
+  <Section id="principles" index={2} label={t.principles.label} title={t.principles.title}>
+    <Points items={t.principles.items} layout="rows" />
+  </Section>
+
+  <Section
+    id="budgets"
+    index={3}
+    label={t.budgets.label}
+    title={t.budgets.title}
+    intro={t.budgets.intro}
+  >
+    <BudgetTable copy={t.budgets} />
+  </Section>
+
+  <CompactSection id="credits" index={4} label={t.credits.label}>
+    <ul role="list" class="credits">
+      <li class="credits__item">
+        <p>{t.credits.fonts}</p>
+        <p class="credits__links">
+          <ExternalLink locale={locale} href={CREDIT_LINKS.geist}>
+            {t.credits.geist}
+          </ExternalLink>
+          <ExternalLink locale={locale} href={CREDIT_LINKS.licence}>
+            {t.credits.licence}
+          </ExternalLink>
+        </p>
+      </li>
+      <li class="credits__item">
+        <p>{t.credits.drawn}</p>
+      </li>
+    </ul>
+  </CompactSection>
+</BaseLayout>
+
+<style>
+  .credits {
+    display: grid;
+    max-width: var(--measure);
+    border-bottom: var(--hairline) solid var(--color-line);
+    font-size: var(--step--1);
+  }
+
+  .credits__item {
+    display: grid;
+    gap: var(--space-1);
+    padding-block: var(--space-2);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .credits__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-3);
+  }
+
+  .credits__links :global(.ext-link) {
+    min-height: 2.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .credits__links :global(.ext-link:hover) {
+    color: var(--color-accent);
+  }
+</style>
