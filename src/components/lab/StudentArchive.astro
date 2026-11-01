@@ -1,0 +1,100 @@
+---
+/**
+ * The optional short archive of student projects (src/data/lab.ts), kept
+ * deliberately low-key at the end of the Lab: one compact row per project,
+ * smaller type, no cards.
+ */
+import { studentArchive } from '../../data/lab.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { term } from '../../i18n/term.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import ExternalLink from '../ui/ExternalLink.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const watch = ui[locale].cta.watchVideo;
+---
+
+<ul role="list" class="archive">
+  {studentArchive.map((project) => (
+    <li class="archive__row">
+      <h3 class="archive__title">{project.title[locale]}</h3>
+      <p class="archive__desc">{project.description[locale]}</p>
+      <p class="archive__meta">
+        {project.stack.length > 0 && (
+          <span class="archive__stack">
+            {project.stack.map((item) => term(item, locale)).join(' · ')}
+          </span>
+        )}
+        {project.video && (
+          <ExternalLink locale={locale} href={project.video} context={project.title[locale]}>
+            {watch}
+          </ExternalLink>
+        )}
+      </p>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .archive {
+    display: grid;
+    border-bottom: var(--hairline) solid var(--color-line);
+    font-size: var(--step--1);
+  }
+
+  .archive__row {
+    display: grid;
+    gap: var(--space-half);
+    padding-block: var(--space-2);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .archive__title {
+    font-size: var(--step--1);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0;
+  }
+
+  .archive__desc {
+    color: var(--color-text-muted);
+  }
+
+  .archive__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--space-3);
+    color: var(--color-text-subtle);
+  }
+
+  .archive__stack {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+  }
+
+  @media (min-width: 48rem) {
+    .archive__row {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      align-items: baseline;
+    }
+
+    .archive__title {
+      grid-column: 1 / span 3;
+    }
+
+    .archive__desc {
+      grid-column: 4 / span 6;
+    }
+
+    .archive__meta {
+      grid-column: 10 / -1;
+      justify-content: flex-end;
+      text-align: right;
+    }
+  }
+</style>

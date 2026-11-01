@@ -1,0 +1,332 @@
+---
+/**
+ * Shell of the two legal pages (Impressum and Datenschutzerklärung), in both
+ * locales: a header with the mono label, the h1, a lede and the note on which
+ * version is binding (German), an optional table of contents, then numbered
+ * sections with the title in the left columns and the text on the right.
+ * Static HTML, no JavaScript; the BreadcrumbList goes into the head.
+ */
+import Icon from '../../components/ui/Icon.astro';
+import SectionLabel from '../../components/ui/SectionLabel.astro';
+import { SCENE_SHOTS } from '../../data/scene.ts';
+import { LOCALE_META, otherLocale, type Locale } from '../../i18n/config.ts';
+import { formatYearMonth } from '../../i18n/format.ts';
+import { pageMeta } from '../../i18n/meta.copy.ts';
+import { ROUTES, routeHref } from '../../i18n/routes.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ogImagePath } from '../../lib/og.ts';
+import { breadcrumbJsonLd } from '../../lib/structured-data.ts';
+import LegalBlocks from './LegalBlocks.astro';
+import { legalCopy } from './legal.copy.ts';
+import { PRIVACY_VERSION, type LegalPageCopy, visibleSections } from './legal.ts';
+
+interface Props {
+  locale: Locale;
+  routeKey: 'impressum' | 'datenschutz';
+  copy: LegalPageCopy;
+  /** Show the version date in the header (the Datenschutzerklärung). */
+  showVersion?: boolean;
+  /** Show a table of contents (long pages). */
+  toc?: boolean;
+}
+
+const { locale, routeKey, copy, showVersion = false, toc = false } = Astro.props;
+const meta = pageMeta[locale][routeKey];
+const t = legalCopy[locale];
+const other = otherLocale(locale);
+const sections = visibleSections(copy.sections);
+const pad = (value: number) => String(value).padStart(2, '0');
+const crumbs = [
+  { name: ui[locale].nav.home, path: '/' },
+  // Titles may carry soft hyphens for narrow screens; structured data gets the plain word.
+  { name: copy.title.replace(/\u00ad/g, ''), path: ROUTES[routeKey] },
+];
+---
+
+<BaseLayout
+  locale={locale}
+  title={meta.title}
+  description={meta.description}
+  path={ROUTES[routeKey]}
+  ogImage={ogImagePath(locale, routeKey)}
+  sceneShot={SCENE_SHOTS[routeKey]}
+  jsonLd={[breadcrumbJsonLd(locale, crumbs)]}
+>
+  <article class="legal" aria-labelledby="legal-title">
+    <header class="container legal-head">
+      <div class="legal-head__intro">
+        <SectionLabel>{t.label}</SectionLabel>
+        <h1 id="legal-title" class="legal-head__title">
+          {copy.title}
+        </h1>
+        <p class="legal-head__lede">{copy.lede}</p>
+      </div>
+
+      <div class="legal-note" role="note" aria-labelledby="legal-note-title">
+        <p class="legal-note__title" id="legal-note-title">
+          {t.notice.title}
+        </p>
+        <p class="legal-note__text">{t.notice.text}</p>
+        <a
+          class="legal-note__link"
+          href={routeHref(other, routeKey)}
+          hreflang={LOCALE_META[other].htmlLang}
+        >
+          {t.notice.link}
+          <Icon name="arrow-right" size={14} />
+        </a>
+        {showVersion && (
+          <p class="legal-note__version">
+            <span>{t.version}</span>
+            <time datetime={PRIVACY_VERSION}>
+              {formatYearMonth(PRIVACY_VERSION, locale, 'long')}
+            </time>
+          </p>
+        )}
+      </div>
+    </header>
+
+    {toc && (
+      <div class="container">
+        <nav class="legal-toc" aria-labelledby="legal-toc-title">
+          <p class="label" id="legal-toc-title">
+            {t.contents}
+          </p>
+          <ol role="list" class="legal-toc__list">
+            {sections.map((section, index) => (
+              <li>
+                <a href={`#${section.id}`}>
+                  <span class="legal-toc__index">{pad(index + 1)}</span> {section.title}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </div>
+    )}
+
+    <div class="container legal-body">
+      {sections.map((section, index) => (
+        <section class="legal-section" id={section.id} aria-labelledby={`${section.id}-title`}>
+          <div class="legal-section__head">
+            <span class="legal-section__index" aria-hidden="true">
+              {pad(index + 1)}
+            </span>
+            <h2 class="legal-section__title" id={`${section.id}-title`}>
+              {section.title}
+            </h2>
+          </div>
+          <div class="legal-section__body">
+            <LegalBlocks blocks={section.blocks} locale={locale} />
+          </div>
+        </section>
+      ))}
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .legal {
+    padding-top: var(--page-top);
+  }
+
+  /* ---- Header ------------------------------------------------------------ */
+  .legal-head {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-5) var(--grid-gutter);
+    padding-bottom: var(--space-8);
+  }
+
+  .legal-head > *,
+  .legal-toc > *,
+  .legal-section > * {
+    min-width: 0;
+  }
+
+  .legal-head__intro {
+    grid-column: 1 / span 7;
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+
+  .legal-head__title {
+    max-width: 18ch;
+  }
+
+  .legal-head__lede {
+    max-width: 52ch;
+    color: var(--color-text-muted);
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+
+  .legal-note {
+    grid-column: 9 / -1;
+    align-self: end;
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-3);
+    background: var(--color-surface);
+    font-size: var(--step--1);
+  }
+
+  .legal-note__title {
+    font-weight: var(--weight-semibold);
+  }
+
+  .legal-note__text {
+    color: var(--color-text-muted);
+  }
+
+  .legal-note__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    justify-self: start;
+    min-height: var(--space-4);
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .legal-note__link:hover {
+    color: var(--color-accent-hover);
+    text-decoration: underline;
+    text-decoration-color: currentColor;
+  }
+
+  .legal-note__version {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+    padding-top: var(--space-2);
+    border-top: var(--hairline) solid var(--color-line);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .legal-note__version time {
+    color: var(--color-text);
+  }
+
+  /* ---- Table of contents ------------------------------------------------- */
+  .legal-toc {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-2) var(--grid-gutter);
+    padding-block: var(--space-4);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .legal-toc > .label {
+    grid-column: 1 / span 4;
+    align-self: start;
+    padding-top: var(--space-half);
+  }
+
+  .legal-toc__list {
+    grid-column: 5 / -1;
+    columns: 2;
+    column-gap: var(--grid-gutter);
+  }
+
+  .legal-toc__list li {
+    break-inside: avoid;
+  }
+
+  .legal-toc__list a {
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+    padding-block: var(--space-half);
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .legal-toc__list a:hover {
+    color: var(--color-accent);
+  }
+
+  .legal-toc__index {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Sections ---------------------------------------------------------- */
+  .legal-section {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-2) var(--grid-gutter);
+    padding-block: var(--space-4) var(--space-6);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .legal-section__head {
+    grid-column: 1 / span 4;
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+    align-self: start;
+  }
+
+  .legal-section__index {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .legal-section__title {
+    font-size: var(--step-1);
+    line-height: var(--leading-snug);
+  }
+
+  /* The container LegalBlocks' term–value rows query, so they stack together. */
+  .legal-section__body {
+    container: legal-body / inline-size;
+    grid-column: 5 / -1;
+    display: grid;
+    gap: var(--space-2);
+    max-width: var(--measure);
+    align-content: start;
+  }
+
+  @media (max-width: 1023.98px) {
+    .legal-head__intro,
+    .legal-note {
+      grid-column: 1 / -1;
+    }
+
+    .legal-note {
+      max-width: var(--measure);
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .legal-toc > .label,
+    .legal-toc__list,
+    .legal-section__head,
+    .legal-section__body {
+      grid-column: 1 / -1;
+    }
+
+    .legal-toc__list {
+      columns: 1;
+    }
+
+    .legal-section {
+      padding-block: var(--space-3) var(--space-5);
+    }
+  }
+</style>

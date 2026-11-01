@@ -1,0 +1,35 @@
+---
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<a class="skip-link" href="#main">
+  {ui[locale].skipToContent}
+</a>
+
+<style>
+  .skip-link {
+    position: fixed;
+    top: var(--space-1);
+    left: var(--space-1);
+    z-index: var(--z-skip);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-2);
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    font-weight: var(--weight-medium);
+    text-decoration: none;
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus-visible {
+    transform: none;
+    outline-color: var(--color-text);
+  }
+</style>

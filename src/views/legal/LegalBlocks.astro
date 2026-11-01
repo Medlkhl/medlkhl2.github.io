@@ -1,0 +1,146 @@
+---
+/**
+ * Renders the blocks of one legal section (see legal.ts). Strings go through
+ * <Rich> so placeholders such as [NAME: full legal name] stay visible.
+ * External links use ui/ExternalLink (same tab, arrow icon, visually hidden
+ * "(external link)") and send no referrer. Term–value rows (email, address
+ * reference, version) share one term column and stack together on narrow
+ * columns (a container query on LegalPage's .legal-section__body).
+ */
+import ExternalLink from '../../components/ui/ExternalLink.astro';
+import Rich from '../../components/ui/Rich.astro';
+import { profile } from '../../data/profile.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { formatYearMonth } from '../../i18n/format.ts';
+import { routeHref } from '../../i18n/routes.ts';
+import { legalCopy } from './legal.copy.ts';
+import { PRIVACY_VERSION, type LegalBlock } from './legal.ts';
+
+interface Props {
+  blocks: LegalBlock[];
+  locale: Locale;
+}
+
+const { blocks, locale } = Astro.props;
+const t = legalCopy[locale];
+---
+
+{blocks.map((block) => {
+  switch (block.type) {
+    case 'p':
+      return (
+        <p>
+          <Rich text={block.text} />
+        </p>
+      );
+    case 'list':
+      return (
+        <ul class="legal-list">
+          {block.items.map((item) => (
+            <li>
+              <Rich text={item} />
+            </li>
+          ))}
+        </ul>
+      );
+    case 'address':
+      return (
+        <address class="legal-address">
+          {t.address.map((line) => (
+            <span class="legal-address__line">
+              <Rich text={line} />
+            </span>
+          ))}
+        </address>
+      );
+    case 'name':
+      return (
+        <p class="legal-address">
+          <span class="legal-address__line">
+            <Rich text={t.address[0] ?? ''} />
+          </span>
+        </p>
+      );
+    case 'addressRef':
+      return (
+        <p class="legal-field">
+          <span class="legal-field__term">{t.addressRef.term}</span>
+          <a href={routeHref(locale, 'impressum')}>{t.addressRef.link}</a>
+        </p>
+      );
+    case 'email':
+      return (
+        <p class="legal-field">
+          <span class="legal-field__term">{t.email}</span>
+          <a href={`mailto:${profile.email}`}>{profile.email}</a>
+        </p>
+      );
+    case 'link':
+      return (
+        <p class="legal-link">
+          <ExternalLink locale={locale} href={block.href} rel="noreferrer">
+            {block.label}
+          </ExternalLink>
+        </p>
+      );
+    case 'version':
+      return (
+        <p class="legal-field">
+          <span class="legal-field__term">{t.version}</span>
+          <time datetime={PRIVACY_VERSION}>{formatYearMonth(PRIVACY_VERSION, locale, 'long')}</time>
+        </p>
+      );
+    default:
+      return null;
+  }
+})}
+
+<style>
+  .legal-list {
+    padding-left: 1.25rem;
+  }
+
+  .legal-list li + li {
+    margin-top: var(--space-1);
+  }
+
+  .legal-list li::marker {
+    color: var(--color-text-subtle);
+  }
+
+  .legal-address {
+    display: grid;
+    gap: var(--space-half);
+    font-style: normal;
+  }
+
+  .legal-address__line {
+    display: block;
+  }
+
+  .legal-field {
+    display: grid;
+    grid-template-columns: var(--space-16) minmax(0, 1fr);
+    gap: var(--space-half) var(--space-2);
+    align-items: baseline;
+  }
+
+  /* Narrow columns: every row of the section stacks at once, not one by one. */
+  @container legal-body (max-width: 26rem) {
+    .legal-field {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .legal-field__term {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .legal-field a {
+    overflow-wrap: anywhere;
+  }
+</style>

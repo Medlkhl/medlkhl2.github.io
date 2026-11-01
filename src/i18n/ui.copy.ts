@@ -1,0 +1,135 @@
+import { defineCopy } from './copy.ts';
+
+/**
+ * Shared interface strings (header, footer, buttons, status chips).
+ * Page-specific copy lives next to each view in its own `*.copy.ts` module.
+ */
+export const ui = defineCopy({
+  en: {
+    skipToContent: 'Skip to content',
+    nav: {
+      label: 'Main',
+      home: 'Home',
+      work: 'Work',
+      experience: 'Experience',
+      lab: 'Lab',
+      about: 'About',
+      cv: 'CV',
+      contact: 'Contact',
+      menu: 'Menu',
+      closeMenu: 'Close menu',
+    },
+    language: {
+      /** Shown on English pages: link to the German version. */
+      switchText: 'DE',
+      switchLabel: 'Deutsch: diese Seite auf Deutsch lesen',
+    },
+    theme: {
+      toPaper: 'Switch to the paper (light) theme',
+      toGraphite: 'Switch to the graphite (dark) theme',
+    },
+    cta: {
+      selectedWork: 'Selected work',
+      downloadCv: 'Download CV',
+      downloadCvPdf: 'Download CV (PDF)',
+      contact: 'Contact',
+      copyEmail: 'Copy email',
+      emailCopied: 'Email copied',
+      copyFailed: 'Copy failed. The address is selected; press Ctrl+C or ⌘C.',
+      writeEmail: 'Write an email',
+      readCaseStudy: 'Read the case study',
+      /** Link to a named case study, e.g. from a timeline entry. */
+      caseStudyFor: 'Case study: {title}',
+      allWork: 'All work',
+      fullTimeline: 'Full timeline',
+      watchVideo: 'Watch on YouTube',
+    },
+    status: {
+      live: 'Live',
+      internal: 'Internal',
+      'in-development': 'In development',
+      completed: 'Completed',
+    },
+    labels: {
+      /** Chip for anything not built yet. */
+      planned: 'Planned',
+      /** The open end of a date range ("Jul 2024 – Present"). */
+      present: 'Present',
+    },
+    footer: {
+      sitemap: 'Site',
+      contact: 'Contact',
+      legal: 'Legal',
+      impressum: 'Legal notice (Impressum)',
+      datenschutz: 'Privacy policy',
+      colophon: 'Colophon',
+      builtWith: 'Static HTML, no cookies, no tracking.',
+    },
+    externalLink: '(external link)',
+    placeholderLegend:
+      'Bracketed marks like [METRIC: …] are placeholders for content that is still being supplied.',
+  },
+  de: {
+    skipToContent: 'Zum Inhalt springen',
+    nav: {
+      label: 'Hauptnavigation',
+      home: 'Startseite',
+      work: 'Projekte',
+      experience: 'Erfahrung',
+      lab: 'Lab',
+      about: 'Über mich',
+      cv: 'Lebenslauf',
+      contact: 'Kontakt',
+      menu: 'Menü',
+      closeMenu: 'Menü schließen',
+    },
+    language: {
+      switchText: 'EN',
+      switchLabel: 'English: read this page in English',
+    },
+    theme: {
+      toPaper: 'Zum hellen Farbschema (Papier) wechseln',
+      toGraphite: 'Zum dunklen Farbschema (Graphit) wechseln',
+    },
+    cta: {
+      selectedWork: 'Ausgewählte Projekte',
+      downloadCv: 'Lebenslauf herunterladen',
+      downloadCvPdf: 'Lebenslauf herunterladen (PDF)',
+      contact: 'Kontakt',
+      copyEmail: 'E-Mail kopieren',
+      emailCopied: 'E-Mail kopiert',
+      copyFailed:
+        'Kopieren fehlgeschlagen. Die Adresse ist markiert; bitte Strg+C oder ⌘C drücken.',
+      writeEmail: 'E-Mail schreiben',
+      readCaseStudy: 'Zur Fallstudie',
+      caseStudyFor: 'Fallstudie: {title}',
+      allWork: 'Alle Projekte',
+      fullTimeline: 'Vollständiger Werdegang',
+      watchVideo: 'Auf YouTube ansehen',
+    },
+    status: {
+      live: 'Live',
+      internal: 'Intern',
+      'in-development': 'In Entwicklung',
+      completed: 'Abgeschlossen',
+    },
+    labels: {
+      planned: 'Geplant',
+      present: 'heute',
+    },
+    footer: {
+      sitemap: 'Seiten',
+      contact: 'Kontakt',
+      legal: 'Rechtliches',
+      impressum: 'Impressum',
+      datenschutz: 'Datenschutzerklärung',
+      colophon: 'Kolophon',
+      builtWith: 'Statisches HTML, keine Cookies, kein Tracking.',
+    },
+    externalLink: '(externer Link)',
+    placeholderLegend:
+      'Markierungen in eckigen Klammern wie [METRIC: …] sind Platzhalter für Inhalte, die noch nachgereicht werden.',
+  },
+});
+
+export type UiCopy = (typeof ui)['en'];

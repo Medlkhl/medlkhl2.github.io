@@ -1,0 +1,98 @@
+---
+/**
+ * Page section with the editorial header used everywhere:
+ *   02 — EXPERIENCE        (mono label)
+ *   Heading                (h2, or h1 for page intros)
+ *   Optional intro         (muted, max 68ch)
+ * Pass `navTarget` on the home page so the header highlights the section in view
+ * (an empty string marks a section without a nav link, which clears the highlight).
+ */
+import SectionLabel from './SectionLabel.astro';
+
+interface Props {
+  id: string;
+  index?: number;
+  label: string;
+  title: string;
+  intro?: string;
+  headingLevel?: 1 | 2;
+  navTarget?: string;
+  /** Draw the hairline rule above the section (default true). */
+  rule?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  index,
+  label,
+  title,
+  intro,
+  headingLevel = 2,
+  navTarget,
+  rule = true,
+  class: className,
+} = Astro.props;
+const Heading = headingLevel === 1 ? 'h1' : 'h2';
+const headingId = `${id}-title`;
+---
+
+<section
+  id={id}
+  class:list={['section-block', { 'section-block--rule': rule }, className]}
+  aria-labelledby={headingId}
+  data-nav-target={navTarget}
+>
+  <div class="container">
+    <header class="section-block__header">
+      <SectionLabel index={index}>{label}</SectionLabel>
+      <Heading id={headingId} class="section-block__title">
+        {title}
+      </Heading>
+      {intro && <p class="section-block__intro">{intro}</p>}
+      <slot name="header-extra" />
+    </header>
+    <div class="section-block__body">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .section-block {
+    padding-block: var(--section-gap);
+  }
+
+  /* The footer's own margin is the gap after the last section (no double gap). */
+  .section-block:last-child {
+    padding-bottom: 0;
+  }
+
+  .section-block--rule {
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .section-block__header {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 48rem;
+    margin-bottom: var(--space-6);
+  }
+
+  .section-block__title {
+    font-size: var(--step-4);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-display);
+  }
+
+  h1.section-block__title {
+    font-size: var(--step-5);
+  }
+
+  .section-block__intro {
+    max-width: var(--measure);
+    color: var(--color-text-muted);
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+</style>

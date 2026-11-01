@@ -1,0 +1,92 @@
+---
+/**
+ * A recommendation: either a verbatim quote (always rendered with lang="en",
+ * never rephrased) or an empty, clearly marked slot.
+ */
+import type { Recommendation } from '../../schemas/data.ts';
+import type { Locale } from '../../i18n/config.ts';
+import Rich from './Rich.astro';
+
+interface Props {
+  recommendation: Recommendation;
+  locale: Locale;
+  class?: string;
+}
+
+const { recommendation: rec, locale, class: className } = Astro.props;
+---
+
+{rec.kind === 'quote' ? (
+  <figure class:list={['quote', className]}>
+    <blockquote lang={rec.quote.lang} class="quote__text">
+      <p>“{rec.quote.text}”</p>
+    </blockquote>
+    <figcaption class="quote__caption">
+      <span class="quote__author">{rec.author}</span>
+      <span class="quote__role">{rec.role[locale]}</span>
+      <span class="quote__context">{rec.context[locale]}</span>
+    </figcaption>
+  </figure>
+) : (
+  <div class:list={['quote', 'quote--slot', className]}>
+    <p class="quote__wanted">{rec.wanted[locale]}</p>
+    <p>
+      <Rich text={rec.placeholder[locale]} />
+    </p>
+  </div>
+)}
+
+<style>
+  .quote {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    margin: 0;
+    padding: var(--space-4);
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-3);
+    background: var(--color-surface);
+  }
+
+  .quote__text {
+    margin: 0;
+    font-size: var(--step-1);
+    line-height: 1.45;
+    letter-spacing: -0.005em;
+    text-wrap: pretty;
+  }
+
+  .quote__caption {
+    display: grid;
+    gap: var(--space-half);
+    font-size: var(--step--1);
+  }
+
+  .quote__author {
+    font-weight: var(--weight-semibold);
+  }
+
+  .quote__role,
+  .quote__context {
+    color: var(--color-text-muted);
+  }
+
+  .quote__context {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.02em;
+    color: var(--color-text-subtle);
+  }
+
+  .quote--slot {
+    border-style: dashed;
+    border-color: var(--color-line-strong);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  .quote__wanted {
+    color: var(--color-text);
+  }
+</style>

@@ -1,0 +1,314 @@
+---
+/**
+ * Fig. 1, the exploded architecture stack: an isometric engineering drawing of
+ * a phone with one slab per entry in src/data/layers.ts floating above it,
+ * evenly spaced, top (UI) to bottom (CI/CD). Numbered balloons and leader
+ * lines label the slabs; on small screens only the balloons remain.
+ *
+ * Wide, the title sits in the drawing's title block. Narrow, where the drawing
+ * scales down too far for legible SVG text, the title is an HTML label above
+ * the drawing instead, at the type scale's smallest step.
+ *
+ * Decorative: the SVG is aria-hidden and its meaning lives in the HTML parts
+ * list (StackLegend). Hovering or focusing a list item highlights its slab and
+ * hovering a slab highlights its list item, with :has() and no JavaScript.
+ * The rules are generated from the layer ids and live in an SVG <style>.
+ *
+ * Phase 3 hooks: every slab group has id="stack-layer-<id>" and
+ * data-layer="<id>"; the wrapper carries data-stack-poster.
+ */
+import { layers } from '../../data/layers.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { round, stackGeometry } from './stack-geometry.ts';
+
+interface Props {
+  locale: Locale;
+  /** "Fig. 1" */
+  figure: string;
+  /** "Exploded architecture" */
+  title: string;
+  /** "Isometric view · not to scale" */
+  note: string;
+  class?: string;
+}
+
+const { locale, figure, title, note, class: className, ...rest } = Astro.props;
+
+const ordered = [...layers].sort((first, second) => first.index - second.index);
+const geometry = stackGeometry(ordered.length);
+const slabs = ordered.map((layer, position) => ({ layer, shape: geometry.slabs[position]! }));
+// Paint bottom-up so each slab hides the part of the slab below that lies behind it.
+const paintOrder = [...slabs].reverse();
+const pad = (value: number) => String(value).padStart(2, '0');
+
+const highlightCss = ordered
+  .map(({ id }) => {
+    const item = `[data-layer-item="${id}"]`;
+    const slab = `[data-layer="${id}"]`;
+    return `[data-stack-root]:has(${item}:is(:hover,:focus-within,:target),${slab}:hover) :is(${slab},${item}){--hl:var(--color-accent);--hl-soft:var(--color-accent-soft)}`;
+  })
+  .join('');
+
+const { titleBlock: tb, balloonRadius: br } = geometry;
+const sizes = `--fig-w:${geometry.width};--fig-h:${geometry.height};--fig-cw:${geometry.compactWidth}`;
+---
+
+<div class:list={['fig-wrap', className]} style={sizes} data-stack-poster {...rest}>
+  <p class="fig__caption" aria-hidden="true">
+    {figure} — {title}
+  </p>
+  <svg
+    class="fig"
+    viewBox={`0 0 ${geometry.width} ${geometry.height}`}
+    preserveAspectRatio="xMinYMin slice"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <style is:inline set:html={highlightCss} />
+
+    <g class="fig__guides">
+      {geometry.cornerMarks.map((d) => (
+        <path d={d} />
+      ))}
+      {geometry.compactMarks.map((d) => (
+        <path class="fig__compact-mark" d={d} />
+      ))}
+      <path class="fig__axis" d={geometry.centreLine} />
+      <path d={geometry.dimension.line} />
+      {geometry.dimension.extensions.map((d) => (
+        <path d={d} />
+      ))}
+      {geometry.dimension.ticks.map((d) => (
+        <path class="fig__tick" d={d} />
+      ))}
+    </g>
+
+    <g class="fig__phone">
+      <path class="fig__side" d={geometry.phone.silhouette} />
+      <path class="fig__top" d={geometry.phone.top} />
+      <path class="fig__screen" d={geometry.phone.screen} />
+      <path class="fig__island" d={geometry.phone.island} />
+      {geometry.phone.buttons.map((d) => (
+        <path class="fig__button" d={d} />
+      ))}
+    </g>
+
+    {paintOrder.map(({ layer, shape }) => (
+      <g id={`stack-layer-${layer.id}`} class="fig__layer" data-layer={layer.id}>
+        <path class="fig__side" d={shape.silhouette} />
+        <path class="fig__top" d={shape.top} />
+        <path class="fig__tint" d={shape.top} />
+        <path class="fig__inset" d={shape.inset} />
+        {shape.details.map((d) => (
+          <path class="fig__detail" d={d} />
+        ))}
+        <path
+          class="fig__leader"
+          d={`M${round(shape.anchor.x)} ${round(shape.anchor.y)} H${round(shape.balloon.x - br)}`}
+        />
+        <circle class="fig__dot" cx={round(shape.anchor.x)} cy={round(shape.anchor.y)} r="1.75" />
+        <g class="fig__balloon">
+          <circle cx={round(shape.balloon.x)} cy={round(shape.balloon.y)} r={br} />
+          <text x={round(shape.balloon.x)} y={round(shape.balloon.y)} dy="0.36em">
+            {pad(layer.index)}
+          </text>
+        </g>
+        <text class="fig__name" x={round(shape.label.x)} y={round(shape.label.y)} dy="0.36em">
+          {layer.label[locale]}
+        </text>
+      </g>
+    ))}
+
+    <g class="fig__title fig__title--wide">
+      <rect x={tb.x} y={tb.y} width={tb.width} height={tb.height} />
+      <path d={`M${tb.x} ${tb.y + tb.height / 2} H${tb.x + tb.width}`} />
+      <text class="fig__title-main" x={tb.x + 11} y={tb.y + tb.height / 4} dy="0.36em">
+        {figure} — {title}
+      </text>
+      <text class="fig__title-note" x={tb.x + 11} y={tb.y + (tb.height * 3) / 4} dy="0.36em">
+        {note}
+      </text>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .fig-wrap {
+    container: stack-figure / inline-size;
+    --fig-line: var(--color-line-strong);
+    --fig-faint: var(--color-line);
+    --fig-top: var(--color-surface);
+    --fig-side: var(--color-bg);
+  }
+
+  .fig {
+    width: 100%;
+    height: auto;
+    aspect-ratio: calc(var(--fig-w) / var(--fig-h));
+    overflow: hidden;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .fig path,
+  .fig circle,
+  .fig rect {
+    vector-effect: non-scaling-stroke;
+    stroke-width: var(--hairline);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  /* Guides: frame marks, centre line, dimension line. */
+  .fig__guides path {
+    fill: none;
+    stroke: var(--fig-faint);
+  }
+
+  .fig__guides .fig__tick {
+    stroke: var(--fig-line);
+  }
+
+  .fig__axis {
+    stroke-dasharray: 14 4 2 4;
+  }
+
+  .fig__guides .fig__compact-mark {
+    display: none;
+  }
+
+  /* Solids: side walls in the page colour, top faces in the surface colour. */
+  .fig__side {
+    fill: var(--fig-side);
+    stroke: var(--hl, var(--fig-line));
+  }
+
+  .fig__top {
+    fill: var(--fig-top);
+    stroke: var(--hl, var(--fig-line));
+  }
+
+  .fig__tint {
+    fill: var(--hl-soft, transparent);
+    stroke: none;
+  }
+
+  .fig__inset,
+  .fig__detail,
+  .fig__island {
+    fill: none;
+    stroke: var(--fig-faint);
+  }
+
+  /* The phone's glass is a shade darker than its frame. */
+  .fig__screen {
+    fill: var(--fig-side);
+    stroke: var(--fig-line);
+  }
+
+  .fig__button {
+    fill: none;
+    stroke: var(--fig-line);
+  }
+
+  /* Callouts: leader, dot, numbered balloon, label. */
+  .fig__leader {
+    fill: none;
+    stroke: var(--hl, var(--fig-line));
+  }
+
+  .fig__dot {
+    fill: var(--hl, var(--fig-line));
+    stroke: none;
+  }
+
+  .fig__balloon {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .fig__balloon circle {
+    fill: var(--color-bg);
+    stroke: var(--hl, var(--fig-line));
+  }
+
+  /* SVG sizes are user units: at 1440 the drawing renders at about 0.95, so 12 → 11.4px. */
+  .fig__balloon text {
+    fill: var(--hl, var(--color-text-subtle));
+    font-size: 12px;
+    font-weight: var(--weight-medium);
+    text-anchor: middle;
+  }
+
+  .fig__name {
+    fill: var(--hl, var(--color-text-muted));
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Title block. */
+  .fig__title rect,
+  .fig__title path {
+    fill: none;
+    stroke: var(--fig-faint);
+  }
+
+  .fig__title rect {
+    fill: var(--color-bg);
+  }
+
+  .fig__title-main {
+    fill: var(--color-text-muted);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .fig__title-note {
+    fill: var(--color-text-subtle);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* The narrow title: a mono label above the drawing (hidden while the title block shows). */
+  .fig__caption {
+    display: none;
+    margin-bottom: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  /* Narrow containers: crop the label column and keep the balloons, enlarged on phones. */
+  @container stack-figure (max-width: 33rem) {
+    .fig {
+      aspect-ratio: calc(var(--fig-cw) / var(--fig-h));
+    }
+
+    .fig__name,
+    .fig__title {
+      display: none;
+    }
+
+    .fig__caption {
+      display: block;
+    }
+
+    .fig__guides .fig__compact-mark {
+      display: inline;
+    }
+
+    .fig__balloon {
+      transform: scale(1.15);
+    }
+  }
+
+  @container stack-figure (max-width: 26rem) {
+    .fig__balloon {
+      transform: scale(1.45);
+    }
+  }
+</style>

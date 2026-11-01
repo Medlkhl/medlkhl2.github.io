@@ -1,0 +1,157 @@
+---
+/**
+ * The CV's one contact line: email, LinkedIn, GitHub, website and city.
+ * No phone number, street address or birth date, ever.
+ *
+ * Screen: LinkedIn and GitHub read as short labels with the external-link icon
+ * and the hidden "(external link)" note. Print: every link prints its readable
+ * address instead (protocol stripped), so the paper copy stays usable and the
+ * PDF keeps the clickable link. All hrefs are absolute, which keeps the links
+ * in the PDF valid.
+ */
+import Icon from '../ui/Icon.astro';
+import { EMAIL, LINKS } from '../../data/identity.ts';
+import { profile } from '../../data/profile.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import { absoluteUrl } from '../../lib/url.ts';
+import type { CvCopy } from '../../views/cv/cv.copy.ts';
+
+interface Props {
+  locale: Locale;
+  copy: CvCopy;
+  class?: string;
+}
+
+const { locale, copy, class: className } = Astro.props;
+
+/** 'https://www.linkedin.com/in/x/' → 'linkedin.com/in/x' */
+const readable = (url: string) =>
+  url
+    .replace(/^[a-z]+:\/\//i, '')
+    .replace(/^www\./i, '')
+    .replace(/\/$/, '');
+
+const website = absoluteUrl('/');
+const external = [
+  { href: LINKS.linkedin, label: copy.contact.linkedin },
+  { href: LINKS.github, label: copy.contact.github },
+];
+---
+
+<ul role="list" class:list={['cv-contact', className]} aria-label={copy.contact.label}>
+  <li class="cv-contact__item">
+    <span class="visually-hidden">{copy.contact.email}: </span>
+    <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+  </li>
+  {external.map((link) => (
+    <li class="cv-contact__item">
+      <a href={link.href} rel="me">
+        <span class="cv-contact__screen">{link.label}</span>
+        <span class="cv-contact__print">{readable(link.href)}</span>
+        <Icon name="arrow-up-right" size={14} class="cv-contact__icon" />
+        <span class="visually-hidden"> {ui[locale].externalLink}</span>
+      </a>
+    </li>
+  ))}
+  <li class="cv-contact__item">
+    <span class="visually-hidden">{copy.contact.website}: </span>
+    <a href={website}>{readable(website)}</a>
+  </li>
+  <li class="cv-contact__item">
+    <span class="visually-hidden">{copy.contact.location}: </span>
+    <span>
+      {profile.location.city}, {copy.country}
+    </span>
+  </li>
+</ul>
+
+<style>
+  /*
+   * Separators sit in front of each item, inside the column gap, and the list
+   * clips horizontally: an item that starts a line loses its separator, so a
+   * wrapped line never begins or ends with a stray middot. The inline padding
+   * (offset by a negative margin) keeps the focus ring inside the clip.
+   */
+  .cv-contact {
+    --cv-contact-sep: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--cv-contact-sep);
+    row-gap: var(--space-half);
+    margin-inline: calc(-1 * var(--space-1));
+    padding-inline: var(--space-1);
+    overflow-x: clip;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .cv-contact__item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  .cv-contact__item::before {
+    content: '·' / '';
+    position: absolute;
+    right: 100%;
+    width: var(--cv-contact-sep);
+    text-align: center;
+    color: var(--color-text-subtle);
+  }
+
+  .cv-contact a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-half);
+    min-height: var(--target-min);
+    color: var(--color-text);
+  }
+
+  .cv-contact a:hover {
+    color: var(--color-accent);
+  }
+
+  .cv-contact :global(.cv-contact__icon) {
+    flex: none;
+    color: var(--color-text-subtle);
+  }
+
+  .cv-contact a:hover :global(.cv-contact__icon) {
+    color: currentColor;
+  }
+
+  .cv-contact__print {
+    display: none;
+  }
+
+  /* Phones: one item per line (each one starts a line, so no separators show). */
+  @media screen and (max-width: 39.98rem) {
+    .cv-contact {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  @media print {
+    .cv-contact {
+      row-gap: 0.1em;
+      color: var(--color-text);
+    }
+
+    .cv-contact a {
+      min-height: 0;
+    }
+
+    .cv-contact__screen,
+    .cv-contact :global(.cv-contact__icon) {
+      display: none;
+    }
+
+    .cv-contact__print {
+      display: inline;
+    }
+  }
+</style>

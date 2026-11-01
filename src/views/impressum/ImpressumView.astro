@@ -1,0 +1,19 @@
+---
+/**
+ * Impressum (§ 5 DDG). /de/impressum/ is the binding version; /impressum/ is
+ * the English translation and says so. Name and postal address are
+ * placeholders until the owner supplies them (the only place the postal
+ * address will ever appear on the site).
+ */
+import type { Locale } from '../../i18n/config.ts';
+import LegalPage from '../legal/LegalPage.astro';
+import { impressumCopy } from './impressum.copy.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<LegalPage locale={locale} routeKey="impressum" copy={impressumCopy[locale]} />

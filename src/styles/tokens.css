@@ -1,0 +1,231 @@
+/*
+ * Design tokens: the single source of truth for colour, type, space, grid,
+ * lines, radii, layers, focus and motion. Code that needs the values imports
+ * the typed mirror in src/styles/tokens.ts; a unit test keeps both in sync.
+ *
+ * Themes: graphite (dark, default) and paper (light), set as data-theme on <html>
+ * by an inline script before first paint. Without JavaScript the theme follows
+ * prefers-color-scheme (see the media query below). Print always uses the paper
+ * palette on a white page (the print block at the end).
+ * Colour rule: neutrals plus one accent (cobalt), used only for interaction and highlights.
+ */
+
+:root {
+  /* ---- Type ---------------------------------------------------------- */
+  --font-sans: var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif);
+  --font-mono: var(--font-geist-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+
+  /* Fluid scale: 16px × 1.2 at 360px → 17px × 1.25 at 1440px (Utopia method). */
+  --step--2: 0.75rem; /* 12px, mono micro labels */
+  --step--1: clamp(0.8125rem, 0.7917rem + 0.0926vw, 0.875rem); /* 13–14px */
+  --step-0: clamp(1rem, 0.9792rem + 0.0926vw, 1.0625rem); /* 16–17px */
+  --step-1: clamp(1.2rem, 1.1573rem + 0.1898vw, 1.3281rem); /* 19.2–21.3px */
+  --step-2: clamp(1.44rem, 1.3666rem + 0.3262vw, 1.6602rem); /* 23–26.6px */
+  --step-3: clamp(1.728rem, 1.6123rem + 0.5144vw, 2.0752rem); /* 27.6–33.2px */
+  --step-4: clamp(2.0736rem, 1.9001rem + 0.771vw, 2.594rem); /* 33.2–41.5px */
+  --step-5: clamp(2.4883rem, 2.2369rem + 1.1173vw, 3.2425rem); /* 39.8–51.9px */
+  --step-6: clamp(2.986rem, 2.6303rem + 1.5809vw, 4.0531rem); /* 47.8–64.8px */
+
+  --leading-tight: 1.08;
+  --leading-snug: 1.25;
+  --leading-normal: 1.6;
+  --tracking-display: -0.025em;
+  --tracking-heading: -0.015em;
+  --tracking-label: 0.08em;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --measure: 68ch;
+
+  /* ---- Space (8px scale; --space-half for hairline offsets) ----------- */
+  --space-half: 0.25rem; /* 4px */
+  --space-1: 0.5rem; /* 8px */
+  --space-2: 1rem; /* 16px */
+  --space-3: 1.5rem; /* 24px */
+  --space-4: 2rem; /* 32px */
+  --space-5: 2.5rem; /* 40px */
+  --space-6: 3rem; /* 48px */
+  --space-8: 4rem; /* 64px */
+  --space-10: 5rem; /* 80px */
+  --space-12: 6rem; /* 96px */
+  --space-16: 8rem; /* 128px */
+  --section-gap: clamp(var(--space-10), 9vw, var(--space-16));
+  --page-top: var(--section-gap); /* above every page's header, so all pages start at one height */
+
+  /* ---- Grid ------------------------------------------------------------ */
+  --grid-columns: 12;
+  --grid-gutter: clamp(1rem, 0.75rem + 1.1vw, 1.5rem); /* 16–24px */
+  --grid-margin: clamp(1rem, 0.25rem + 3.4vw, 3rem); /* 16–48px */
+  --container-max: 76rem; /* 1216px */
+  --header-height: 4rem; /* 64px */
+  --blueprint-cell: 24px;
+
+  /* ---- Lines and radii ------------------------------------------------- */
+  --hairline: 1px;
+  --radius-0: 0;
+  --radius-1: 2px;
+  --radius-2: 4px;
+  --radius-3: 8px;
+  --radius-pill: 999px;
+
+  /* ---- Layers ---------------------------------------------------------- */
+  --z-stage: 0;
+  --z-content: 1;
+  --z-header: 50;
+  --z-overlay: 80;
+  --z-dialog: 100;
+  --z-toast: 110;
+  --z-skip: 120;
+
+  /* ---- Focus ----------------------------------------------------------- */
+  --focus-width: 2px;
+  --focus-offset: 3px;
+
+  /* ---- Targets (WCAG 2.2: 24px for inline links, 44px for controls) ----- */
+  --target-min: 1.5rem; /* 24px */
+  --target-compact: 1.75rem; /* 28px: links in dense lists (parts list, legal links) */
+  --target: 2.75rem; /* 44px */
+
+  /* ---- Motion (brief §7). Phase 1 ships no motion; Phase 2 consumes these. */
+  --dur-micro: 150ms;
+  --ease-micro: cubic-bezier(0.215, 0.61, 0.355, 1); /* GSAP power2.out */
+  --dur-standard: 300ms;
+  --ease-standard: cubic-bezier(0.165, 0.84, 0.44, 1); /* GSAP power3.out */
+  --dur-emphasis: 600ms;
+  --ease-emphasis: cubic-bezier(0.19, 1, 0.22, 1); /* GSAP expo.out */
+  --dur-page: 450ms;
+  --ease-page: cubic-bezier(0.77, 0, 0.175, 1); /* GSAP power3.inOut */
+  --dur-camera-min: 1200ms;
+  --dur-camera: 1400ms;
+  --dur-camera-max: 1600ms;
+  /* Custom "camera" ease: slow start, fast middle, soft landing. */
+  --ease-camera: cubic-bezier(0.7, 0, 0.2, 1);
+  --stagger: 40ms; /* per item; inherits its parent token's easing */
+
+  /* ---- Print (the A4 CV sheet in print.css) ----------------------------- */
+  --print-font-size: 9.5pt; /* the print root: every rem token scales with it */
+  --print-leading: 1.42;
+  --print-margin-top: 15mm;
+  --print-margin-side: 17mm;
+  --print-margin-bottom: 17mm;
+  --print-photo-size: 26mm;
+}
+
+/* ---- Graphite: dark, the default ---------------------------------------- */
+:root,
+[data-theme='graphite'] {
+  color-scheme: dark;
+  --color-bg: #101113;
+  --color-surface: #16181b;
+  --color-surface-2: #1c1f23;
+  --color-text: #ecedef;
+  --color-text-muted: #a8aeb7;
+  --color-text-subtle: #8b929c;
+  --color-line: #2a2e34;
+  --color-line-strong: #6b727c;
+  --color-accent: #6b95ff;
+  --color-accent-hover: #8fb0ff;
+  --color-accent-ink: #0a1230;
+  --color-accent-soft: rgb(107 149 255 / 0.14);
+  --color-grid: rgb(236 237 239 / 0.05);
+  --color-grid-major: rgb(236 237 239 / 0.085);
+  --color-hatch: rgb(236 237 239 / 0.09);
+  --color-header: rgb(16 17 19 / 0.86);
+  --shadow-1: 0 1px 0 rgb(0 0 0 / 0.35), 0 12px 32px -16px rgb(0 0 0 / 0.7);
+}
+
+/* ---- Paper: light ------------------------------------------------------- */
+[data-theme='paper'] {
+  color-scheme: light;
+  --color-bg: #f6f6f3;
+  --color-surface: #ffffff;
+  --color-surface-2: #eeeeea;
+  --color-text: #141619;
+  --color-text-muted: #454a52;
+  --color-text-subtle: #5c616a;
+  --color-line: #dcdcd6;
+  --color-line-strong: #7b8089;
+  --color-accent: #1f4bd8;
+  --color-accent-hover: #1738a6;
+  --color-accent-ink: #ffffff;
+  --color-accent-soft: rgb(31 75 216 / 0.09);
+  --color-grid: rgb(20 22 25 / 0.05);
+  --color-grid-major: rgb(20 22 25 / 0.085);
+  --color-hatch: rgb(20 22 25 / 0.08);
+  --color-header: rgb(246 246 243 / 0.88);
+  --shadow-1: 0 1px 0 rgb(20 22 25 / 0.06), 0 12px 32px -18px rgb(20 22 25 / 0.28);
+}
+
+/* ---- No JavaScript: follow the system preference (same values as paper) -- */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --color-bg: #f6f6f3;
+    --color-surface: #ffffff;
+    --color-surface-2: #eeeeea;
+    --color-text: #141619;
+    --color-text-muted: #454a52;
+    --color-text-subtle: #5c616a;
+    --color-line: #dcdcd6;
+    --color-line-strong: #7b8089;
+    --color-accent: #1f4bd8;
+    --color-accent-hover: #1738a6;
+    --color-accent-ink: #ffffff;
+    --color-accent-soft: rgb(31 75 216 / 0.09);
+    --color-grid: rgb(20 22 25 / 0.05);
+    --color-grid-major: rgb(20 22 25 / 0.085);
+    --color-hatch: rgb(20 22 25 / 0.08);
+    --color-header: rgb(246 246 243 / 0.88);
+    --shadow-1: 0 1px 0 rgb(20 22 25 / 0.06), 0 12px 32px -18px rgb(20 22 25 / 0.28);
+  }
+}
+
+/* ---- Print: the paper palette on a white page, whatever the theme -------- */
+@media print {
+  :root[data-theme],
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #eeeeea;
+    --color-text: #141619;
+    --color-text-muted: #454a52;
+    --color-text-subtle: #5c616a;
+    --color-line: #dcdcd6;
+    --color-line-strong: #7b8089;
+    --color-accent: #1f4bd8;
+    --color-accent-hover: #1738a6;
+    --color-accent-ink: #ffffff;
+    --color-accent-soft: rgb(31 75 216 / 0.09);
+    --color-grid: rgb(20 22 25 / 0.05);
+    --color-grid-major: rgb(20 22 25 / 0.085);
+    --color-hatch: rgb(20 22 25 / 0.08);
+    --color-header: rgb(246 246 243 / 0.88);
+    --shadow-1: none;
+  }
+}
+
+/* ---- Reduced motion: every duration collapses to zero -------------------- */
+[data-motion='reduced'] {
+  --dur-micro: 0ms;
+  --dur-standard: 0ms;
+  --dur-emphasis: 0ms;
+  --dur-page: 0ms;
+  --dur-camera-min: 0ms;
+  --dur-camera: 0ms;
+  --dur-camera-max: 0ms;
+  --stagger: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion='full']) {
+    --dur-micro: 0ms;
+    --dur-standard: 0ms;
+    --dur-emphasis: 0ms;
+    --dur-page: 0ms;
+    --dur-camera-min: 0ms;
+    --dur-camera: 0ms;
+    --dur-camera-max: 0ms;
+    --stagger: 0ms;
+  }
+}

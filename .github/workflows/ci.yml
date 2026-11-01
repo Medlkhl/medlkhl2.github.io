@@ -1,0 +1,173 @@
+name: CI
+
+# Runs on every push and pull request. Deploys to GitHub Pages only on pushes
+# to the default branch, whatever it is called.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push cancels a superseded run on feature branches and PRs, but never
+# on the default branch, where the run may be deploying to GitHub Pages.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_name != github.event.repository.default_branch }}
+
+env:
+  ASTRO_TELEMETRY_DISABLED: '1'
+  FORCE_COLOR: '1'
+
+jobs:
+  quality:
+    name: Lint, types, unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: ESLint and Prettier
+        run: pnpm lint
+      - name: astro check (TypeScript strict)
+        run: pnpm check
+      - name: Vitest (schemas, EN/DE parity, formatting, tokens)
+        run: pnpm test
+
+  build:
+    name: Build, PDF CVs, placeholders, link check, JS budget
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install Chromium for the PDF printer
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Build site and print PDF CVs
+        run: pnpm build
+      # After the build, so the report also lists the pages that show placeholders.
+      - name: Content placeholders (warning only)
+        run: pnpm content:check
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: placeholders
+          path: reports/placeholders.*
+          if-no-files-found: ignore
+      - name: Internal link check
+        run: pnpm linkcheck
+      - name: JavaScript per page (gzip budget)
+        run: pnpm size
+      - name: Upload built site
+        uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: dist
+          retention-days: 14
+      - name: Upload build reports
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-reports
+          path: |
+            reports/link-check.json
+            reports/js-size.json
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  e2e:
+    name: Playwright (smoke, keyboard, theme, language, axe, screenshots)
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: dist
+      - name: Playwright (and gate screenshots of every route)
+        run: pnpm test:e2e
+        env:
+          SCREENSHOTS: '1'
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: reports/playwright
+          if-no-files-found: ignore
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshots
+          path: reports/screenshots
+          if-no-files-found: ignore
+
+  lighthouse:
+    name: Lighthouse CI (mobile and desktop)
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: dist
+      - name: Lighthouse CI
+        run: pnpm lhci
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse
+          path: reports/lighthouse
+          if-no-files-found: ignore
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: [quality, build, e2e, lighthouse]
+    if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v5

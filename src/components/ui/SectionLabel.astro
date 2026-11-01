@@ -1,0 +1,49 @@
+---
+/**
+ * Monospace section label in the "02 — Experience" style.
+ * Renders as <p> by default; pass `as="h2"` when the label is the section heading.
+ * The number and the dash end in a no-break space, so copied text and the PDF
+ * outline read "02 — Experience" (Chromium drops plain spaces between flex
+ * items there, and they are not rendered on screen either).
+ */
+interface Props {
+  index?: number | string;
+  as?: 'p' | 'span' | 'h2' | 'h3';
+  id?: string;
+  class?: string;
+}
+
+const { index, as: Tag = 'p', id, class: className } = Astro.props;
+const number = index === undefined ? undefined : String(index).padStart(2, '0');
+---
+
+<Tag class:list={['label', className]} id={id}>
+  {number && (
+    <>
+      <span class="label__index">{number}&nbsp;</span>
+      <span class="label__dash" aria-hidden="true">
+        —&nbsp;
+      </span>
+    </>
+  )}
+  <span class="label__text">
+    <slot />
+  </span>
+</Tag>
+
+<style>
+  /* The no-break spaces carry the gap: a mono space is 0.6em, the old flex gap,
+     plus the label tracking, which each item gives back through its margin. */
+  .label {
+    gap: 0;
+  }
+
+  .label__index,
+  .label__dash {
+    margin-right: calc(-1 * var(--tracking-label));
+  }
+
+  .label__index {
+    color: var(--color-text-muted);
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+/**
+ * Status chip for things that do not exist yet ("Planned" / "Geplant", from
+ * ui.copy.ts): a dashed outline and a hollow marker, in line with the dashed
+ * placeholders. Shared by the Lab and Colophon views.
+ */
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+
+interface Props {
+  locale: Locale;
+  class?: string;
+}
+
+const { locale, class: className } = Astro.props;
+---
+
+<span class:list={['chip', 'chip--status', 'planned-chip', className]} data-status="planned">
+  {ui[locale].labels.planned}
+</span>
+
+<style>
+  .planned-chip {
+    border-style: dashed;
+    border-color: var(--color-line-strong);
+  }
+</style>

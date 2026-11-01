@@ -1,0 +1,146 @@
+---
+/**
+ * Recommendations: the verbatim quotes (always in English, lang="en", rendered
+ * by Quote), each with the case study it relates to, followed by the empty,
+ * clearly marked slots for recommendations still to come.
+ */
+import Icon from '../ui/Icon.astro';
+import Quote from '../ui/Quote.astro';
+import { recommendations } from '../../data/recommendations.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { workHref } from '../../i18n/routes.ts';
+import type { HomeCopy } from '../../views/home/home.copy.ts';
+
+interface Props {
+  locale: Locale;
+  copy: HomeCopy['recommendations'];
+  /** Case-study titles by slug (published entries of this locale). */
+  workTitles: Map<string, string>;
+  class?: string;
+}
+
+const { locale, copy, workTitles, class: className, ...rest } = Astro.props;
+const quotes = recommendations.filter((entry) => entry.kind === 'quote');
+const slots = recommendations.filter((entry) => entry.kind === 'slot');
+---
+
+<div class:list={['recs', className]} {...rest}>
+  <ul role="list" class="recs__quotes">
+    {quotes.map((entry) => {
+      const related = entry.work.flatMap((slug) => {
+        const title = workTitles.get(slug);
+        return title ? [{ slug, title }] : [];
+      });
+      return (
+        <li class="recs__quote">
+          <Quote recommendation={entry} locale={locale} />
+          <div class="recs__meta">
+            <p class="recs__note">{copy.verbatim}</p>
+            {related.map((work) => (
+              <p class="recs__related">
+                <span class="recs__term">{copy.related}</span>
+                <a href={workHref(locale, work.slug)}>
+                  <span>{work.title}</span>
+                  <Icon name="arrow-right" />
+                </a>
+              </p>
+            ))}
+          </div>
+        </li>
+      );
+    })}
+  </ul>
+  <ul role="list" class="recs__slots">
+    {slots.map((entry) => (
+      <li>
+        <Quote recommendation={entry} locale={locale} />
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .recs {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .recs__quotes {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .recs__quote {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .recs__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-3);
+    padding-inline: var(--space-1);
+  }
+
+  .recs__note {
+    font-size: var(--step--1);
+    color: var(--color-text-subtle);
+  }
+
+  .recs__related {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-half) var(--space-2);
+  }
+
+  .recs__term {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .recs__related a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: var(--target-compact);
+    font-size: var(--step--1);
+  }
+
+  .recs__slots {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .recs__slots > li {
+    display: grid;
+  }
+
+  @media (min-width: 48rem) {
+    .recs__slots {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .recs {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      align-items: start;
+    }
+
+    .recs__quotes {
+      grid-column: 1 / span 7;
+    }
+
+    .recs__slots {
+      grid-column: 8 / -1;
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

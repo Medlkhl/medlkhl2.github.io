@@ -1,0 +1,119 @@
+---
+/**
+ * Email contact: a real mailto: link (works without JavaScript) plus a
+ * "Copy email" button that appears once JavaScript runs. Status changes are
+ * announced through a polite live region. Written for ClientRouter: the
+ * handler is bound on every astro:page-load.
+ */
+import { EMAIL } from '../../data/identity.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import Icon from './Icon.astro';
+
+interface Props {
+  locale: Locale;
+  /** Show the address itself as the mailto link text (default) or a short label. */
+  showAddress?: boolean;
+  /** Visual weight of the copy button. */
+  variant?: 'default' | 'primary';
+  /** Size of the address: 'large' where it is the page's main action (the home contact sheet). */
+  size?: 'default' | 'large';
+  class?: string;
+}
+
+const {
+  locale,
+  showAddress = true,
+  variant = 'default',
+  size = 'default',
+  class: className,
+} = Astro.props;
+const t = ui[locale].cta;
+---
+
+<span
+  class:list={['copy-email', { 'copy-email--large': size === 'large' }, className]}
+  data-copy-email
+>
+  <a class="copy-email__link" href={`mailto:${EMAIL}`} data-copy-source>
+    <Icon name="mail" />
+    <span>{showAddress ? EMAIL : t.writeEmail}</span>
+  </a>
+  <button
+    type="button"
+    class:list={['btn', 'js-only', { 'btn--primary': variant === 'primary' }]}
+    data-copy-button
+    data-copy-value={EMAIL}
+    data-label-idle={t.copyEmail}
+    data-label-done={t.emailCopied}
+    data-label-failed={t.copyFailed}
+  >
+    <Icon name="copy" />
+    <span data-copy-label>{t.copyEmail}</span>
+  </button>
+  <span class="visually-hidden" role="status" aria-live="polite" data-copy-status></span>
+</span>
+
+<style>
+  .copy-email {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+  }
+
+  .copy-email__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: var(--target);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  .copy-email--large .copy-email__link {
+    font-size: var(--step-1);
+    overflow-wrap: anywhere;
+  }
+</style>
+
+<script>
+  function bindCopyButtons() {
+    document.querySelectorAll<HTMLElement>('[data-copy-email]').forEach((root) => {
+      const button = root.querySelector<HTMLButtonElement>('[data-copy-button]');
+      const label = root.querySelector<HTMLElement>('[data-copy-label]');
+      const status = root.querySelector<HTMLElement>('[data-copy-status]');
+      const source = root.querySelector<HTMLElement>('[data-copy-source]');
+      if (!button || !label || !status || button.dataset.bound === 'true') return;
+      button.dataset.bound = 'true';
+      let timer: number | undefined;
+
+      button.addEventListener('click', async () => {
+        const value = button.dataset.copyValue ?? '';
+        const idle = button.dataset.labelIdle ?? '';
+        let message = button.dataset.labelDone ?? '';
+        try {
+          await navigator.clipboard.writeText(value);
+        } catch {
+          message = button.dataset.labelFailed ?? '';
+          if (source) {
+            const range = document.createRange();
+            range.selectNodeContents(source);
+            const selection = window.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+          }
+        }
+        label.textContent = message;
+        status.textContent = message;
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          label.textContent = idle;
+          status.textContent = '';
+        }, 2400);
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', bindCopyButtons);
+</script>

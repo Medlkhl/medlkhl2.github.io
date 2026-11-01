@@ -1,0 +1,108 @@
+---
+/**
+ * Theme switch (graphite ↔ paper). Needs JavaScript, so it is hidden until the
+ * inline script marks <html class="js">; without JS the system preference applies.
+ */
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = ui[locale].theme;
+---
+
+<button
+  type="button"
+  class="theme-toggle js-only"
+  data-theme-toggle
+  data-label-to-paper={t.toPaper}
+  data-label-to-graphite={t.toGraphite}
+  aria-label={t.toPaper}
+  title={t.toPaper}
+>
+  <span class="theme-toggle__icon theme-toggle__icon--sun">
+    <Icon name="sun" size={18} />
+  </span>
+  <span class="theme-toggle__icon theme-toggle__icon--moon">
+    <Icon name="moon" size={18} />
+  </span>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: var(--target);
+    height: var(--target);
+    border: var(--hairline) solid transparent;
+    border-radius: var(--radius-2);
+    background: transparent;
+    color: var(--color-text-muted);
+    transition:
+      color var(--dur-micro) var(--ease-micro),
+      border-color var(--dur-micro) var(--ease-micro);
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-text);
+    border-color: var(--color-line-strong);
+  }
+
+  .theme-toggle__icon {
+    grid-area: 1 / 1;
+    display: grid;
+  }
+
+  /* Graphite shows the sun (switch to paper); paper shows the moon. */
+  :global([data-theme='paper']) .theme-toggle__icon--sun,
+  :global(:root:not([data-theme='paper'])) .theme-toggle__icon--moon {
+    display: none;
+  }
+</style>
+
+<script>
+  import { getEffective, onPrefsChange, toggleTheme, watchSystemPrefs } from '../../lib/prefs.ts';
+
+  function syncLabel(button: HTMLButtonElement) {
+    const label =
+      getEffective().theme === 'graphite'
+        ? button.dataset.labelToPaper
+        : button.dataset.labelToGraphite;
+    if (label) {
+      button.setAttribute('aria-label', label);
+      button.title = label;
+    }
+  }
+
+  function syncLabels() {
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach(syncLabel);
+  }
+
+  /** Releases the current page's click listeners before ClientRouter swaps it out. */
+  let controller: AbortController | undefined;
+
+  document.addEventListener('astro:page-load', () => {
+    controller?.abort();
+    controller = new AbortController();
+    const { signal } = controller;
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((button) => {
+      syncLabel(button);
+      // toggleTheme() emits prefs:change, which relabels the button (below).
+      button.addEventListener('click', () => toggleTheme(), { signal });
+    });
+  });
+
+  document.addEventListener('astro:before-swap', () => {
+    controller?.abort();
+    controller = undefined;
+  });
+
+  // Registered once for the document's lifetime: every preference change, including
+  // a live OS colour-scheme switch while the theme follows the system, relabels it.
+  onPrefsChange(syncLabels);
+  watchSystemPrefs();
+</script>

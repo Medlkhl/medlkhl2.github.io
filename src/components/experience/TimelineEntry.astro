@@ -1,0 +1,181 @@
+---
+/**
+ * One role of the full timeline: dates and duration on the left (from 48rem),
+ * then role (h3), organisation and location, every highlight, the stack and
+ * links to the related case studies. The entry's id is its data id, so other
+ * pages can link to it (/experience/#gomycode).
+ */
+import type { Locale } from '../../i18n/config.ts';
+import { formatDuration } from '../../i18n/format.ts';
+import { workHref } from '../../i18n/routes.ts';
+import { term } from '../../i18n/term.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import type { Experience } from '../../schemas/data.ts';
+import type { ExperienceCopy } from '../../views/experience/experience.copy.ts';
+import ArrowLink from '../ui/ArrowLink.astro';
+import DateRange from '../ui/DateRange.astro';
+
+interface Props {
+  entry: Experience;
+  locale: Locale;
+  copy: ExperienceCopy['timeline'];
+  /** Case-study titles by slug, from the work collection. */
+  workTitles: Map<string, string>;
+}
+
+const { entry, locale, copy, workTitles } = Astro.props;
+const duration = entry.end === null ? null : formatDuration(entry.start, entry.end, locale);
+const links = entry.work.map((slug) => ({
+  href: workHref(locale, slug),
+  label: ui[locale].cta.caseStudyFor.replace('{title}', workTitles.get(slug) ?? slug),
+}));
+---
+
+<li class="entry" id={entry.id}>
+  <div class="entry__when">
+    <p class="entry__dates">
+      <DateRange start={entry.start} end={entry.end} locale={locale} />
+    </p>
+    {duration && (
+      <p class="entry__duration">
+        <span class="visually-hidden">{`${copy.duration}: `}</span>
+        {duration}
+      </p>
+    )}
+  </div>
+  <div class="entry__body">
+    <h3 class="entry__role">{entry.role[locale]}</h3>
+    {/* prettier-ignore */}
+    <p class="entry__org"><span class="entry__org-name">{entry.org}</span><span class="visually-hidden">, </span><span class="entry__sep" aria-hidden="true">·</span><span>{entry.location[locale]}</span></p>
+    <ul role="list" class="entry__highlights">
+      {entry.highlights.map((highlight) => (
+        <li>{highlight[locale]}</li>
+      ))}
+    </ul>
+    {entry.stack.length > 0 && (
+      <ul role="list" class="entry__stack" aria-label={copy.stack}>
+        {entry.stack.map((item) => (
+          <li class="chip">{term(item, locale)}</li>
+        ))}
+      </ul>
+    )}
+    {links.length > 0 && (
+      <ul role="list" class="entry__links">
+        {links.map((link) => (
+          <li>
+            <ArrowLink href={link.href}>{link.label}</ArrowLink>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</li>
+
+<style>
+  .entry {
+    display: grid;
+    gap: var(--space-2);
+    padding-block: var(--space-5) var(--space-6);
+    border-top: var(--hairline) solid var(--color-line);
+    scroll-margin-top: calc(var(--header-height) + var(--space-2));
+  }
+
+  .entry__when {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-half) var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .entry__dates {
+    color: var(--color-text);
+  }
+
+  .entry__duration {
+    color: var(--color-text-subtle);
+    font-size: var(--step--2);
+  }
+
+  .entry__body {
+    display: grid;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .entry__role {
+    font-size: var(--step-2);
+  }
+
+  .entry__org {
+    margin-top: calc(-1 * var(--space-1));
+    color: var(--color-text-muted);
+  }
+
+  .entry__org-name {
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+  }
+
+  .entry__sep {
+    margin-inline: var(--space-1);
+    color: var(--color-text-subtle);
+  }
+
+  .entry__highlights {
+    display: grid;
+    gap: var(--space-1);
+    max-width: var(--measure);
+    margin-top: var(--space-1);
+  }
+
+  /* Short hairline dashes as markers, like leader lines on a drawing. */
+  .entry__highlights > li {
+    position: relative;
+    padding-left: var(--space-4);
+    color: var(--color-text-muted);
+  }
+
+  .entry__highlights > li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: calc(var(--leading-normal) * 0.5em); /* the middle of the first line */
+    width: var(--space-2);
+    border-top: var(--hairline) solid var(--color-line-strong);
+  }
+
+  .entry__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-half);
+    margin-top: var(--space-1);
+  }
+
+  .entry__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-3);
+  }
+
+  @media (min-width: 48rem) {
+    .entry {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+    }
+
+    .entry__when {
+      grid-column: 1 / span 3;
+      flex-direction: column;
+      align-content: start;
+      gap: var(--space-half);
+      padding-top: var(--space-1);
+    }
+
+    .entry__body {
+      grid-column: 4 / -1;
+    }
+  }
+</style>

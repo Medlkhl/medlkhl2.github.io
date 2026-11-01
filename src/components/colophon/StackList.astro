@@ -1,0 +1,129 @@
+---
+/**
+ * The colophon's stack as a definition list in two groups: what is in use
+ * today, and what later phases add (labelled as planned). Each row: role
+ * (mono), tool, and one line on why or how it is used.
+ */
+import type { Locale } from '../../i18n/config.ts';
+import type { ColophonCopy } from '../../views/colophon/colophon.copy.ts';
+import PlannedChip from '../ui/PlannedChip.astro';
+
+interface Props {
+  locale: Locale;
+  copy: ColophonCopy;
+}
+
+const { locale, copy } = Astro.props;
+const groups = [
+  { id: 'stack-in-use', title: copy.stack.inUse, items: copy.stack.items, planned: false },
+  { id: 'stack-later', title: copy.stack.later, items: copy.stack.laterItems, planned: true },
+];
+---
+
+<div class="stack">
+  {groups.map((group) => (
+    <div class:list={['stack__group', { 'stack__group--planned': group.planned }]}>
+      <div class="stack__head">
+        <h3 id={group.id} class="stack__title">
+          {group.title}
+        </h3>
+        {group.planned && <PlannedChip locale={locale} />}
+      </div>
+      <dl class="stack__list">
+        {group.items.map((item) => (
+          <div class="stack__row">
+            <dt class="stack__role">{item.role}</dt>
+            <dd class="stack__tool">{item.tool}</dd>
+            <dd class="stack__note">{item.note}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  ))}
+</div>
+
+<style>
+  .stack {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .stack__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+
+  .stack__title {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .stack__list {
+    display: grid;
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .stack__row {
+    display: grid;
+    gap: var(--space-half);
+    padding-block: var(--space-2);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  /* Planned rows: dashed rules, like every other "not built yet" mark. */
+  .stack__group--planned .stack__row {
+    border-top-style: dashed;
+    border-top-color: var(--color-line-strong);
+  }
+
+  .stack__group--planned .stack__list {
+    border-bottom-style: dashed;
+    border-bottom-color: var(--color-line-strong);
+  }
+
+  .stack__role {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .stack__tool {
+    margin: 0;
+    font-weight: var(--weight-medium);
+  }
+
+  .stack__note {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  @media (min-width: 48rem) {
+    .stack__row {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      align-items: baseline;
+    }
+
+    .stack__role {
+      grid-column: 1 / span 3;
+    }
+
+    .stack__tool {
+      grid-column: 4 / span 4;
+    }
+
+    .stack__note {
+      grid-column: 8 / -1;
+    }
+  }
+</style>

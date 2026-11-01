@@ -1,0 +1,284 @@
+---
+/**
+ * The 2019 humanoid-robot archive: the main demo video and every module of
+ * src/data/lab.ts (title, description, stack, "Watch on YouTube"). Videos are
+ * link-outs, never embeds (no third-party requests, brief section 11). The
+ * demo card is one stretched link, so its play mark opens the video too.
+ */
+import { experience } from '../../data/experience.ts';
+import { ROBOT_DEMO_VIDEO, robotModules } from '../../data/lab.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { workHref } from '../../i18n/routes.ts';
+import { term } from '../../i18n/term.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import type { LabCopy } from '../../views/lab/lab.copy.ts';
+import ArrowLink from '../ui/ArrowLink.astro';
+import DateRange from '../ui/DateRange.astro';
+import ExternalLink from '../ui/ExternalLink.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  locale: Locale;
+  copy: LabCopy;
+  /** Title of the robot case study, from the work collection. */
+  caseStudyTitle: string;
+}
+
+const { locale, copy, caseStudyTitle } = Astro.props;
+const t = copy.robot;
+const watch = ui[locale].cta.watchVideo;
+const pad = (value: number) => String(value).padStart(2, '0');
+/** The graduation project's entry in the CV data: organisation, place and dates. */
+const project = experience.find((entry) => entry.id === 'dot-it');
+---
+
+<div class="robot">
+  <div class="robot__lead">
+    <div class="demo">
+      <span class="demo__mark" aria-hidden="true">
+        <Icon name="play" size={20} />
+      </span>
+      <div class="demo__text">
+        <p class="demo__title">{t.demoTitle}</p>
+        <p class="demo__desc">{t.demoText}</p>
+        <ExternalLink
+          locale={locale}
+          href={ROBOT_DEMO_VIDEO}
+          context={t.demoTitle}
+          class="demo__link"
+        >
+          {watch}
+        </ExternalLink>
+      </div>
+    </div>
+    <div class="robot__side">
+      {project && (
+        <dl class="robot__facts">
+          <div class="robot__fact">
+            <dt>{t.organisation}</dt>
+            <dd>{`${project.org}, ${project.location[locale]}`}</dd>
+          </div>
+          <div class="robot__fact">
+            <dt>{t.period}</dt>
+            <dd>
+              <DateRange start={project.start} end={project.end} locale={locale} />
+            </dd>
+          </div>
+        </dl>
+      )}
+      <ArrowLink href={workHref(locale, 'humanoid-robot')}>
+        {ui[locale].cta.caseStudyFor.replace('{title}', caseStudyTitle)}
+      </ArrowLink>
+    </div>
+  </div>
+
+  <ol role="list" class="modules" aria-label={t.modulesLabel}>
+    {robotModules.map((module, index) => (
+      <li class="module" id={`module-${module.id}`}>
+        <span class="module__index" aria-hidden="true">
+          {pad(index + 1)}
+        </span>
+        <h3 class="module__title">{module.title[locale]}</h3>
+        <p class="module__desc">{module.description[locale]}</p>
+        <ul role="list" class="module__stack" aria-label={t.stackLabel}>
+          {module.stack.map((item) => (
+            <li class="chip">{term(item, locale)}</li>
+          ))}
+        </ul>
+        {module.video && (
+          <ExternalLink
+            locale={locale}
+            href={module.video}
+            context={module.title[locale]}
+            class="module__link"
+          >
+            {watch}
+          </ExternalLink>
+        )}
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .robot {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .robot__lead {
+    display: grid;
+    gap: var(--space-4) var(--grid-gutter);
+    align-items: start;
+  }
+
+  .robot__side {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+  }
+
+  .robot__facts {
+    display: grid;
+    width: 100%;
+    margin: 0;
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .robot__fact {
+    display: grid;
+    grid-template-columns: minmax(var(--space-16), 40%) minmax(0, 1fr);
+    gap: var(--space-2);
+    align-items: baseline;
+    padding-block: var(--space-1);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .robot__fact dt {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .robot__fact dd {
+    margin: 0;
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The whole card (play mark included) opens the video: a stretched link, one tab stop. */
+  .demo {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+    padding: var(--space-3);
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-3);
+    background: var(--color-surface);
+    transition: border-color var(--dur-micro) var(--ease-micro);
+  }
+
+  .demo:hover,
+  .demo:focus-within {
+    border-color: var(--color-line-strong);
+  }
+
+  .demo :global(.demo__link)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-3);
+  }
+
+  .demo :global(.demo__link:focus-visible) {
+    outline: none;
+  }
+
+  /* Astro leaves selectors inside :has() unscoped, so this matches ExternalLink's <a>. */
+  .demo:has(.demo__link:focus-visible) {
+    outline: var(--focus-width) solid var(--color-accent);
+    outline-offset: var(--focus-offset);
+  }
+
+  .demo__mark {
+    display: grid;
+    place-items: center;
+    width: var(--space-6);
+    height: var(--space-6);
+    border: var(--hairline) solid var(--color-line-strong);
+    border-radius: var(--radius-2);
+    color: var(--color-text);
+  }
+
+  .demo__text {
+    display: grid;
+    gap: var(--space-half);
+    justify-items: start;
+  }
+
+  .demo__title {
+    font-weight: var(--weight-semibold);
+  }
+
+  .demo__desc {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  .demo :global(.demo__link),
+  .module :global(.module__link) {
+    min-height: var(--target);
+    font-size: var(--step--1);
+    font-weight: var(--weight-medium);
+  }
+
+  .modules {
+    display: grid;
+    gap: var(--space-6) var(--grid-gutter);
+  }
+
+  .module {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: var(--space-1);
+    padding-top: var(--space-3);
+    border-top: var(--hairline) solid var(--color-line-strong);
+  }
+
+  .module__index {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .module__title {
+    margin-top: var(--space-1);
+    font-size: var(--step-1);
+  }
+
+  .module__desc {
+    color: var(--color-text-muted);
+  }
+
+  .module__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-half);
+    margin-top: var(--space-1);
+  }
+
+  @media (min-width: 48rem) {
+    .modules {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .robot__lead {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    }
+
+    .demo {
+      grid-column: 1 / span 7;
+    }
+
+    .robot__side {
+      grid-column: 8 / -1;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .modules {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .robot__side {
+      grid-column: 9 / -1;
+    }
+  }
+</style>

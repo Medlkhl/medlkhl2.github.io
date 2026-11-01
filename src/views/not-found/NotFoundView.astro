@@ -1,0 +1,186 @@
+---
+/**
+ * The single 404 page GitHub Pages serves for every missing URL, so it is
+ * bilingual: English first (h1, lang="en"), German beside it (h2, lang="de").
+ * Links are absolute (base path included) because the page is served at
+ * arbitrary paths. noindex, no canonical, no alternates, no JavaScript.
+ */
+import SectionLabel from '../../components/ui/SectionLabel.astro';
+import Icon from '../../components/ui/Icon.astro';
+import { LOCALES, type Locale } from '../../i18n/config.ts';
+import { pageMeta } from '../../i18n/meta.copy.ts';
+import { routeHref } from '../../i18n/routes.ts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ogImagePath } from '../../lib/og.ts';
+import { notFoundCopy } from './not-found.copy.ts';
+
+const en = pageMeta.en.notFound;
+const de = pageMeta.de.notFound;
+
+const columns = LOCALES.map((locale: Locale) => {
+  const t = notFoundCopy[locale];
+  return {
+    locale,
+    t,
+    title: pageMeta[locale].notFound.title,
+    links: [
+      { href: routeHref(locale, 'home'), label: t.links.home },
+      { href: routeHref(locale, 'work'), label: t.links.work },
+      { href: routeHref(locale, 'cv'), label: t.links.cv },
+      { href: routeHref(locale, 'home', 'contact'), label: t.links.contact },
+    ],
+  };
+});
+---
+
+<BaseLayout
+  locale="en"
+  title={`${en.title} · ${de.title}`}
+  description={`${en.description} ${de.description}`}
+  path={null}
+  ogImage={ogImagePath('en', 'not-found')}
+  noindex
+>
+  <div class="nf">
+    <div class="nf__backdrop blueprint" aria-hidden="true"></div>
+    <div class="container nf__inner">
+      <SectionLabel index="404">
+        {notFoundCopy.en.status} · <span lang="de">{notFoundCopy.de.status}</span>
+      </SectionLabel>
+
+      <div class="nf__grid">
+        {columns.map(({ locale, t, title, links }) => {
+          const Heading = locale === 'en' ? 'h1' : 'h2';
+          const id = `nf-${locale}`;
+          return (
+            <section class="nf-col" lang={locale} aria-labelledby={id}>
+              <p class="nf-col__lang">
+                <span class="nf-col__code">{locale.toUpperCase()}</span>
+                {t.language}
+              </p>
+              <Heading id={id} class="nf-col__title">
+                {title}
+              </Heading>
+              <p class="nf-col__text">{t.text}</p>
+              <ul role="list" class="nf-links" aria-label={t.linksLabel}>
+                {links.map((link) => (
+                  <li>
+                    <a class="nf-links__link" href={link.href}>
+                      <span>{link.label}</span>
+                      <Icon name="arrow-right" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .nf {
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* The blueprint grid of the home hero, fading out toward the edges. */
+  .nf__backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(
+      ellipse 80% 75% at 30% 30%,
+      var(--color-text) 30%,
+      transparent 90%
+    );
+    mask-image: radial-gradient(ellipse 80% 75% at 30% 30%, var(--color-text) 30%, transparent 90%);
+  }
+
+  .nf__inner {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--page-top) var(--space-10);
+  }
+
+  .nf__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-8) var(--grid-gutter);
+  }
+
+  .nf-col {
+    grid-column: span 6;
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    min-width: 0;
+    padding-top: var(--space-3);
+    border-top: var(--hairline) solid var(--color-line-strong);
+  }
+
+  .nf-col__lang {
+    display: flex;
+    gap: var(--space-1);
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .nf-col__code {
+    color: var(--color-text-muted);
+  }
+
+  .nf-col__title {
+    font-size: var(--step-5);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .nf-col__text {
+    max-width: 44ch;
+    color: var(--color-text-muted);
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+
+  .nf-links {
+    margin-top: var(--space-2);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .nf-links__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-height: var(--space-6);
+    border-bottom: var(--hairline) solid var(--color-line);
+    text-decoration: none;
+  }
+
+  .nf-links__link :global(svg) {
+    flex: none;
+    color: var(--color-text-subtle);
+  }
+
+  .nf-links__link:hover :global(svg) {
+    color: currentColor;
+  }
+
+  @media (max-width: 767.98px) {
+    .nf__inner {
+      padding-bottom: var(--space-8);
+    }
+
+    .nf-col {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

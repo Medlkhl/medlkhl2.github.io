@@ -1,0 +1,20 @@
+---
+/**
+ * Self-hosted Geist via the Astro Fonts API. <Font> emits the @font-face rules
+ * (with size-adjusted fallback faces generated from the font metrics, so CLS
+ * stays near 0). Only the first variant of each family, the latin subset, is
+ * preloaded; latin-ext loads on demand through unicode-range.
+ */
+import { Font, fontData } from 'astro:assets';
+
+const FAMILIES = ['--font-geist-sans', '--font-geist-mono'] as const;
+const preloads = FAMILIES.map((family) => fontData[family]?.[0]?.src[0]?.url).filter(
+  (url): url is string => Boolean(url),
+);
+---
+
+<Font cssVariable="--font-geist-sans" />
+<Font cssVariable="--font-geist-mono" />
+{preloads.map((url) => (
+  <link rel="preload" href={url} as="font" type="font/woff2" crossorigin />
+))}

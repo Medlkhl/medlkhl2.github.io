@@ -1,0 +1,255 @@
+---
+/**
+ * Home hero. The first screen answers a recruiter without JavaScript: name,
+ * role, positioning line, the three main actions and the quick facts, with
+ * Fig. 1 (the exploded stack) beside them on wide screens. Below the facts
+ * follows the parts list (the HTML mirror of Fig. 1) while the figure stays in
+ * view (position: sticky), so hovering a layer shows where it sits.
+ *
+ * data-stack-root marks the common ancestor of the figure and the list for
+ * the :has() highlight rules; the empty data-nav-target clears the header's
+ * section highlight while the hero is in view. A faint blueprint grid sits
+ * behind it all.
+ * The list holds about 30 links, so a link that is visually hidden until
+ * focused lets keyboard users skip straight to 01 Selected work (#work).
+ */
+import Icon from '../ui/Icon.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import QuickFacts from './QuickFacts.astro';
+import StackFigure from './StackFigure.astro';
+import StackLegend from './StackLegend.astro';
+import { profile } from '../../data/profile.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import { cvPdfHref } from '../../lib/cv.ts';
+import type { HomeCopy } from '../../views/home/home.copy.ts';
+
+interface Props {
+  locale: Locale;
+  copy: HomeCopy;
+  workTitles: Map<string, string>;
+}
+
+const { locale, copy, workTitles } = Astro.props;
+const cta = ui[locale].cta;
+---
+
+<div class="hero" data-stack-root data-nav-target="">
+  <div class="hero__backdrop blueprint" aria-hidden="true"></div>
+  <div class="container hero__grid">
+    <header class="hero__intro">
+      <SectionLabel index={0}>{copy.hero.kicker}</SectionLabel>
+      <h1 class="hero__name">{profile.name}</h1>
+      <p class="hero__role">{profile.role[locale]}</p>
+      <p class="hero__lead">{profile.positioning[locale]}</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#work">
+          <Icon name="arrow-down" />
+          <span>{cta.selectedWork}</span>
+        </a>
+        <a class="btn" href={cvPdfHref(locale)} download>
+          <Icon name="download" />
+          <span>{cta.downloadCv}</span>
+        </a>
+        <a class="btn" href="#contact">
+          <Icon name="arrow-down" />
+          <span>{cta.contact}</span>
+        </a>
+      </div>
+    </header>
+
+    <QuickFacts locale={locale} copy={copy.facts} class="hero__facts" />
+
+    <StackFigure
+      locale={locale}
+      figure={copy.stack.figure}
+      title={copy.stack.drawingTitle}
+      note={copy.stack.drawingNote}
+      class="hero__figure"
+    />
+
+    <section class="hero__legend" aria-labelledby="stack-title">
+      <header class="hero__legend-header">
+        <SectionLabel index={copy.stack.figure}>{copy.stack.label}</SectionLabel>
+        <h2 id="stack-title" class="hero__legend-title">
+          {copy.stack.title}
+        </h2>
+        <p class="hero__legend-intro">{copy.stack.intro}</p>
+      </header>
+      <div class="hero__parts">
+        <a class="hero__skip visually-hidden" href="#work">
+          {copy.stack.skip}
+        </a>
+        <StackLegend locale={locale} copy={copy.stack} workTitles={workTitles} />
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    padding-block: var(--space-5) var(--section-gap);
+  }
+
+  /* The blueprint covers the first screen only and fades out toward every edge. */
+  .hero__backdrop {
+    position: absolute;
+    inset: 0 0 auto;
+    height: min(100%, 60rem);
+    z-index: -1;
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(
+      ellipse 72% 70% at 66% 34%,
+      var(--color-text) 25%,
+      transparent 88%
+    );
+    mask-image: radial-gradient(ellipse 72% 70% at 66% 34%, var(--color-text) 25%, transparent 88%);
+  }
+
+  .hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-6);
+  }
+
+  .hero__intro {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-2);
+  }
+
+  .hero__name {
+    margin-top: var(--space-half);
+    font-size: var(--step-6);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .hero__role {
+    font-size: var(--step-2);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-heading);
+    color: var(--color-text-muted);
+  }
+
+  .hero__lead {
+    max-width: 34ch;
+    font-size: var(--step-1);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+  }
+
+  /*
+   * Phones: the primary button takes the first row in both locales and the two
+   * others share the second, so none is left hanging on its own.
+   */
+  @media (max-width: 29.99rem) {
+    .hero__actions {
+      align-self: stretch;
+    }
+
+    .hero__actions > .btn {
+      flex: 1 1 auto;
+    }
+
+    .hero__actions > .btn--primary {
+      flex-basis: 100%;
+    }
+  }
+
+  .hero__legend {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .hero__legend-header {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .hero__legend-title {
+    font-size: var(--step-3);
+  }
+
+  .hero__legend-intro {
+    max-width: 52ch;
+    color: var(--color-text-muted);
+  }
+
+  .hero__parts {
+    position: relative;
+  }
+
+  /* Shown only while focused (.visually-hidden), over the top of the list. */
+  .hero__skip {
+    position: absolute;
+    top: var(--space-1);
+    left: 0;
+    z-index: var(--z-content);
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target);
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-2);
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    font-size: var(--step--1);
+    font-weight: var(--weight-medium);
+    text-decoration: none;
+  }
+
+  .hero__skip:hover {
+    color: var(--color-accent-ink);
+  }
+
+  .hero__skip:focus-visible {
+    outline-color: var(--color-text);
+  }
+
+  @media (min-width: 64rem) {
+    .hero {
+      padding-top: var(--space-5);
+    }
+
+    .hero__grid {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      row-gap: var(--space-4);
+    }
+
+    .hero__intro,
+    .hero__legend {
+      grid-column: 1 / span 6;
+    }
+
+    .hero__facts {
+      grid-column: 1 / span 6;
+    }
+
+    .hero__legend {
+      margin-top: var(--space-8);
+    }
+
+    .hero__figure {
+      grid-column: 7 / -1;
+      grid-row: 1 / span 3;
+      align-self: start;
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-3));
+      width: 100%;
+      max-width: calc(
+        (100svh - var(--header-height) - var(--space-6)) * var(--fig-w) / var(--fig-h)
+      );
+      justify-self: end;
+    }
+  }
+</style>

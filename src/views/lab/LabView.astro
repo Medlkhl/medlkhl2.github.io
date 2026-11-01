@@ -1,0 +1,93 @@
+---
+/**
+ * Lab page (/lab/ and /de/lab/), brief section 5: a HoloBox preview with the
+ * planned spatial view, the 2019 humanoid-robot archive (modules and demo
+ * videos as link-outs), the experiments still to come (clearly planned) and a
+ * low-key student archive. Static HTML, no client script, no embeds.
+ */
+import HoloBoxPreview from '../../components/lab/HoloBoxPreview.astro';
+import RobotArchive from '../../components/lab/RobotArchive.astro';
+import StudentArchive from '../../components/lab/StudentArchive.astro';
+import CompactSection from '../../components/ui/CompactSection.astro';
+import PageHeader from '../../components/ui/PageHeader.astro';
+import Points from '../../components/ui/Points.astro';
+import Section from '../../components/ui/Section.astro';
+import StatusChip from '../../components/ui/StatusChip.astro';
+import { experience } from '../../data/experience.ts';
+import { SCENE_SHOTS } from '../../data/scene.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { pageMeta } from '../../i18n/meta.copy.ts';
+import { ROUTES } from '../../i18n/routes.ts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ogImagePath } from '../../lib/og.ts';
+import { getWork, workSlug } from '../../lib/work.ts';
+import { labCopy } from './lab.copy.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = labCopy[locale];
+const meta = pageMeta[locale].lab;
+const workTitles = new Map(
+  (await getWork(locale)).map((entry) => [workSlug(entry), entry.data.title]),
+);
+const robotProject = experience.find((entry) => entry.id === 'dot-it');
+const robotIntro = t.robot.intro
+  .replace('{org}', robotProject?.org ?? '')
+  .replace('{year}', robotProject?.start.slice(0, 4) ?? '');
+---
+
+<BaseLayout
+  locale={locale}
+  title={meta.title}
+  description={meta.description}
+  path={ROUTES.lab}
+  ogImage={ogImagePath(locale, 'lab')}
+  sceneShot={SCENE_SHOTS.lab}
+>
+  <PageHeader label={t.header.label} title={t.header.title} intro={t.header.intro} />
+
+  <Section id="holobox" index={1} label={t.holobox.label} title={t.holobox.title}>
+    <div slot="header-extra">
+      <StatusChip status="in-development" locale={locale} />
+    </div>
+    <HoloBoxPreview
+      locale={locale}
+      copy={t}
+      caseStudyTitle={workTitles.get('holobox') ?? t.holobox.title}
+    />
+  </Section>
+
+  <Section id="robot" index={2} label={t.robot.label} title={t.robot.title} intro={robotIntro}>
+    <RobotArchive
+      locale={locale}
+      copy={t}
+      caseStudyTitle={workTitles.get('humanoid-robot') ?? t.robot.title}
+    />
+  </Section>
+
+  <Section
+    id="experiments"
+    index={3}
+    label={t.experiments.label}
+    title={t.experiments.title}
+    intro={t.experiments.intro}
+  >
+    <Points items={t.experiments.items} columns={3} variant="planned" locale={locale} />
+  </Section>
+
+  <CompactSection id="student-archive" index={4} label={t.archive.label}>
+    <p class="archive-intro">{t.archive.intro}</p>
+    <StudentArchive locale={locale} />
+  </CompactSection>
+</BaseLayout>
+
+<style>
+  .archive-intro {
+    margin-bottom: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+</style>

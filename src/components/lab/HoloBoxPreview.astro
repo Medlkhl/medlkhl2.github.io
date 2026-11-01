@@ -1,0 +1,100 @@
+---
+/**
+ * HoloBox teaser for the Lab: what it is (two short paragraphs), a link to the
+ * case study, and the planned head-tracked "spatial view" demo, clearly
+ * labelled as planned (brief section 4). Nothing here runs yet; no camera code.
+ */
+import type { Locale } from '../../i18n/config.ts';
+import { workHref } from '../../i18n/routes.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import type { LabCopy } from '../../views/lab/lab.copy.ts';
+import ArrowLink from '../ui/ArrowLink.astro';
+import PlannedChip from '../ui/PlannedChip.astro';
+
+interface Props {
+  locale: Locale;
+  copy: LabCopy;
+  /** Title of the HoloBox case study, from the work collection. */
+  caseStudyTitle: string;
+}
+
+const { locale, copy, caseStudyTitle } = Astro.props;
+const t = copy.holobox;
+---
+
+<div class="holobox">
+  <div class="holobox__text">
+    {t.paragraphs.map((paragraph) => (
+      <p>{paragraph}</p>
+    ))}
+    <ArrowLink href={workHref(locale, 'holobox')} class="holobox__link">
+      {ui[locale].cta.caseStudyFor.replace('{title}', caseStudyTitle)}
+    </ArrowLink>
+  </div>
+
+  <div class="holobox__planned">
+    <PlannedChip locale={locale} />
+    <h3 class="holobox__planned-title">{t.spatial.title}</h3>
+    <p class="holobox__planned-text">{t.spatial.text}</p>
+  </div>
+</div>
+
+<style>
+  .holobox {
+    display: grid;
+    gap: var(--space-6) var(--grid-gutter);
+  }
+
+  .holobox__text {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    max-width: var(--measure);
+  }
+
+  .holobox__text > p:first-child {
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+
+  .holobox__text > p + p {
+    color: var(--color-text-muted);
+  }
+
+  .holobox__text :global(.holobox__link) {
+    margin-top: var(--space-1);
+  }
+
+  .holobox__planned {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    justify-items: start;
+    padding: var(--space-4);
+    border: var(--hairline) dashed var(--color-line-strong);
+    border-radius: var(--radius-3);
+  }
+
+  .holobox__planned-title {
+    font-size: var(--step-1);
+  }
+
+  .holobox__planned-text {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  @media (min-width: 64rem) {
+    .holobox {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    }
+
+    .holobox__text {
+      grid-column: 1 / span 7;
+    }
+
+    .holobox__planned {
+      grid-column: 9 / -1;
+    }
+  }
+</style>

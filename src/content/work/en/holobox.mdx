@@ -1,0 +1,100 @@
+---
+title: 'HoloBox'
+summary: 'Applied AI in .NET MAUI Blazor Hybrid: head-tracked off-axis projection with three.js and MediaPipe, speech, and a local Gemma model in-process via LLamaSharp.'
+outcome: 'A talking 3D avatar that seems to stand inside a flat screen, built to run offline and answer with low latency.'
+status: 'in-development'
+role: 'Architecture and development'
+team: '[CONFIRM: team size]'
+timeframe:
+  start: '[CONFIRM: start date]'
+  end: null
+platforms: ['Windows (first target)']
+stack: ['.NET MAUI', 'Blazor Hybrid', 'three.js', 'MediaPipe', 'LLamaSharp', 'Gemma (GGUF)', 'C#']
+order: 2
+featured: true
+layers: ['ui', 'domain']
+context: 'HoloBox is my current applied-AI project. A flat screen shows a conversational 3D avatar as if it stood inside a physical box: a webcam tracks the viewer’s head, and the scene is rendered with an off-axis projection that matches their viewpoint. You speak, a local language model answers, and the avatar says the reply aloud with lip-sync. Everything runs on the device, so it works offline and responds with low latency.'
+constraints:
+  - 'Offline by design: speech, the language model and rendering all run on the device, with no cloud service.'
+  - 'Low latency: a spoken exchange only feels natural when the answer comes quickly, so nothing may wait on a network.'
+  - 'Two runtimes: 3D rendering and face tracking run in JavaScript inside a WebView, the language model in .NET.'
+  - 'Windows first: the first target is a Windows PC, with the model running inside the app process.'
+responsibilities:
+  - 'Designing the architecture: a .NET MAUI Blazor Hybrid app with three.js and MediaPipe in its WebView and a local model in .NET.'
+  - 'Building the head-tracked off-axis projection that turns the flat screen into a window onto a box.'
+  - 'Integrating a Gemma model in GGUF format in-process through LLamaSharp, so conversations stay on the device.'
+  - 'Building the conversation loop: speech in, the model’s reply, speech out with lip-sync.'
+architecture:
+  diagram: 'holobox'
+  summary: 'One .NET MAUI Blazor Hybrid app runs two loops. Vision: the webcam drives face tracking and a head-coupled camera. Voice: speech becomes text, a local model answers in-process, and the reply becomes speech with lip-sync. Both meet in the avatar.'
+  steps:
+    - id: 'track-head'
+      label: 'Track the head'
+      detail: 'MediaPipe runs in the WebView and estimates the position of the viewer’s head from the webcam image.'
+    - id: 'project-view'
+      label: 'Project for that viewpoint'
+      detail: 'The head position drives an off-axis camera: an asymmetric frustum through the screen rectangle, so the screen behaves like a window onto a box.'
+    - id: 'listen'
+      label: 'Listen'
+      detail: 'The microphone feeds speech recognition on the device. [CONFIRM: speech-recognition engine]'
+    - id: 'generate'
+      label: 'Answer locally'
+      detail: 'The transcript goes to a Gemma model loaded from a GGUF file and run in-process through LLamaSharp. No network round trip.'
+    - id: 'speak'
+      label: 'Speak'
+      detail: 'The reply is turned into speech, and the avatar’s lips move with it. [CONFIRM: text-to-speech engine and lip-sync technique]'
+    - id: 'render'
+      label: 'Render'
+      detail: 'The avatar is rendered by three.js through the head-coupled camera on the flat screen, so it appears to stand inside the display.'
+  decisions:
+    - title: 'A local model, in-process'
+      choice: 'A Gemma model in GGUF format runs inside the app process through LLamaSharp.'
+      tradeoff: 'Model size and answer quality are bounded by the user’s hardware; in return, it works offline, keeps conversations on the device and avoids a network round trip.'
+    - title: 'Blazor Hybrid with the 3D in a WebView'
+      choice: 'A .NET MAUI Blazor Hybrid app hosts three.js and MediaPipe in its WebView, while the model and the app shell run in .NET.'
+      tradeoff: 'Two runtimes and an interop boundary between JavaScript and .NET to keep fast; in return, mature web libraries for 3D and face tracking next to .NET for the model.'
+    - title: 'Head-coupled perspective on a regular screen'
+      choice: 'A webcam tracks the viewer’s head, and an off-axis projection makes a regular flat screen show depth.'
+      tradeoff: 'The illusion is correct for one viewer at a time and depends on tracking quality; in return, it needs no special display and no glasses.'
+problems:
+  - title: 'A flat screen that behaves like a box'
+    challenge: 'A normal perspective camera produces a flat picture. For the avatar to seem to stand inside the display, the image has to match where the viewer’s eyes actually are, and follow them as they move.'
+    approach: 'MediaPipe estimates the head position from the webcam in the WebView. The three.js camera then uses an off-axis projection: an asymmetric frustum from the eye through the edges of the physical screen, updated as the head moves.'
+    evidence:
+      type: 'placeholder'
+      text: '[CODE: off-axis projection excerpt]'
+  - title: 'A conversation without the cloud'
+    challenge: 'Speech in, an answer from a language model and speech out have to feel immediate, and work without an internet connection.'
+    approach: 'The language model runs locally: a Gemma model in GGUF format, loaded in-process through LLamaSharp, so no request leaves the device. [DETAIL: how speech recognition, the model and text-to-speech are chained]'
+    evidence:
+      type: 'placeholder'
+      text: '[ASSET: short demo clip of a spoken exchange]'
+results:
+  metrics:
+    - { label: 'Cloud services', value: 'None' }
+    - { label: 'Response latency', value: '[METRIC: speech to speech]' }
+    - { label: 'Frame rate', value: '[METRIC: fps on the target PC]' }
+    - { label: 'Model size', value: '[METRIC: GGUF size and quantisation]' }
+    - { label: 'Memory', value: '[METRIC: peak memory]' }
+  outcomes:
+    - 'An offline-first architecture: tracking, rendering and the language model all run on the device.'
+    - '[DETAIL: current state of the prototype]'
+  next: '[DETAIL: next milestones]'
+proof:
+  placeholder: '[LINK: demo clip or repository]'
+scene:
+  shot: 'cam_work_holobox'
+  layer: 'layer_ui'
+---
+
+### The idea
+
+A screen is flat, but we judge depth partly by how a scene shifts as we move our head. HoloBox tracks the viewer’s head and redraws the scene from exactly that viewpoint, so the avatar seems to stand inside a box behind the glass rather than on its surface.
+
+### How it works
+
+The app is a .NET MAUI Blazor Hybrid application. Its WebView runs three.js for the avatar and MediaPipe for face tracking. The .NET side runs a Gemma model in-process through LLamaSharp, loaded from a GGUF file. Speech recognition turns what the viewer says into text, the model answers, and text-to-speech gives the avatar its voice, with lip-sync. [CONFIRM: speech and voice engines]
+
+### Why everything stays local
+
+Running the model inside the app keeps the whole conversation on the device. There is no network round trip, it works offline, and nothing the viewer says has to leave the machine. HoloBox is in development, Windows first.

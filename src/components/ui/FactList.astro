@@ -1,0 +1,120 @@
+---
+/**
+ * A definition list of facts (quick facts, case-study header, About languages):
+ * monospace term, regular value, hairline between rows, tabular figures.
+ * Values may contain placeholders.
+ */
+import Rich from './Rich.astro';
+
+export interface Fact {
+  term: string;
+  value: string | string[];
+}
+
+interface Props {
+  facts: Fact[];
+  /**
+   * 'rows' (term left, value right), 'stacked' (term above value) or 'auto':
+   * rows that stack once the list itself is 24rem wide or narrower (a container
+   * query, so it follows the space the list gets, not the viewport).
+   */
+  layout?: 'rows' | 'stacked' | 'auto';
+  class?: string;
+}
+
+const { facts, layout = 'rows', class: className } = Astro.props;
+---
+
+<dl class:list={['facts', `facts--${layout}`, className]}>
+  {facts.map((fact) => (
+    <div class="facts__row">
+      <dt class="facts__term">{fact.term}</dt>
+      <dd class="facts__value">
+        {Array.isArray(fact.value) ? (
+          <ul role="list" class="facts__list">
+            {fact.value.map((item) => (
+              <li>
+                <Rich text={item} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Rich text={fact.value} />
+        )}
+      </dd>
+    </div>
+  ))}
+</dl>
+
+<style>
+  .facts {
+    display: grid;
+    margin: 0;
+  }
+
+  .facts__row {
+    display: grid;
+    gap: var(--space-half) var(--space-2);
+    padding-block: var(--space-1);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .facts__row:last-child {
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .facts--rows .facts__row,
+  .facts--auto .facts__row {
+    grid-template-columns: minmax(7rem, 30%) 1fr;
+    align-items: baseline;
+  }
+
+  .facts--auto {
+    container: facts / inline-size;
+  }
+
+  @container facts (max-width: 24rem) {
+    .facts--auto .facts__row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .facts__term {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .facts__value {
+    margin: 0;
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /*
+   * Middots sit in the column gap before each item, so a wrapped line never
+   * ends in one and the first item of a line has none (clipped at the list's
+   * edge). The empty alt text keeps them out of the accessible names.
+   */
+  .facts__list {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--space-3);
+    overflow-x: clip;
+  }
+
+  .facts__list li {
+    position: relative;
+  }
+
+  .facts__list li::before {
+    content: '·' / '';
+    position: absolute;
+    right: 100%;
+    width: var(--space-3);
+    text-align: center;
+    color: var(--color-text-subtle);
+  }
+</style>

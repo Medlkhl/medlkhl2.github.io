@@ -1,0 +1,120 @@
+---
+/**
+ * Experience page (/experience/ and /de/experience/), brief section 5: the
+ * full timeline of src/data/experience.ts, newest first, then education and
+ * the CV downloads. Static HTML, no client script. Team-lead title and team
+ * size are deliberately absent until the owner confirms them (DECISIONS D-018).
+ */
+import EducationEntry from '../../components/experience/EducationEntry.astro';
+import TimelineEntry from '../../components/experience/TimelineEntry.astro';
+import ArrowLink from '../../components/ui/ArrowLink.astro';
+import CompactSection from '../../components/ui/CompactSection.astro';
+import Icon from '../../components/ui/Icon.astro';
+import PageHeader from '../../components/ui/PageHeader.astro';
+import { education, experience } from '../../data/experience.ts';
+import { SCENE_SHOTS } from '../../data/scene.ts';
+import { LOCALE_META, type Locale, otherLocale } from '../../i18n/config.ts';
+import { pageMeta } from '../../i18n/meta.copy.ts';
+import { ROUTES, routeHref } from '../../i18n/routes.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { cvPdfHref } from '../../lib/cv.ts';
+import { ogImagePath } from '../../lib/og.ts';
+import { getWork, workSlug } from '../../lib/work.ts';
+import { experienceCopy } from './experience.copy.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = experienceCopy[locale];
+const cta = ui[locale].cta;
+const meta = pageMeta[locale].experience;
+const other = otherLocale(locale);
+const workTitles = new Map(
+  (await getWork(locale)).map((entry) => [workSlug(entry), entry.data.title]),
+);
+const firstYear = experience
+  .map((entry) => entry.start.slice(0, 4))
+  .sort()
+  .at(0);
+const title = t.header.title.replace('{year}', firstYear ?? '');
+---
+
+<BaseLayout
+  locale={locale}
+  title={meta.title}
+  description={meta.description}
+  path={ROUTES.experience}
+  ogImage={ogImagePath(locale, 'experience')}
+  sceneShot={SCENE_SHOTS.experience}
+>
+  <PageHeader label={t.header.label} title={title} intro={t.header.intro}>
+    <a class="btn btn--primary" href={cvPdfHref(locale)} download>
+      <Icon name="download" />
+      <span>{cta.downloadCvPdf}</span>
+    </a>
+    <a class="btn" href={routeHref(locale, 'cv')}>
+      <span>{t.header.cvOnline}</span>
+      <Icon name="arrow-right" />
+    </a>
+  </PageHeader>
+
+  <CompactSection id="timeline" index={1} label={t.timeline.label}>
+    <ol role="list" class="timeline" aria-label={t.timeline.listLabel}>
+      {experience.map((entry) => (
+        <TimelineEntry entry={entry} locale={locale} copy={t.timeline} workTitles={workTitles} />
+      ))}
+    </ol>
+  </CompactSection>
+
+  <CompactSection id="education" index={2} label={t.education.label} rule={false}>
+    <ul role="list" class="education">
+      {education.map((entry) => (
+        <EducationEntry entry={entry} locale={locale} />
+      ))}
+    </ul>
+  </CompactSection>
+
+  <CompactSection id="cv-download" index={3} label={t.cv.label} layout="side">
+    <div class="cv-band">
+      <p class="cv-band__text">{t.cv.text}</p>
+      <div class="cv-band__actions">
+        <a class="btn btn--primary" href={cvPdfHref(locale)} download>
+          <Icon name="download" />
+          <span>{cta.downloadCvPdf}</span>
+        </a>
+        <a class="btn" href={cvPdfHref(other)} hreflang={LOCALE_META[other].htmlLang} download>
+          <Icon name="download" />
+          <span>{t.cv.otherLanguage}</span>
+        </a>
+        <ArrowLink href={routeHref(locale, 'cv')}>{t.header.cvOnline}</ArrowLink>
+      </div>
+    </div>
+  </CompactSection>
+</BaseLayout>
+
+<style>
+  .timeline {
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .cv-band {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .cv-band__text {
+    max-width: var(--measure);
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+
+  .cv-band__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+  }
+</style>

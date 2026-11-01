@@ -1,0 +1,1200 @@
+---
+/**
+ * Case-study template: the nine parts of brief §5, in reading order.
+ *   1 header (breadcrumb, status, title, outcome, facts) · 2 context and constraints
+ *   3 role + the MDX story · 4 architecture (diagram, steps, decisions)
+ *   5 hard problems with evidence · 6 results · 7 proof · 8 confidentiality
+ *   9 scene hook → BaseLayout (data-scene-shot / data-active-layer, data only)
+ * Every string from frontmatter goes through <Rich> so placeholders stay visible.
+ * No client JavaScript.
+ */
+import type { CodeLanguage } from 'astro';
+import { Code } from 'astro:components';
+import { render } from 'astro:content';
+import ExternalLink from '../../components/ui/ExternalLink.astro';
+import FactList from '../../components/ui/FactList.astro';
+import Icon from '../../components/ui/Icon.astro';
+import Quote from '../../components/ui/Quote.astro';
+import Rich from '../../components/ui/Rich.astro';
+import Section from '../../components/ui/Section.astro';
+import SectionLabel from '../../components/ui/SectionLabel.astro';
+import StatusChip from '../../components/ui/StatusChip.astro';
+import ProseLink from '../../components/work/ProseLink.astro';
+import { DIAGRAMS } from '../../components/work/diagrams/index.ts';
+import { getRecommendation } from '../../data/recommendations.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { formatRange } from '../../i18n/format.ts';
+import { routeHref, workHref } from '../../i18n/routes.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { leadIn } from '../../lib/lead-in.ts';
+import { ogImagePath } from '../../lib/og.ts';
+import { hasPlaceholder, splitPlaceholders } from '../../lib/placeholders.ts';
+import { breadcrumbJsonLd } from '../../lib/structured-data.ts';
+import { type WorkEntry, getWork, workSlug } from '../../lib/work.ts';
+import { workCopy } from './work.copy.ts';
+
+interface Props {
+  entry: WorkEntry;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+const slug = workSlug(entry);
+const data = entry.data;
+const { Content } = await render(entry);
+const t = workCopy[locale];
+const u = ui[locale];
+const path = `/work/${slug}/`;
+
+// 1 · Header
+const facts = [
+  { term: t.header.facts.role, value: data.role },
+  { term: t.header.facts.team, value: data.team },
+  {
+    term: t.header.facts.timeframe,
+    value: formatRange(data.timeframe.start, data.timeframe.end, locale),
+  },
+  { term: t.header.facts.platforms, value: data.platforms },
+  { term: t.header.facts.stack, value: data.stack },
+];
+const showLegend = hasPlaceholder(JSON.stringify(data)) || hasPlaceholder(entry.body ?? '');
+
+// 4 · Architecture
+const Diagram = DIAGRAMS[data.architecture.diagram];
+// Only a confidential case study (HAPP) is drawn with generic names.
+const caption = t.architecture.caption
+  .replace('{title}', data.title)
+  .replace('{generic}', data.confidentiality ? t.architecture.genericNames : '');
+
+// 5 · Hard problems
+const codeThemes = { light: 'github-light', dark: 'github-dark-dimmed' } as const;
+const isYouTube = (href: string) => /^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(href);
+
+// 6 · Results
+const nextLabel =
+  data.status === 'in-development'
+    ? t.results.nextInDevelopment
+    : data.status === 'completed'
+      ? t.results.lookingBack
+      : t.results.next;
+
+// 7 · Proof
+const recommendation = data.proof.recommendation
+  ? getRecommendation(data.proof.recommendation)
+  : undefined;
+if (data.proof.recommendation && !recommendation) {
+  throw new Error(`${entry.id}: unknown recommendation "${data.proof.recommendation}"`);
+}
+const slotKind = splitPlaceholders(data.proof.placeholder ?? '').find(
+  (segment) => segment.type === 'placeholder',
+);
+const proofWanted =
+  slotKind?.type === 'placeholder' && slotKind.kind === 'RECOMMENDATION'
+    ? t.proof.wantedRecommendation
+    : t.proof.wantedEvidence;
+const hasProof = Boolean(recommendation || data.proof.placeholder || data.proof.links.length);
+
+// Previous / next case study (work index order, no wrap-around)
+const all = await getWork(locale);
+const index = all.findIndex((item) => workSlug(item) === slug);
+const previous = index > 0 ? all[index - 1] : undefined;
+const next = index >= 0 ? all[index + 1] : undefined;
+
+const pad = (n: number) => String(n).padStart(2, '0');
+
+/** True when a string is nothing but one placeholder, e.g. "[DETAIL: next milestones]". */
+function onlyPlaceholder(text: string): boolean {
+  const segments = splitPlaceholders(text.trim());
+  return segments.length === 1 && segments[0]?.type === 'placeholder';
+}
+---
+
+<BaseLayout
+  locale={locale}
+  title={data.title}
+  description={data.summary}
+  path={path}
+  ogType="article"
+  ogImage={ogImagePath(locale, `work-${slug}`)}
+  jsonLd={[
+    breadcrumbJsonLd(locale, [
+      { name: u.nav.home, path: '/' },
+      { name: u.nav.work, path: '/work/' },
+      { name: data.title, path },
+    ]),
+  ]}
+  sceneShot={data.scene.shot}
+  activeLayer={data.scene.layer}
+>
+  <article class="case" data-work={slug}>
+    <!-- 1 · Header -->
+    <header class="case-header">
+      <div class="container">
+        <nav class="crumbs" aria-label={t.breadcrumb}>
+          <ol role="list" class="crumbs__list">
+            <li>
+              <a href={routeHref(locale, 'home')}>{u.nav.home}</a>
+            </li>
+            <li>
+              <span class="crumbs__sep" aria-hidden="true">
+                /
+              </span>
+              <a href={routeHref(locale, 'work')}>{u.nav.work}</a>
+            </li>
+            <li>
+              <span class="crumbs__sep" aria-hidden="true">
+                /
+              </span>
+              <span class="crumbs__current" aria-current="page">
+                {data.title}
+              </span>
+            </li>
+          </ol>
+        </nav>
+
+        <div class="case-header__grid">
+          <div class="case-header__lead">
+            <div class="case-header__meta">
+              <SectionLabel index={1}>{t.header.label}</SectionLabel>
+              <StatusChip status={data.status} locale={locale} />
+            </div>
+            <h1 class="case-header__title">{data.title}</h1>
+            <p class="case-header__outcome">
+              <Rich text={data.outcome} />
+            </p>
+          </div>
+          <div class="case-header__facts">
+            <FactList facts={facts} />
+          </div>
+        </div>
+
+        {showLegend && (
+          <p class="case-header__legend">
+            <Rich text={u.placeholderLegend} />
+          </p>
+        )}
+      </div>
+    </header>
+
+    <!-- 2 · Context and constraints -->
+    <Section
+      id="context"
+      index={2}
+      label={t.sections.context.label}
+      title={t.sections.context.title}
+    >
+      <div class="ctx">
+        <p class="ctx__lead">
+          <Rich text={data.context} />
+        </p>
+        <div class="ctx__constraints">
+          <h3 class="case-kicker">{t.context.constraints}</h3>
+          <ul role="list" class="rule-list">
+            {data.constraints.map((item) => {
+              const { lead, rest } = leadIn(item, locale);
+              return (
+                <li class="rule-list__item">
+                  {lead && <strong class="rule-list__lead">{lead}</strong>}
+                  <span>
+                    <Rich text={rest} />
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    </Section>
+
+    <!-- 3 · My role, then the story (MDX body) -->
+    <Section id="role" index={3} label={t.sections.role.label} title={t.sections.role.title}>
+      <div class="role">
+        <div class="role__resp">
+          <h3 class="case-kicker">{t.role.responsibilities}</h3>
+          <ul role="list" class="rule-list">
+            {data.responsibilities.map((item) => (
+              <li class="rule-list__item">
+                <Rich text={item} />
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="prose role__story">
+          <Content components={{ a: ProseLink }} />
+        </div>
+      </div>
+    </Section>
+
+    <!-- 4 · Architecture -->
+    <Section
+      id="architecture"
+      index={4}
+      label={t.sections.architecture.label}
+      title={t.sections.architecture.title}
+    >
+      <p class="lead-text">
+        <Rich text={data.architecture.summary} />
+      </p>
+      <div class="arch">
+        <figure class="arch__figure">
+          <div class="arch__sheet blueprint">
+            <Diagram steps={data.architecture.steps} locale={locale} />
+          </div>
+          <figcaption class="arch__caption">
+            <span class="arch__fig">{t.architecture.figure}</span>
+            {caption}
+          </figcaption>
+        </figure>
+        <div class="arch__steps">
+          <h3 class="case-kicker">{t.architecture.steps}</h3>
+          <ol role="list" class="steps">
+            {data.architecture.steps.map((step, i) => (
+              <li class="step" id={`step-${step.id}`} data-step={step.id}>
+                <span class="step__no" aria-hidden="true">
+                  {i + 1}
+                </span>
+                <div class="step__body">
+                  <p class="step__label">
+                    <Rich text={step.label} />
+                  </p>
+                  <p class="step__detail">
+                    <Rich text={step.detail} />
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+
+      <div class="decisions">
+        <h3 class="decisions__title">{t.architecture.decisions}</h3>
+        <ul role="list" class="decisions__list">
+          {data.architecture.decisions.map((decision) => (
+            <li class="decision">
+              <h4 class="decision__title">
+                <Rich text={decision.title} />
+              </h4>
+              <dl class="pairs">
+                <div>
+                  <dt>{t.architecture.choice}</dt>
+                  <dd>
+                    <Rich text={decision.choice} />
+                  </dd>
+                </div>
+                <div>
+                  <dt>{t.architecture.tradeoff}</dt>
+                  <dd>
+                    <Rich text={decision.tradeoff} />
+                  </dd>
+                </div>
+              </dl>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Section>
+
+    <!-- 5 · Hard problems solved -->
+    <Section
+      id="problems"
+      index={5}
+      label={t.sections.problems.label}
+      title={t.sections.problems.title}
+    >
+      <ol role="list" class="problems">
+        {data.problems.map((problem, i) => (
+          <li class="problem">
+            <div class="problem__text">
+              <p class="problem__index" aria-hidden="true">
+                {pad(i + 1)}
+              </p>
+              <h3 class="problem__title">
+                <Rich text={problem.title} />
+              </h3>
+              <dl class="pairs problem__pairs">
+                <div>
+                  <dt>{t.problems.challenge}</dt>
+                  <dd>
+                    <Rich text={problem.challenge} />
+                  </dd>
+                </div>
+                <div>
+                  <dt>{t.problems.approach}</dt>
+                  <dd>
+                    <Rich text={problem.approach} />
+                  </dd>
+                </div>
+              </dl>
+            </div>
+            <div class="problem__evidence">
+              <p class="case-kicker">{t.problems.evidence}</p>
+              {problem.evidence.type === 'code' && (
+                <figure class="evidence-code">
+                  <Code
+                    code={problem.evidence.code}
+                    lang={problem.evidence.lang as CodeLanguage}
+                    themes={codeThemes}
+                    defaultColor={false}
+                  />
+                  <figcaption class="evidence-code__caption">
+                    <Rich text={problem.evidence.caption} />
+                  </figcaption>
+                </figure>
+              )}
+              {problem.evidence.type === 'link' && (
+                <ExternalLink
+                  href={problem.evidence.href}
+                  locale={locale}
+                  inline
+                  class="evidence-link"
+                >
+                  <span class="evidence-link__play">
+                    <Icon name="play" size={14} />
+                  </span>
+                  <span class="evidence-link__text">
+                    <span class="evidence-link__label">{problem.evidence.label}</span>
+                    <span class="evidence-link__meta">
+                      {isYouTube(problem.evidence.href)
+                        ? u.cta.watchVideo
+                        : new URL(problem.evidence.href).hostname}
+                    </span>
+                  </span>
+                </ExternalLink>
+              )}
+              {problem.evidence.type === 'placeholder' && (
+                <p class="ph-block">{problem.evidence.text}</p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </Section>
+
+    <!-- 6 · Results -->
+    <Section
+      id="results"
+      index={6}
+      label={t.sections.results.label}
+      title={t.sections.results.title}
+    >
+      <h3 class="case-kicker">{t.results.metrics}</h3>
+      <dl class="metrics">
+        {data.results.metrics.map((metric) => (
+          <div class:list={['metric', { 'metric--pending': hasPlaceholder(metric.value) }]}>
+            <dt class="metric__label">
+              <Rich text={metric.label} />
+            </dt>
+            <dd class="metric__value">
+              <Rich text={metric.value} />
+            </dd>
+          </div>
+        ))}
+      </dl>
+      <div class="results">
+        <div class="results__outcomes">
+          <h3 class="case-kicker">{t.results.outcomes}</h3>
+          <ul role="list" class="outcomes">
+            {data.results.outcomes.map((outcome) => (
+              <li class="outcome">
+                {onlyPlaceholder(outcome) ? (
+                  <span aria-hidden="true" />
+                ) : (
+                  <Icon name="check" size={16} class="outcome__icon" />
+                )}
+                <span>
+                  <Rich text={outcome} />
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="results__next">
+          <h3 class="case-kicker">{nextLabel}</h3>
+          <p>
+            <Rich text={data.results.next} />
+          </p>
+        </div>
+      </div>
+    </Section>
+
+    <!-- 7 · Proof -->
+    {hasProof && (
+      <Section id="proof" index={7} label={t.sections.proof.label} title={t.sections.proof.title}>
+        <div class="proof">
+          <div class="proof__main">
+            {recommendation ? (
+              <Quote recommendation={recommendation} locale={locale} />
+            ) : (
+              data.proof.placeholder && (
+                <div class="proof__slot">
+                  <p class="proof__wanted">{proofWanted}</p>
+                  <p>
+                    <Rich text={data.proof.placeholder} />
+                  </p>
+                </div>
+              )
+            )}
+          </div>
+          {data.proof.links.length > 0 && (
+            <div class="proof__links">
+              <h3 class="case-kicker">{t.proof.links}</h3>
+              <ul role="list" class="link-list">
+                {data.proof.links.map((link) => (
+                  <li>
+                    <ExternalLink href={link.href} locale={locale} inline class="link-list__link">
+                      {link.label}
+                    </ExternalLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </Section>
+    )}
+
+    <!-- 8 · Confidentiality: a compact note under its own mono heading -->
+    {data.confidentiality && (
+      <section id="confidentiality" class="confidential" aria-labelledby="confidentiality-title">
+        <div class="container confidential__inner">
+          <SectionLabel as="h2" id="confidentiality-title" index={8}>
+            {t.sections.confidentiality.label}
+          </SectionLabel>
+          <p class="confidential__text">
+            <Rich text={data.confidentiality} />
+          </p>
+        </div>
+      </section>
+    )}
+  </article>
+
+  <nav class="container pager" aria-labelledby="pager-title">
+    <div class="pager__head">
+      <p class="case-kicker pager__kicker" id="pager-title">
+        {t.pager.label}
+      </p>
+      <a class="pager__all" href={routeHref(locale, 'work')}>
+        {u.cta.allWork}
+        <Icon name="arrow-right" />
+      </a>
+    </div>
+    {(previous || next) && (
+      <ul role="list" class="pager__list">
+        {previous && (
+          <li class="pager__item pager__item--prev">
+            <a class="pager__link" href={workHref(locale, workSlug(previous))} rel="prev">
+              <span class="pager__dir">
+                <Icon name="arrow-right" class="pager__back" />
+                {t.pager.previous}
+              </span>
+              <span class="pager__title">{previous.data.title}</span>
+            </a>
+          </li>
+        )}
+        {next && (
+          <li class="pager__item pager__item--next">
+            <a class="pager__link" href={workHref(locale, workSlug(next))} rel="next">
+              <span class="pager__dir">
+                {t.pager.next}
+                <Icon name="arrow-right" />
+              </span>
+              <span class="pager__title">{next.data.title}</span>
+            </a>
+          </li>
+        )}
+      </ul>
+    )}
+  </nav>
+</BaseLayout>
+
+<style>
+  /* ---- Shared bits ------------------------------------------------------- */
+  .case-kicker,
+  .pairs dt,
+  .metric__label,
+  .problem__index,
+  .pager__dir,
+  .arch__caption {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    line-height: 1.5;
+  }
+
+  .case-kicker {
+    margin-bottom: var(--space-2);
+  }
+
+  .lead-text {
+    max-width: var(--measure);
+    font-size: var(--step-1);
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .rule-list {
+    display: grid;
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .rule-list__item {
+    display: grid;
+    gap: var(--space-half);
+    padding-block: var(--space-2);
+    border-top: var(--hairline) solid var(--color-line);
+    font-size: var(--step--1);
+  }
+
+  .rule-list__lead {
+    font-size: var(--step-0);
+    font-weight: var(--weight-semibold);
+  }
+
+  .pairs {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .pairs dd {
+    margin: var(--space-half) 0 0;
+    max-width: var(--measure);
+  }
+
+  /* ---- 1 · Header -------------------------------------------------------- */
+  .case-header {
+    padding-block: var(--space-4) var(--space-10);
+  }
+
+  .crumbs {
+    margin-bottom: var(--space-8);
+  }
+
+  .crumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.04em;
+    color: var(--color-text-subtle);
+  }
+
+  .crumbs__list li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .crumbs__list a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target-min);
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .crumbs__list a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .crumbs__sep {
+    color: var(--color-line-strong);
+  }
+
+  .crumbs__current {
+    color: var(--color-text);
+  }
+
+  .case-header__grid {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .case-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .case-header__title {
+    font-size: var(--step-6);
+  }
+
+  .case-header__outcome {
+    max-width: 38ch;
+    margin-top: var(--space-3);
+    font-size: var(--step-1);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    text-wrap: pretty;
+  }
+
+  .case-header__legend {
+    max-width: var(--measure);
+    margin-top: var(--space-6);
+    color: var(--color-text-subtle);
+    font-size: var(--step--1);
+  }
+
+  /* ---- 2 · Context -------------------------------------------------------- */
+  .ctx {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  /* ---- 3 · Role ------------------------------------------------------------ */
+  .role {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .role__story :global(h3) {
+    font-size: var(--step-2);
+  }
+
+  /* ---- 4 · Architecture --------------------------------------------------- */
+  .arch {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+  }
+
+  .arch__figure {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .arch__sheet {
+    padding: var(--space-2) var(--space-1);
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-3);
+    background-color: var(--color-bg);
+  }
+
+  .arch__sheet :global(svg) {
+    max-width: 26rem;
+    margin-inline: auto;
+  }
+
+  .arch__caption {
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  .arch__fig {
+    margin-right: 0.5em;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+  }
+
+  .steps {
+    display: grid;
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 1.375rem minmax(0, 1fr);
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .step__no {
+    display: inline-grid;
+    place-items: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    margin-top: 0.1rem;
+    border-radius: 50%;
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: var(--weight-semibold);
+    line-height: 1;
+  }
+
+  .step__label {
+    font-weight: var(--weight-medium);
+  }
+
+  .step__detail {
+    margin-top: var(--space-half);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  .decisions {
+    margin-top: var(--space-10);
+  }
+
+  .decisions__title {
+    margin-bottom: var(--space-4);
+    font-size: var(--step-2);
+  }
+
+  .decisions__list {
+    display: grid;
+    gap: var(--space-6) var(--grid-gutter);
+  }
+
+  .decision {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding-top: var(--space-3);
+    border-top: var(--hairline) solid var(--color-line-strong);
+  }
+
+  .decision__title {
+    font-size: var(--step-1);
+  }
+
+  .decision .pairs dd {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  /* ---- 5 · Hard problems -------------------------------------------------- */
+  .problems {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .problem {
+    display: grid;
+    gap: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: var(--hairline) solid var(--color-line-strong);
+  }
+
+  .problem__text,
+  .problem__evidence {
+    min-width: 0;
+  }
+
+  .problem__title {
+    margin-top: var(--space-1);
+    font-size: var(--step-2);
+  }
+
+  .problem__pairs {
+    margin-top: var(--space-3);
+  }
+
+  .problem__evidence .ph-block {
+    min-height: 10rem;
+  }
+
+  .evidence-code {
+    display: grid;
+    gap: var(--space-1);
+    margin: 0;
+  }
+
+  .evidence-code__caption {
+    color: var(--color-text-subtle);
+    font-size: var(--step--1);
+  }
+
+  .problem__evidence :global(.evidence-link) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--target);
+    padding: var(--space-3);
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-3);
+    background: var(--color-surface);
+    text-decoration: none;
+  }
+
+  .problem__evidence :global(.evidence-link:hover) {
+    border-color: var(--color-accent);
+    color: inherit;
+  }
+
+  .evidence-link__play {
+    display: inline-grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: var(--hairline) solid var(--color-line-strong);
+    border-radius: 50%;
+    color: var(--color-text);
+  }
+
+  .evidence-link__text {
+    display: grid;
+    gap: var(--space-half);
+  }
+
+  .evidence-link__label {
+    font-weight: var(--weight-medium);
+  }
+
+  .evidence-link__meta {
+    color: var(--color-text-subtle);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.02em;
+  }
+
+  /* ---- 6 · Results -------------------------------------------------------- */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    margin: 0 0 var(--space-8);
+    border-top: var(--hairline) solid var(--color-line-strong);
+    border-left: var(--hairline) solid var(--color-line);
+  }
+
+  .metric {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    border-right: var(--hairline) solid var(--color-line);
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .metric__value {
+    margin: 0;
+    font-size: var(--step-2);
+    font-weight: var(--weight-medium);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .metric--pending .metric__value {
+    font-size: var(--step-0);
+    line-height: var(--leading-normal);
+  }
+
+  /* One dashed box per pending value, not one per wrapped line. */
+  .metric--pending .metric__value :global(.ph) {
+    display: inline-block;
+    max-width: 100%;
+  }
+
+  /* Phones and tablets: two columns; with an odd count the first figure spans both (1+2+2). */
+  @media (max-width: 63.99rem) {
+    .metrics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metric:first-child:nth-last-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .metric__label {
+    letter-spacing: 0.06em;
+  }
+
+  .results {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .outcomes {
+    display: grid;
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .outcome {
+    display: grid;
+    grid-template-columns: 1rem minmax(0, 1fr);
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .outcome :global(.outcome__icon) {
+    margin-top: 0.3em;
+    color: var(--color-text-subtle);
+  }
+
+  .results__next p {
+    max-width: var(--measure);
+  }
+
+  /* ---- 7 · Proof ---------------------------------------------------------- */
+  .proof {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .proof__slot {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border: var(--hairline) dashed var(--color-line-strong);
+    border-radius: var(--radius-3);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  .proof__wanted {
+    color: var(--color-text);
+    font-size: var(--step-0);
+  }
+
+  .link-list {
+    display: grid;
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .link-list li {
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .link-list :global(.link-list__link) {
+    display: flex;
+    align-items: center;
+    min-height: var(--target);
+    padding-block: var(--space-1);
+  }
+
+  /* ---- 8 · Confidentiality ------------------------------------------------ */
+  .confidential {
+    padding-block: var(--space-8);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .confidential__inner {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .confidential__text {
+    max-width: var(--measure);
+    padding-left: var(--space-3);
+    border-left: var(--hairline) solid var(--color-line-strong);
+    color: var(--color-text-muted);
+  }
+
+  /* ---- Pager --------------------------------------------------------------- */
+  .pager {
+    padding-top: var(--space-6);
+  }
+
+  .pager__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-3);
+    padding-top: var(--space-3);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .pager__kicker {
+    margin: 0;
+  }
+
+  .pager__all {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: var(--target);
+    font-size: var(--step--1);
+    font-weight: var(--weight-medium);
+    text-decoration: none;
+  }
+
+  .pager__list {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+
+  .pager__link {
+    display: grid;
+    gap: var(--space-1);
+    height: 100%;
+    padding: var(--space-3);
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-3);
+    background: var(--color-surface);
+    text-decoration: none;
+  }
+
+  .pager__link:hover {
+    border-color: var(--color-line-strong);
+    color: inherit;
+  }
+
+  .pager__dir {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .pager__dir :global(.pager__back) {
+    transform: scaleX(-1);
+  }
+
+  .pager__title {
+    font-size: var(--step-2);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  .pager__link:hover .pager__title {
+    color: var(--color-accent);
+  }
+
+  /* ---- Tablet --------------------------------------------------------------- */
+  @media (min-width: 48rem) {
+    .decisions__list {
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    }
+
+    .results {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+    }
+
+    .case-header__outcome {
+      font-size: var(--step-2);
+      line-height: 1.35;
+    }
+
+    .metric__value {
+      font-size: var(--step-3);
+    }
+
+    .pager__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      align-items: stretch;
+    }
+
+    .pager__item--prev {
+      grid-column: 1;
+    }
+
+    .pager__item--next {
+      grid-column: 2;
+      text-align: right;
+    }
+
+    .pager__item--next .pager__dir {
+      justify-content: flex-end;
+    }
+  }
+
+  /* ---- Desktop: the 12-column editorial layout ----------------------------- */
+  @media (min-width: 64rem) {
+    .case-header__grid,
+    .ctx,
+    .role,
+    .arch,
+    .problem,
+    .proof {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+    }
+
+    .case-header__grid {
+      align-items: end;
+    }
+
+    .case-header__lead {
+      grid-column: 1 / span 7;
+    }
+
+    .case-header__facts {
+      grid-column: 9 / -1;
+    }
+
+    .ctx__lead {
+      grid-column: 1 / span 7;
+    }
+
+    .ctx__constraints {
+      grid-column: 9 / -1;
+    }
+
+    .role {
+      align-items: start;
+    }
+
+    .role__resp {
+      grid-column: 1 / span 4;
+    }
+
+    .role__story {
+      grid-column: 6 / -1;
+    }
+
+    .arch {
+      align-items: start;
+    }
+
+    .arch__figure {
+      grid-column: 1 / span 6;
+    }
+
+    .arch__steps {
+      grid-column: 8 / -1;
+    }
+
+    .problem__text {
+      grid-column: 1 / span 6;
+    }
+
+    .problem__evidence {
+      grid-column: 8 / -1;
+    }
+
+    .proof {
+      align-items: start;
+    }
+
+    .proof__main {
+      grid-column: 1 / span 7;
+    }
+
+    .proof__links {
+      grid-column: 9 / -1;
+    }
+
+    .confidential__inner {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      align-items: baseline;
+    }
+
+    .confidential__inner > :first-child {
+      grid-column: 1 / span 4;
+    }
+
+    .confidential__text {
+      grid-column: 5 / -1;
+    }
+  }
+
+  /* Keep the diagram in view next to its steps when the window is tall enough to hold it. */
+  @media (min-width: 64rem) and (min-height: 52rem) {
+    .arch__figure {
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-3));
+    }
+  }
+</style>

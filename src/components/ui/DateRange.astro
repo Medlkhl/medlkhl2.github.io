@@ -1,0 +1,30 @@
+---
+/**
+ * A date range in the site's single format (formatRangeParts: "Jul 2024 – Dec 2025",
+ * "Juli 2024 – Dez. 2025", open ends as "Present" / "heute"), with each end in
+ * its own <time datetime>. Year-only values ("2015") are valid datetimes too.
+ */
+import type { Locale } from '../../i18n/config.ts';
+import { formatRangeParts } from '../../i18n/format.ts';
+
+interface Props {
+  start: string;
+  end: string | null;
+  locale: Locale;
+  class?: string;
+}
+
+const { start, end, locale, class: className } = Astro.props;
+const SEPARATOR = ' – ';
+const { from, to, fromDateTime, toDateTime } = formatRangeParts(start, end, locale);
+---
+
+{/* prettier-ignore */}
+<span class:list={['date-range', className]}><time datetime={fromDateTime}>{from}</time>{SEPARATOR}{end === null ? <span>{to}</span> : <time datetime={toDateTime}>{to}</time>}</span>
+
+<style>
+  /* Each end stays on one line; a narrow column may break only around the dash. */
+  .date-range time {
+    white-space: nowrap;
+  }
+</style>

@@ -1,0 +1,137 @@
+---
+/**
+ * The drawing sheet every architecture diagram is drawn on: one inline SVG in
+ * the site's engineering-drawing style (hairlines, Geist Mono labels, numbered
+ * balloon callouts). Decorative: aria-hidden, with the meaning in the HTML step
+ * list next to it. Colours come from the theme tokens, so it follows graphite
+ * and paper. Steps are <g data-step="…"> groups (Phase 2 highlights them).
+ */
+import { arrowId } from './steps.ts';
+
+interface Props {
+  /** Diagram key, e.g. 'happ'; also prefixes the marker id. */
+  name: string;
+  width: number;
+  height: number;
+}
+
+const { name, width, height } = Astro.props;
+---
+
+<svg
+  class="diagram"
+  data-diagram={name}
+  viewBox={`0 0 ${width} ${height}`}
+  width={width}
+  height={height}
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <marker
+      id={arrowId(name)}
+      viewBox="0 0 10 10"
+      refX="10"
+      refY="5"
+      markerWidth="7"
+      markerHeight="7"
+      markerUnits="userSpaceOnUse"
+      orient="auto-start-reverse"
+    >
+      <path class="diagram__arrowhead" d="M0 0.8 10 5 0 9.2z"></path>
+    </marker>
+  </defs>
+  <slot />
+</svg>
+
+<style>
+  .diagram {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .diagram :global(:is(rect, path, line, circle)) {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .diagram__arrowhead {
+    fill: var(--color-text-subtle);
+  }
+
+  /* Group frames (the app, the WebView, …): dashed hairline, mono caption. */
+  .diagram :global(.d-frame) {
+    fill: none;
+    stroke: var(--color-line-strong);
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+  }
+
+  /*
+   * Sizes are user units: the 360-unit sheet renders at about 0.94 at 390px and
+   * 1.15 at 1440px, so the smallest label (11) stays near the 12px floor.
+   */
+  .diagram :global(.d-frame-label) {
+    fill: var(--color-text-subtle);
+    font-size: 11px;
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Boxes and layer bars. */
+  .diagram :global(.d-node rect) {
+    fill: var(--color-surface);
+    stroke: var(--color-line-strong);
+    stroke-width: 1;
+  }
+
+  .diagram :global(.d-node--split rect) {
+    fill: var(--color-surface-2);
+  }
+
+  .diagram :global(.d-title) {
+    fill: var(--color-text);
+    font-size: 13px;
+    font-weight: var(--weight-medium);
+  }
+
+  .diagram :global(.d-sub) {
+    fill: var(--color-text-subtle);
+    font-size: 12px;
+  }
+
+  /* Layer bars hold title and sub-label on one line ("Infrastruktur", "API-Zugriff · Anmeldung"). */
+  .diagram :global(.d-node--split .d-sub) {
+    font-size: 11.5px;
+  }
+
+  /* Flows. */
+  .diagram :global(.d-edge) {
+    fill: none;
+    stroke: var(--color-text-subtle);
+    stroke-width: 1;
+  }
+
+  .diagram :global(.d-edge--dashed) {
+    stroke-dasharray: 3 3;
+  }
+
+  .diagram :global(.d-note) {
+    fill: var(--color-text-subtle);
+    font-size: 11.5px;
+  }
+
+  /* Balloon callouts: solid neutral discs, so the accent stays free for Phase 2 highlights. */
+  .diagram :global(.d-balloon circle) {
+    fill: var(--color-text);
+  }
+
+  .diagram :global(.d-balloon text) {
+    fill: var(--color-bg);
+    font-size: 11px;
+    font-weight: var(--weight-semibold);
+  }
+</style>

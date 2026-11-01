@@ -1,0 +1,628 @@
+---
+/**
+ * /tokens/ — the living reference of the design system (noindex, not in the
+ * sitemap, English only). Contrast ratios are computed at build time from the
+ * same values as tokens.css, so the page cannot disagree with the CSS.
+ */
+import CopyEmail from '../../components/ui/CopyEmail.astro';
+import Icon from '../../components/ui/Icon.astro';
+import Rich from '../../components/ui/Rich.astro';
+import SectionLabel from '../../components/ui/SectionLabel.astro';
+import StatusChip from '../../components/ui/StatusChip.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { contrastRatio, formatRatio } from '../../lib/contrast.ts';
+import { ogImagePath } from '../../lib/og.ts';
+import { WORK_STATUSES } from '../../schemas/work.ts';
+import {
+  COLOR_ROLES,
+  CONTRAST_PAIRS,
+  THEMES,
+  colors,
+  motion,
+  radii,
+  space,
+  typeScale,
+  zIndex,
+} from '../../styles/tokens.ts';
+
+const themeLabel = { graphite: 'Graphite · dark · default', paper: 'Paper · light' } as const;
+
+const contrast = THEMES.map((theme) => ({
+  theme,
+  rows: CONTRAST_PAIRS.map((pair) => {
+    const ratio = contrastRatio(colors[theme][pair.fg], colors[theme][pair.bg]);
+    return { ...pair, ratio, pass: ratio >= pair.min };
+  }),
+}));
+const allPass = contrast.every((group) => group.rows.every((row) => row.pass));
+
+const steps = Object.entries(typeScale).sort((a, b) => Number(a[0]) - Number(b[0])) as Array<
+  [string, readonly [number, number]]
+>;
+const px = (rem: number) => `${Math.round(rem * 16 * 10) / 10}px`;
+
+const motionRows = [
+  {
+    name: 'micro',
+    ms: `${motion.micro.ms} ms`,
+    ease: motion.micro.gsap,
+    css: motion.micro.css,
+    use: 'Hover, press, toggles, focus rings',
+  },
+  {
+    name: 'standard',
+    ms: `${motion.standard.ms} ms`,
+    ease: motion.standard.gsap,
+    css: motion.standard.css,
+    use: 'Panels, cards, menus',
+  },
+  {
+    name: 'emphasis',
+    ms: `${motion.emphasis.ms} ms`,
+    ease: motion.emphasis.gsap,
+    css: motion.emphasis.css,
+    use: 'Headline reveals, section intros',
+  },
+  {
+    name: 'page',
+    ms: `${motion.page.ms} ms`,
+    ease: motion.page.gsap,
+    css: motion.page.css,
+    use: 'Page transitions with shared elements',
+  },
+  {
+    name: 'camera',
+    ms: `${motion.camera.minMs}–${motion.camera.maxMs} ms`,
+    ease: 'CustomEase "camera"',
+    css: motion.camera.css,
+    use: 'Camera flights between shots',
+  },
+  {
+    name: 'stagger',
+    ms: `${motion.staggerMs} ms / item`,
+    ease: 'inherits parent',
+    css: '',
+    use: 'Lists, words in text reveals',
+  },
+];
+
+/** SVG path of a cubic-bezier easing curve in a 100×100 box (y up). */
+function curve(css: string): string {
+  const m = /cubic-bezier\(([^)]+)\)/.exec(css);
+  if (!m?.[1]) return '';
+  const [x1, y1, x2, y2] = m[1].split(',').map((v) => Number(v.trim()));
+  const y = (v: number | undefined) => 100 - (v ?? 0) * 100;
+  return `M0,100 C${(x1 ?? 0) * 100},${y(y1)} ${(x2 ?? 0) * 100},${y(y2)} 100,0`;
+}
+---
+
+<BaseLayout
+  locale="en"
+  title="Design tokens"
+  description="The design tokens of this site: colour and contrast, type, spacing, grid, lines, radii, layers, focus and motion, in both themes."
+  path={null}
+  ogImage={ogImagePath('en', 'home')}
+  noindex
+>
+  <div class="container tokens">
+    <header class="tokens__intro">
+      <SectionLabel index={0}>Design system</SectionLabel>
+      <h1>Design tokens</h1>
+      <p class="muted">
+        One source of truth: <code>src/styles/tokens.css</code>, mirrored in
+        <code>src/styles/tokens.ts</code>. Internal page: not indexed and not in the sitemap.
+      </p>
+    </header>
+
+    <section class="tokens__section" aria-labelledby="t-colour">
+      <SectionLabel index={1}>Colour</SectionLabel>
+      <h2 id="t-colour">Colour and contrast</h2>
+      <p class="muted">
+        Neutrals plus one accent, cobalt, used only for interaction and highlights. Required: 4.5:1
+        for text, 3:1 for control boundaries, focus indicators and large text.
+        <strong>{allPass ? 'Every pair passes.' : 'Some pairs fail.'}</strong>
+      </p>
+      <div class="theme-pair">
+        {contrast.map((group) => (
+          <div class="theme-panel" data-theme={group.theme}>
+            <p class="label">{themeLabel[group.theme]}</p>
+            <ul role="list" class="swatches">
+              {COLOR_ROLES.map((role) => (
+                <li class="swatch">
+                  <span class="swatch__chip" style={`background:${colors[group.theme][role]}`} />
+                  <span class="swatch__name mono">--color-{role}</span>
+                  <span class="swatch__hex mono subtle">{colors[group.theme][role]}</span>
+                </li>
+              ))}
+            </ul>
+            <div
+              class="table-scroll"
+              role="region"
+              tabindex="0"
+              aria-label={`Contrast pairs, ${group.theme}`}
+            >
+              <table class="contrast">
+                <caption class="visually-hidden">
+                  Contrast ratios in the {group.theme} theme
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Pair</th>
+                    <th scope="col">Use</th>
+                    <th scope="col">Ratio</th>
+                    <th scope="col">Min</th>
+                    <th scope="col">Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {group.rows.map((row) => (
+                    <tr>
+                      <td class="mono">
+                        {row.min === 4.5 ? (
+                          <span
+                            class="pair-sample"
+                            style={`color:${colors[group.theme][row.fg]};background:${colors[group.theme][row.bg]}`}
+                          >
+                            Aa
+                          </span>
+                        ) : (
+                          <span
+                            class="pair-sample pair-sample--ui"
+                            style={`border-color:${colors[group.theme][row.fg]};background:${colors[group.theme][row.bg]}`}
+                          />
+                        )}
+                        {row.fg} / {row.bg}
+                      </td>
+                      <td>{row.use}</td>
+                      <td class="mono">{formatRatio(row.ratio)}</td>
+                      <td class="mono">{row.min}:1</td>
+                      <td class="mono">{row.pass ? 'Pass' : 'Fail'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="tokens__section" aria-labelledby="t-type">
+      <SectionLabel index={2}>Type</SectionLabel>
+      <h2 id="t-type">Type scale</h2>
+      <p class="muted">
+        Geist Sans for text, Geist Mono for labels, metadata and code; self-hosted, latin subset
+        preloaded. Fluid from 360px to 1440px viewports. Figures use <code>tabular-nums</code>:{' '}
+        <span class="tabular">0123456789</span>.
+      </p>
+      <ol role="list" class="type-scale">
+        {steps.map(([step, [min, max]]) => (
+          <li class="type-row">
+            <span class="mono subtle type-row__meta">
+              --step-{step} · {px(min)}–{px(max)}
+            </span>
+            <span class="type-row__sample" style={`font-size:var(--step-${step})`}>
+              Systems, shipped
+            </span>
+          </li>
+        ))}
+      </ol>
+      <div class="type-specimens">
+        <p class="label">Sans · 400 / 500 / 600</p>
+        <p>
+          <span style="font-weight:400">Regular 400</span> ·{' '}
+          <span style="font-weight:500">Medium 500</span> ·{' '}
+          <span style="font-weight:600">Semibold 600</span>
+        </p>
+        <p class="label">Mono · labels and code</p>
+        <p class="mono">
+          const layers = ['ui', 'viewmodels', 'domain', 'api', 'identity', 'data', 'cicd'];
+        </p>
+        <p class="label">German glyphs</p>
+        <p>Größe, Übergänge, Straße, Württemberg – „Anführungszeichen“ und ‚halbe‘.</p>
+      </div>
+    </section>
+
+    <section class="tokens__section" aria-labelledby="t-space">
+      <SectionLabel index={3}>Space</SectionLabel>
+      <h2 id="t-space">Spacing scale (8px)</h2>
+      <ul role="list" class="space-scale">
+        {Object.entries(space).map(([name, rem]) => (
+          <li class="space-row">
+            <span class="mono subtle">--space-{name}</span>
+            <span class="mono">{px(rem)}</span>
+            <span class="space-bar" style={`width:${rem}rem`} />
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="tokens__section" aria-labelledby="t-grid">
+      <SectionLabel index={4}>Grid</SectionLabel>
+      <h2 id="t-grid">12-column grid</h2>
+      <p class="muted">Max width 76rem plus fluid margins (16–48px) and gutters (16–24px).</p>
+      <div class="grid grid-demo" aria-hidden="true">
+        {Array.from({ length: 12 }, (_, i) => (
+          <span class="grid-demo__col mono">{i + 1}</span>
+        ))}
+      </div>
+      <div class="blueprint blueprint-demo" aria-hidden="true"></div>
+      <p class="subtle mono">
+        Blueprint grid: 24px cells, a major line every 4 cells (hero backdrop).
+      </p>
+    </section>
+
+    <section class="tokens__section" aria-labelledby="t-lines">
+      <SectionLabel index={5}>Lines, radii, layers, focus</SectionLabel>
+      <h2 id="t-lines">Lines, radii, layers and focus</h2>
+      <div class="lines-grid">
+        <div>
+          <p class="label">Hairlines</p>
+          <div class="rule-demo">
+            <span>--color-line (decorative rules)</span>
+          </div>
+          <div class="rule-demo rule-demo--strong">
+            <span>--color-line-strong (control borders, 3:1)</span>
+          </div>
+        </div>
+        <div>
+          <p class="label">Radii</p>
+          <ul role="list" class="radii">
+            {Object.entries(radii).map(([name, value]) => (
+              <li>
+                <span class="radius-box" style={`border-radius:${value}px`} />
+                <span class="mono subtle">
+                  --radius-{name} · {value}px
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p class="label">Z layers</p>
+          <ul role="list" class="mono subtle z-list">
+            {Object.entries(zIndex).map(([name, value]) => (
+              <li>
+                --z-{name}: {value}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p class="label">Focus ring</p>
+          <p class="subtle">2px accent outline, 3px offset (shown here permanently):</p>
+          <button type="button" class="btn focus-demo">
+            Focus me
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="tokens__section" aria-labelledby="t-motion">
+      <SectionLabel index={6}>Motion</SectionLabel>
+      <h2 id="t-motion">Motion tokens (brief §7)</h2>
+      <p class="muted">
+        Defined now, consumed from Phase 2. Phase 1 ships no motion; with reduced motion every
+        duration is 0.
+      </p>
+      <div class="table-scroll" role="region" tabindex="0" aria-label="Motion tokens">
+        <table class="motion-table">
+          <thead>
+            <tr>
+              <th scope="col">Token</th>
+              <th scope="col">Duration</th>
+              <th scope="col">Easing</th>
+              <th scope="col">Curve</th>
+              <th scope="col">Used for</th>
+            </tr>
+          </thead>
+          <tbody>
+            {motionRows.map((row) => (
+              <tr>
+                <td class="mono">{row.name}</td>
+                <td class="mono">{row.ms}</td>
+                <td class="mono">{row.ease}</td>
+                <td>
+                  {row.css ? (
+                    <svg class="curve" viewBox="-6 -6 112 112" aria-hidden="true">
+                      <rect x="0" y="0" width="100" height="100" class="curve__box" />
+                      <path d={curve(row.css)} class="curve__path" />
+                    </svg>
+                  ) : (
+                    <span class="subtle">—</span>
+                  )}
+                </td>
+                <td>{row.use}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="tokens__section" aria-labelledby="t-components">
+      <SectionLabel index={7}>Components</SectionLabel>
+      <h2 id="t-components">Components in both themes</h2>
+      <div class="theme-pair">
+        {THEMES.map((theme) => (
+          <div class="theme-panel components" data-theme={theme}>
+            <p class="label">{themeLabel[theme]}</p>
+            <div class="row">
+              <a class="btn btn--primary" href="#t-components">
+                Selected work <Icon name="arrow-down" />
+              </a>
+              <a class="btn" href="#t-components">
+                <Icon name="download" /> Download CV
+              </a>
+              <a class="btn btn--ghost" href="#t-components">
+                Contact <Icon name="arrow-right" />
+              </a>
+            </div>
+            <div class="row">
+              {WORK_STATUSES.map((status) => (
+                <StatusChip status={status} locale="en" />
+              ))}
+              <span class="chip">ASP.NET Core</span>
+              <span class="chip">Keycloak</span>
+            </div>
+            <SectionLabel index={2}>Experience</SectionLabel>
+            <h3>Heading level three</h3>
+            <p>
+              Body text with <a href="#t-components">an inline link</a> and a placeholder:{' '}
+              <Rich text="Crash-free sessions rose to [METRIC: crash-free rate]." />
+            </p>
+            <p class="muted">Muted text for secondary information.</p>
+            <p class="subtle mono">Subtle mono metadata · Jul 2024 – Dec 2025</p>
+            <div class="ph-block">[ASSET: anonymised screenshot, 16:10]</div>
+            <CopyEmail locale="en" />
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .tokens {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-12);
+    padding-block: var(--page-top) var(--space-12);
+  }
+
+  .tokens__intro,
+  .tokens__section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .tokens__section > p {
+    max-width: var(--measure);
+  }
+
+  .theme-pair {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr));
+    gap: var(--grid-gutter);
+  }
+
+  .theme-panel {
+    display: grid;
+    min-width: 0;
+    gap: var(--space-3);
+    align-content: start;
+    padding: var(--space-4);
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-3);
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: var(--space-1) var(--space-2);
+  }
+
+  .swatch {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    grid-template-rows: auto auto;
+    column-gap: var(--space-1);
+    align-items: center;
+    font-size: var(--step--1);
+  }
+
+  .swatch__chip {
+    grid-row: span 2;
+    width: 2rem;
+    height: 2rem;
+    border: var(--hairline) solid var(--color-line-strong);
+    border-radius: var(--radius-2);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--step--1);
+  }
+
+  th,
+  td {
+    padding: var(--space-1) var(--space-1) var(--space-1) 0;
+    border-bottom: var(--hairline) solid var(--color-line);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  th {
+    font-weight: var(--weight-medium);
+    color: var(--color-text-subtle);
+  }
+
+  /* Wide tables scroll inside a focusable region, so keyboards can scroll them too. */
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .pair-sample {
+    display: inline-grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.5rem;
+    margin-right: var(--space-1);
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-1);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-semibold);
+  }
+
+  .pair-sample--ui {
+    border-width: 2px;
+    vertical-align: middle;
+  }
+
+  .type-scale {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .type-row {
+    display: grid;
+    gap: var(--space-half);
+    padding-bottom: var(--space-2);
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .type-row__meta {
+    font-size: var(--step--2);
+  }
+
+  .type-row__sample {
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  .type-specimens {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .space-scale {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  /* The bar column always has room for the widest bar (--space-16), even at 320px. */
+  .space-row {
+    display: grid;
+    grid-template-columns: minmax(0, 8rem) 3.5rem minmax(8rem, 1fr);
+    align-items: center;
+    font-size: var(--step--1);
+  }
+
+  .space-bar {
+    height: 0.75rem;
+    background: var(--color-accent-soft);
+    border: var(--hairline) solid var(--color-accent);
+  }
+
+  .grid-demo {
+    padding-block: var(--space-1);
+  }
+
+  .grid-demo__col {
+    display: grid;
+    place-items: center;
+    height: 4rem;
+    background: var(--color-accent-soft);
+    border: var(--hairline) dashed var(--color-accent);
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  .blueprint-demo {
+    height: 10rem;
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-2);
+  }
+
+  .lines-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--space-4) var(--grid-gutter);
+  }
+
+  .lines-grid > div {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+
+  .rule-demo {
+    padding-top: var(--space-1);
+    border-top: var(--hairline) solid var(--color-line);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .rule-demo--strong {
+    border-top-color: var(--color-line-strong);
+  }
+
+  .radii {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .radii li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--step--1);
+  }
+
+  .radius-box {
+    width: 2.5rem;
+    height: 1.75rem;
+    border: var(--hairline) solid var(--color-line-strong);
+    background: var(--color-surface-2);
+  }
+
+  .z-list {
+    display: grid;
+    gap: var(--space-half);
+    font-size: var(--step--1);
+  }
+
+  .focus-demo {
+    justify-self: start;
+    outline: var(--focus-width) solid var(--color-accent);
+    outline-offset: var(--focus-offset);
+  }
+
+  .curve {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .curve__box {
+    fill: none;
+    stroke: var(--color-line);
+    stroke-width: 1;
+  }
+
+  .curve__path {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  .components .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+</style>

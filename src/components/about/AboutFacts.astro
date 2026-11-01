@@ -1,0 +1,110 @@
+---
+/**
+ * The reference block that closes the About page: Languages (with levels),
+ * Interests and Education (one line), side by side from 64rem. Each column is
+ * its own section whose heading is the monospace label ("03 — Languages").
+ * Every value comes from src/data/*.
+ */
+import { education } from '../../data/experience.ts';
+import { profile } from '../../data/profile.ts';
+import { languages } from '../../data/skills.ts';
+import type { Locale } from '../../i18n/config.ts';
+import type { AboutCopy } from '../../views/about/about.copy.ts';
+import CompactSection from '../ui/CompactSection.astro';
+import DateRange from '../ui/DateRange.astro';
+import FactList from '../ui/FactList.astro';
+
+interface Props {
+  locale: Locale;
+  copy: AboutCopy;
+  /** Index of the first column's label (the page's sections before it come first). */
+  startIndex: number;
+}
+
+const { locale, copy, startIndex } = Astro.props;
+const languageFacts = languages.map((language) => ({
+  term: language.name[locale],
+  value: language.level[locale],
+}));
+---
+
+<div class="about-facts">
+  <div class="container about-facts__grid">
+    <CompactSection id="languages" index={startIndex} label={copy.languages.label} bare>
+      <FactList facts={languageFacts} />
+    </CompactSection>
+
+    <CompactSection id="interests" index={startIndex + 1} label={copy.interests.label} bare>
+      <ul role="list" class="about-facts__list">
+        {profile.interests.map((interest) => (
+          <li>{interest[locale]}</li>
+        ))}
+      </ul>
+    </CompactSection>
+
+    <CompactSection id="education" index={startIndex + 2} label={copy.education.label} bare>
+      <ul role="list" class="about-facts__list">
+        {education.map((entry) => (
+          <li>
+            {/* prettier-ignore */}
+            <p><span class="about-facts__degree">{entry.degree[locale]}</span>{`, ${entry.institution[locale]}, `}<DateRange start={entry.start} end={entry.end} locale={locale} /></p>
+          </li>
+        ))}
+      </ul>
+    </CompactSection>
+  </div>
+</div>
+
+<style>
+  .about-facts {
+    padding-block: clamp(var(--space-6), 5vw, var(--space-8));
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .about-facts:last-child {
+    padding-bottom: 0;
+  }
+
+  .about-facts__grid {
+    display: grid;
+    gap: var(--space-8) var(--grid-gutter);
+  }
+
+  .about-facts__list {
+    display: grid;
+    border-bottom: var(--hairline) solid var(--color-line);
+    font-size: var(--step--1);
+  }
+
+  .about-facts__list > li {
+    padding-block: var(--space-1);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .about-facts__degree {
+    font-weight: var(--weight-medium);
+  }
+
+  .about-facts :global(.date-range) {
+    color: var(--color-text-subtle);
+    white-space: nowrap;
+  }
+
+  @media (min-width: 64rem) {
+    .about-facts__grid {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    }
+
+    .about-facts__grid > :global(:nth-child(1)) {
+      grid-column: 1 / span 4;
+    }
+
+    .about-facts__grid > :global(:nth-child(2)) {
+      grid-column: 5 / span 3;
+    }
+
+    .about-facts__grid > :global(:nth-child(3)) {
+      grid-column: 8 / -1;
+    }
+  }
+</style>

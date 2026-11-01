@@ -1,0 +1,24 @@
+---
+/**
+ * Renders a plain string and turns any `[KIND: label]` placeholder into a
+ * visible `.ph` mark. Use it for every string that comes from data or
+ * frontmatter so missing content is always obvious.
+ */
+import { splitPlaceholders } from '../../lib/placeholders.ts';
+
+interface Props {
+  text: string;
+}
+
+const segments = splitPlaceholders(Astro.props.text);
+---
+
+{segments.map((segment) =>
+  segment.type === 'text' ? (
+    segment.value
+  ) : (
+    <span class="ph" data-ph={segment.kind}>
+      {segment.raw}
+    </span>
+  ),
+)}

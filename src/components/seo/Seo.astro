@@ -1,0 +1,120 @@
+---
+/**
+ * Head metadata for one page: title, description, canonical URL, hreflang
+ * alternates (en, de, x-default), robots, Open Graph, Twitter and JSON-LD.
+ * Every URL is absolute and respects SITE_URL + BASE_PATH.
+ *
+ * - Title: "<title> — Mohamed Lakhel"; a title that already contains the name
+ *   is used as is. Case studies (/work/<slug>/) get "· Case study" or
+ *   "· Fallstudie", so the English and German twins never share a title.
+ * - Description: one that still contains a placeholder (any bracketed
+ *   "KIND: label" mark) is replaced by a localized template, so placeholders
+ *   never reach search snippets or link previews. The page body still shows
+ *   the placeholder.
+ * - og:image:alt and twitter:image:alt are localized.
+ * - Pages without a locale twin (path null: the 404 page, /tokens/) get no
+ *   canonical and no alternates; they are noindex anyway.
+ */
+import { NAME } from '../../data/identity.ts';
+import { profile } from '../../data/profile.ts';
+import { DEFAULT_LOCALE, LOCALE_META, LOCALES, type Locale } from '../../i18n/config.ts';
+import { fillTemplate, metaTemplates } from '../../i18n/meta.copy.ts';
+import { localePath } from '../../i18n/routes.ts';
+import { OG_HEIGHT, OG_WIDTH } from '../../lib/og.ts';
+import { hasPlaceholder } from '../../lib/placeholders.ts';
+import { absoluteUrl, withBase } from '../../lib/url.ts';
+
+export interface SeoProps {
+  locale: Locale;
+  /** Page title without the site name; titles that already contain the name are used as is. */
+  title: string;
+  description: string;
+  /** Unlocalized path ('/about/', '/work/happ/'); null for pages without a locale twin. */
+  path: string | null;
+  /** Social image path without base, e.g. '/og/en/about.png'. */
+  ogImage: string;
+  ogType?: 'website' | 'article' | 'profile';
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+}
+
+const {
+  locale,
+  title,
+  description,
+  path,
+  ogImage,
+  ogType = 'website',
+  noindex = false,
+  jsonLd = [],
+} = Astro.props as SeoProps;
+
+/** Case-study pages: /work/<slug>/ (not the /work/ index). */
+const CASE_STUDY_PATH = /^\/work\/[^/]+\/$/;
+
+const templates = metaTemplates[locale];
+const isCaseStudy = path !== null && CASE_STUDY_PATH.test(path);
+const pageTitle =
+  isCaseStudy && !title.includes(NAME) ? fillTemplate(templates.caseStudyTitle, { title }) : title;
+const fullTitle = pageTitle.includes(NAME) ? pageTitle : `${pageTitle} — ${NAME}`;
+const metaDescription = hasPlaceholder(description)
+  ? fillTemplate(isCaseStudy ? templates.caseStudyDescription : templates.pageDescription, {
+      title,
+      name: NAME,
+      role: profile.role[locale],
+    })
+  : description;
+
+const canonical = path ? absoluteUrl(localePath(locale, path)) : null;
+const alternates = path
+  ? [
+      ...LOCALES.map((alt) => ({
+        hreflang: LOCALE_META[alt].htmlLang,
+        href: absoluteUrl(localePath(alt, path)),
+      })),
+      { hreflang: 'x-default', href: absoluteUrl(localePath(DEFAULT_LOCALE, path)) },
+    ]
+  : [];
+const imageUrl = absoluteUrl(ogImage);
+const imageAlt = fillTemplate(templates.imageAlt, { title: fullTitle });
+const robots = noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large';
+/** JSON in a <script> must not be able to close it early. */
+const serialize = (data: Record<string, unknown>) =>
+  JSON.stringify(data).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={metaDescription} />
+<meta name="author" content={NAME} />
+<meta name="robots" content={robots} />
+{canonical && <link rel="canonical" href={canonical} />}
+{alternates.map((alt) => (
+  <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+))}
+<link rel="sitemap" type="application/xml" href={withBase('/sitemap-index.xml')} />
+
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={NAME} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={metaDescription} />
+{canonical && <meta property="og:url" content={canonical} />}
+<meta property="og:locale" content={LOCALE_META[locale].og} />
+{path &&
+  LOCALES.filter((alt) => alt !== locale).map((alt) => (
+    <meta property="og:locale:alternate" content={LOCALE_META[alt].og} />
+  ))}
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content={String(OG_WIDTH)} />
+<meta property="og:image:height" content={String(OG_HEIGHT)} />
+<meta property="og:image:alt" content={imageAlt} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={metaDescription} />
+<meta name="twitter:image" content={imageUrl} />
+<meta name="twitter:image:alt" content={imageAlt} />
+
+{jsonLd.map((data) => (
+  <script type="application/ld+json" set:html={serialize(data)} />
+))}
