@@ -87,6 +87,7 @@ const external = [
   }
 
   .cv-contact__item {
+    position: relative;
     display: inline-flex;
     align-items: center;
     white-space: nowrap;
@@ -94,10 +95,9 @@ const external = [
 
   .cv-contact__item::before {
     content: '·' / '';
-    display: inline-block;
-    flex: none;
+    position: absolute;
+    right: 100%;
     width: var(--cv-contact-sep);
-    margin-left: calc(-1 * var(--cv-contact-sep));
     text-align: center;
     color: var(--color-text-subtle);
   }

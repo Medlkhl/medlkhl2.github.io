@@ -8,6 +8,8 @@
  *   no line ever begins or ends with a stray middot, on screen or on paper.
  * - Items never break inside; lines wrap between them.
  */
+import Rich from '../ui/Rich.astro';
+
 interface Props {
   items: readonly string[];
   /** 'mono' for technology names, 'sans' for prose-like items. */
@@ -20,13 +22,15 @@ const { items, variant = 'sans', class: className, ...rest } = Astro.props;
 
 <ul role="list" class:list={['cv-inline', `cv-inline--${variant}`, className]} {...rest}>
   {items.map((item) => (
-    <li class="cv-inline__item">{item}</li>
+    <li class="cv-inline__item">
+      <Rich text={item} />
+    </li>
   ))}
 </ul>
 
 <style>
   .cv-inline {
-    --cv-inline-sep: var(--space-2);
+    --cv-inline-sep: var(--space-3);
     display: flex;
     flex-wrap: wrap;
     column-gap: var(--cv-inline-sep);
@@ -34,26 +38,22 @@ const { items, variant = 'sans', class: className, ...rest } = Astro.props;
   }
 
   .cv-inline__item {
+    position: relative;
     white-space: nowrap;
   }
 
   .cv-inline__item::before {
     content: '·' / '';
-    display: inline-block;
+    position: absolute;
+    right: 100%;
     width: var(--cv-inline-sep);
-    margin-left: calc(-1 * var(--cv-inline-sep));
     text-align: center;
     color: var(--color-text-subtle);
   }
 
   .cv-inline--mono {
-    --cv-inline-sep: var(--space-3);
     font-family: var(--font-mono);
     font-size: var(--step--1);
     letter-spacing: 0;
-  }
-
-  .cv-inline--sans {
-    --cv-inline-sep: var(--space-3);
   }
 </style>

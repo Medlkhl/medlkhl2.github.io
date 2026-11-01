@@ -114,8 +114,9 @@ const sections = copy.sections;
 </BaseLayout>
 
 <style>
-  .cv {
-    padding-bottom: var(--space-4);
+  /* The footer's own top margin separates the last section from it. */
+  .cv > :global(.cv-section:last-child) {
+    padding-bottom: 0;
   }
 
   .cv__summary {
@@ -135,6 +136,7 @@ const sections = copy.sections;
 
   @media print {
     .cv {
+      max-width: none;
       padding: 0;
     }
 

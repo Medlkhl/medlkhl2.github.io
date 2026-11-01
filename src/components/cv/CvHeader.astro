@@ -8,6 +8,7 @@
 import { Picture } from 'astro:assets';
 import portrait from '../../assets/portrait.png';
 import Icon from '../ui/Icon.astro';
+import Rich from '../ui/Rich.astro';
 import CvContact from './CvContact.astro';
 import { NAME } from '../../data/identity.ts';
 import { profile } from '../../data/profile.ts';
@@ -47,7 +48,9 @@ const other = otherLocale(locale);
     <h1 id="cv-name" class="cv-header__name">
       {profile.name}
     </h1>
-    <p class="cv-header__role">{profile.role[locale]}</p>
+    <p class="cv-header__role">
+      <Rich text={profile.role[locale]} />
+    </p>
     <CvContact locale={locale} copy={copy} class="cv-header__contact" />
 
     <div class="cv-header__actions" role="group" aria-label={copy.actions.label}>

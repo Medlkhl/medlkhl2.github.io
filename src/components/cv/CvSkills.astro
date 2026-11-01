@@ -4,6 +4,7 @@
  * group title, then its skills as an inline list. A definition list, so each
  * group title names its skills for assistive technology too.
  */
+import Rich from '../ui/Rich.astro';
 import CvInlineList from './CvInlineList.astro';
 import { capabilities } from '../../data/skills.ts';
 import type { Locale } from '../../i18n/config.ts';
@@ -19,7 +20,9 @@ const { locale, class: className } = Astro.props;
 <dl class:list={['cv-skills', className]}>
   {capabilities.map((capability) => (
     <div class="cv-skills__group">
-      <dt class="cv-skills__title">{capability.title[locale]}</dt>
+      <dt class="cv-skills__title">
+        <Rich text={capability.title[locale]} />
+      </dt>
       <dd class="cv-skills__list">
         <CvInlineList items={capability.skills} variant="mono" />
       </dd>

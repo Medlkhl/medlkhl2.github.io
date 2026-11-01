@@ -57,13 +57,14 @@
     color: var(--color-text);
   }
 
-  body {
+  /* html-qualified: the order of the page's stylesheets is not guaranteed. */
+  html body {
     display: block;
     min-height: 0;
     background: var(--color-bg);
   }
 
-  main {
+  html main {
     flex: none;
   }
 

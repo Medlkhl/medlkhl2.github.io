@@ -3,6 +3,7 @@
  * Languages with their levels (src/data/skills.ts) as a definition list:
  * language above level, four across from 40rem and in print, two on phones.
  */
+import Rich from '../ui/Rich.astro';
 import { languages } from '../../data/skills.ts';
 import type { Locale } from '../../i18n/config.ts';
 
@@ -17,8 +18,12 @@ const { locale, class: className } = Astro.props;
 <dl class:list={['cv-languages', className]}>
   {languages.map((language) => (
     <div class="cv-languages__item">
-      <dt class="cv-languages__name">{language.name[locale]}</dt>
-      <dd class="cv-languages__level">{language.level[locale]}</dd>
+      <dt class="cv-languages__name">
+        <Rich text={language.name[locale]} />
+      </dt>
+      <dd class="cv-languages__level">
+        <Rich text={language.level[locale]} />
+      </dd>
     </div>
   ))}
 </dl>
