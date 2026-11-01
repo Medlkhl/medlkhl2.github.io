@@ -29,7 +29,7 @@ context: 'My graduation project at Dot it in Tunisia was a set of modules that l
 constraints:
   - 'Real time: a robot that imitates a person has to follow their movements without a noticeable lag.'
   - 'Physical limits: tracked human poses have to map onto the robot’s own joints and range of motion.'
-  - 'Remote operation: control had to work over the internet, for a robot at a distant event.'
+  - 'Remote operation: the robot was meant to be operated from afar at a distant event, and a desktop app had to control it over the internet.'
   - 'Many inputs, one body: camera, Kinect, VR headset, microphone and desktop app all drive the same robot.'
 responsibilities:
   - 'Built the modules that let the robot interact with its environment and act autonomously.'
@@ -78,9 +78,9 @@ problems:
       type: 'link'
       label: 'Hand-imitation teleoperation'
       href: 'https://youtu.be/_JGYox5_IY8'
-  - title: 'Being present at a distant event'
-    challenge: 'Make the robot move its head like a person, driven by an operator who is not at the event.'
-    approach: 'A VR headset carries the operator’s head movements over to the robot’s head, so the robot can be operated remotely at a distant event.'
+  - title: 'Operating the robot from afar'
+    challenge: 'Make the robot move its head like a person, driven by an operator who is not on site.'
+    approach: 'A VR headset carries the operator’s head movements over to the robot’s head, so the operator can steer it from afar. It was built for remote operation at a distant event.'
     evidence:
       type: 'link'
       label: 'VR-driven remote head movement'
@@ -99,7 +99,7 @@ results:
     - { label: 'Duration', value: '12 months' }
   outcomes:
     - 'The robot follows a person’s head, imitates an operator’s hands and responds to speech.'
-    - 'It can be operated remotely through VR at a distant event, and from a desktop app over the internet.'
+    - 'An operator can steer its head through a VR headset, a set-up built for remote operation at a distant event, and a desktop app controls the robot over the internet.'
     - 'Five of the six modules are documented in public videos.'
   next: '[DETAIL: what I would do differently today]'
 proof:
@@ -130,7 +130,7 @@ Speech recognition with hotword detection lets people talk to the robot: it wait
 
 ### Being there remotely
 
-With a virtual-reality headset, an operator’s head movements are carried over to the robot’s head, so it can be operated remotely at a distant event. A C#/WPF desktop app controls the robot over the internet through Firebase. [The main demo on video](https://www.youtube.com/watch?v=uJDjwlhpj1g)
+With a virtual-reality headset, an operator’s head movements are carried over to the robot’s head; this was built to operate the robot remotely at a distant event. A C#/WPF desktop app controls the robot over the internet through Firebase. [The main demo on video](https://www.youtube.com/watch?v=uJDjwlhpj1g)
 
 ### Looking back
 

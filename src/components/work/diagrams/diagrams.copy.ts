@@ -73,7 +73,7 @@ export const diagramCopy = defineCopy({
       speech: 'Speech',
       speechSub: 'hotword · recognition',
       vrHead: 'VR head control',
-      vrHeadSub: 'remote, at an event',
+      vrHeadSub: 'remote operation',
       upperBody: 'Motion control',
       upperBodySub: 'upper body',
       remote: 'Remote app',

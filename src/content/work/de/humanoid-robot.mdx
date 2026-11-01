@@ -25,19 +25,19 @@ stack:
 order: 3
 featured: true
 layers: ['ui', 'data']
-context: 'Mein Abschlussprojekt bei Dot it in Tunesien bestand aus Modulen, mit denen ein humanoider Roboter mit seiner Umgebung interagiert und autonom handelt. Der Roboter sollte Menschen bemerken und ihnen mit dem Kopf folgen, Sprache verstehen, die Bewegungen eines Bedieners nachahmen und sich fernsteuern lassen – selbst bei einer entfernten Veranstaltung. Die Arbeit reichte von Computer Vision über Skeletttracking und inverse Kinematik bis zu Sprache und Fernsteuerung über das Internet.'
+context: 'Mein Abschlussprojekt bei Dot it in Tunesien bestand aus Modulen, mit denen ein humanoider Roboter mit seiner Umgebung interagiert und autonom handelt. Der Roboter sollte Menschen bemerken und ihnen mit dem Kopf folgen, Sprache verstehen, die Bewegungen eines Bedieners nachahmen und sich aus der Ferne steuern lassen – selbst bei einer Veranstaltung an einem anderen Ort. Die Arbeit reichte von Computer Vision über Skeletttracking und inverse Kinematik bis zu Sprache und Fernsteuerung über das Internet.'
 constraints:
   - 'Echtzeit: Ein Roboter, der einen Menschen nachahmt, muss dessen Bewegungen ohne spürbare Verzögerung folgen.'
   - 'Physische Grenzen: Erfasste menschliche Posen müssen auf die Gelenke und den Bewegungsspielraum des Roboters passen.'
-  - 'Fernsteuerung: Die Steuerung musste über das Internet funktionieren, für einen Roboter bei einer entfernten Veranstaltung.'
+  - 'Fernsteuerung: Der Roboter sollte sich bei einer Veranstaltung an einem anderen Ort aus der Ferne bedienen lassen, und eine Desktop-App musste ihn über das Internet steuern.'
   - 'Viele Eingaben, ein Körper: Kamera, Kinect, VR-Headset, Mikrofon und Desktop-App steuern denselben Roboter.'
 responsibilities:
   - 'Entwickelte die Module, mit denen der Roboter mit seiner Umgebung interagiert und autonom handelt.'
   - 'Kopf-Tracking mit OpenCV und Python, damit der Roboter dem Kopf einer Person folgt.'
   - 'Teleoperation durch Handnachahmung mit Kinect-Skeletttracking und inverser Kinematik.'
   - 'Spracherkennung mit Hotword-Erkennung.'
-  - 'VR-gesteuerte Kopfbewegung für die Fernsteuerung bei einer entfernten Veranstaltung sowie eine Steuerungsoberfläche für den Oberkörper.'
-  - 'Eine Desktop-App in C#/WPF, die den Roboter über Firebase via Internet steuert.'
+  - 'VR-gesteuerte Kopfbewegung, um den Roboter bei einer Veranstaltung an einem anderen Ort aus der Ferne zu steuern, sowie eine Steuerungsoberfläche für den Oberkörper.'
+  - 'Eine Desktop-App in C#/WPF, die den Roboter mithilfe von Firebase über das Internet steuert.'
 architecture:
   diagram: 'humanoid-robot'
   summary: 'Sechs Module speisen die Steuerung des Roboters, die Kopf, Arme und Hände sowie den Oberkörper bewegt. Manche Module nehmen die Menschen in der Umgebung wahr, andere übertragen die Bewegungen eines Bedieners – aus der Nähe oder über das Internet.'
@@ -53,13 +53,13 @@ architecture:
       detail: 'Die Hotword-Erkennung aktiviert die Spracherkennung, damit Menschen mit dem Roboter sprechen können.'
     - id: 'vr-head'
       label: 'VR-Kopfsteuerung'
-      detail: 'Ein VR-Headset überträgt die Kopfbewegungen des Bedieners auf den Kopf des Roboters, um ihn bei einer entfernten Veranstaltung fernzusteuern.'
+      detail: 'Ein VR-Headset überträgt die Kopfbewegungen des Bedieners auf den Kopf des Roboters, um ihn bei einer Veranstaltung an einem anderen Ort aus der Ferne zu steuern.'
     - id: 'upper-body'
       label: 'Bewegungssteuerung des Oberkörpers'
       detail: 'Eine Steuerungsoberfläche bewegt den Oberkörper des Roboters.'
     - id: 'remote-control'
       label: 'Fernsteuerung über das Internet'
-      detail: 'Eine Desktop-App in C#/WPF sendet über Firebase Befehle an den Roboter – über das Internet.'
+      detail: 'Eine Desktop-App in C#/WPF sendet Befehle über das Internet an den Roboter; Firebase übermittelt sie.'
   decisions:
     - title: 'Unabhängige Module'
       choice: 'Jede Fähigkeit ist ein eigenes Modul: Kopf-Tracking, Teleoperation, Sprache, VR-Kopfsteuerung, Bewegungssteuerung und die Fernsteuer-App.'
@@ -78,9 +78,9 @@ problems:
       type: 'link'
       label: 'Teleoperation durch Handnachahmung'
       href: 'https://youtu.be/_JGYox5_IY8'
-  - title: 'Präsent bei einer entfernten Veranstaltung'
+  - title: 'Den Roboter aus der Ferne steuern'
     challenge: 'Den Kopf des Roboters wie einen menschlichen bewegen – gesteuert von einem Bediener, der nicht vor Ort ist.'
-    approach: 'Ein VR-Headset überträgt die Kopfbewegungen des Bedieners auf den Kopf des Roboters, sodass er sich bei einer entfernten Veranstaltung fernsteuern lässt.'
+    approach: 'Ein VR-Headset überträgt die Kopfbewegungen des Bedieners auf den Kopf des Roboters, sodass der Bediener ihn aus der Ferne steuern kann. Gedacht war das für die Fernsteuerung bei einer Veranstaltung an einem anderen Ort.'
     evidence:
       type: 'link'
       label: 'VR-gesteuerte Kopfbewegung aus der Ferne'
@@ -99,7 +99,7 @@ results:
     - { label: 'Dauer', value: '12 Monate' }
   outcomes:
     - 'Der Roboter folgt dem Kopf einer Person, ahmt die Hände eines Bedieners nach und reagiert auf Sprache.'
-    - 'Er lässt sich per VR bei einer entfernten Veranstaltung fernsteuern und über eine Desktop-App via Internet bedienen.'
+    - 'Ein Bediener kann seinen Kopf per VR-Headset steuern – gedacht für die Fernsteuerung bei einer Veranstaltung an einem anderen Ort –, und eine Desktop-App steuert den Roboter über das Internet.'
     - 'Fünf der sechs Module sind in öffentlichen Videos dokumentiert.'
   next: '[DETAIL: Rückblick aus heutiger Sicht]'
 proof:
@@ -130,8 +130,8 @@ Spracherkennung mit Hotword-Erkennung macht es möglich, mit dem Roboter zu spre
 
 ### Aus der Ferne dabei sein
 
-Mit einem VR-Headset werden die Kopfbewegungen eines Bedieners auf den Kopf des Roboters übertragen, sodass er sich bei einer entfernten Veranstaltung fernsteuern lässt. Eine Desktop-App in C#/WPF steuert den Roboter über Firebase via Internet. [Die Hauptdemo im Video](https://www.youtube.com/watch?v=uJDjwlhpj1g)
+Mit einem VR-Headset werden die Kopfbewegungen eines Bedieners auf den Kopf des Roboters übertragen; gebaut wurde das, um den Roboter bei einer Veranstaltung an einem anderen Ort aus der Ferne zu steuern. Eine Desktop-App in C#/WPF steuert den Roboter mithilfe von Firebase über das Internet. [Die Hauptdemo im Video](https://www.youtube.com/watch?v=uJDjwlhpj1g)
 
 ### Rückblick
 
-Das Projekt liegt früh auf dem roten Faden meiner Arbeit: Software, die Menschen und Maschinen verbindet. Das Kopf-Tracking von 2019 kehrt in HoloBox wieder.
+Mit diesem Projekt beginnt früh, was sich durch meine Arbeit zieht: Software, die Menschen und Maschinen verbindet. Das Kopf-Tracking von 2019 taucht in HoloBox wieder auf.

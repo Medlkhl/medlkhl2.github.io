@@ -40,7 +40,7 @@ export const robotModules = z.array(robotModuleSchema).parse([
     title: { en: 'VR-driven head movement', de: 'VR-gesteuerte Kopfbewegung' },
     description: {
       en: 'Simulates human head movement on the robot from a virtual-reality headset, to operate it remotely at a distant event.',
-      de: 'Überträgt menschliche Kopfbewegungen per VR-Headset auf den Roboter, um ihn bei einer entfernten Veranstaltung fernzusteuern.',
+      de: 'Überträgt menschliche Kopfbewegungen per VR-Headset auf den Roboter, damit er sich bei einer Veranstaltung an einem anderen Ort aus der Ferne steuern lässt.',
     },
     stack: [
       { en: 'Virtual reality', de: 'Virtual Reality' },
