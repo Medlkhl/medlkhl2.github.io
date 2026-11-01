@@ -1,4 +1,5 @@
 ---
+import { routeHref } from '../../i18n/routes.ts';
 /**
  * Renders the blocks of one legal section (see legal.ts). Strings go through
  * <Rich> so placeholders such as [NAME: full legal name] stay visible.
@@ -50,6 +51,21 @@ const t = legalCopy[locale];
             </span>
           ))}
         </address>
+      );
+    case 'name':
+      return (
+        <p class="legal-address">
+          <span class="legal-address__line">
+            <Rich text={t.address[0] ?? ''} />
+          </span>
+        </p>
+      );
+    case 'addressRef':
+      return (
+        <p class="legal-field">
+          <span class="legal-field__term">{t.addressRef.term}</span>
+          <a href={routeHref(locale, 'impressum')}>{t.addressRef.link}</a>
+        </p>
       );
     case 'email':
       return (

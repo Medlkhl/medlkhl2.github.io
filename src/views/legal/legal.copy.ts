@@ -16,6 +16,7 @@ export const legalCopy = defineCopy({
       'Germany',
     ],
     email: 'Email',
+    addressRef: { term: 'Postal address', link: 'see the legal notice (Impressum)' },
     version: 'Version',
     contents: 'Contents',
     notice: {
@@ -33,6 +34,7 @@ export const legalCopy = defineCopy({
       'Deutschland',
     ],
     email: 'E-Mail',
+    addressRef: { term: 'Anschrift', link: 'siehe Impressum' },
     version: 'Stand',
     contents: 'Inhalt',
     notice: {

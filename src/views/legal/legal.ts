@@ -12,8 +12,12 @@ export type LegalBlock =
   /** A paragraph; placeholders such as [NAME: …] render as visible marks. */
   | { type: 'p'; text: string }
   | { type: 'list'; items: string[] }
-  /** The provider's name and postal address (legal.copy.ts → address). */
+  /** The provider's name and postal address (legal.copy.ts → address); Impressum only. */
   | { type: 'address' }
+  /** The provider's name alone (first line of legal.copy.ts → address). */
+  | { type: 'name' }
+  /** "Postal address: see the legal notice", linking to the Impressum (the address lives only there). */
+  | { type: 'addressRef' }
   /** The contact email address from src/data/profile.ts. */
   | { type: 'email' }
   /** An external link on its own line (same tab, arrow icon, visually hidden "external link"). */

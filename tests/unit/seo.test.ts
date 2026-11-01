@@ -298,11 +298,16 @@ describe('legal pages', () => {
         '[ADDRESS: street and house number]',
         '[ADDRESS: postcode and city]',
       ]);
-      for (const copy of Object.values(pages)) {
-        const blocks = copy[locale].sections.flatMap((section) => section.blocks);
-        expect(blocks.some((block) => block.type === 'address')).toBe(true);
-        expect(blocks.some((block) => block.type === 'email')).toBe(true);
-      }
+      // The postal address appears only on the Impressum (owner rule); the privacy
+      // policy names the controller and points to the Impressum for the address.
+      const blocksOf = (copy: (typeof pages)[keyof typeof pages]) =>
+        copy[locale].sections.flatMap((section) => section.blocks).map((block) => block.type);
+      const impressum = blocksOf(pages.impressum);
+      const datenschutz = blocksOf(pages.datenschutz);
+      expect(impressum).toContain('address');
+      expect(impressum).toContain('email');
+      expect(datenschutz).not.toContain('address');
+      expect(datenschutz).toEqual(expect.arrayContaining(['name', 'addressRef', 'email']));
     }
   });
 
