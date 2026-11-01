@@ -63,6 +63,11 @@ const headingId = `${id}-title`;
     padding-block: var(--section-gap);
   }
 
+  /* The footer's own margin is the gap after the last section (no double gap). */
+  .section-block:last-child {
+    padding-bottom: 0;
+  }
+
   .section-block--rule {
     border-top: var(--hairline) solid var(--color-line);
   }
