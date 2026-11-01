@@ -75,7 +75,7 @@ export const ui = defineCopy({
     skipToContent: 'Zum Inhalt springen',
     nav: {
       label: 'Hauptnavigation',
-      home: 'Start',
+      home: 'Startseite',
       work: 'Projekte',
       experience: 'Erfahrung',
       lab: 'Lab',
