@@ -1,3 +1,4 @@
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { BASE_PATH, SITE_URL } from '../../site.config.ts';
@@ -154,6 +155,18 @@ describe('page meta', () => {
 
   it('covers every registered route plus the 404 page', () => {
     expect(keys.sort()).toEqual([...ROUTE_KEYS, 'notFound'].sort());
+  });
+
+  it('copy modules take the name from NAME instead of spelling it out', () => {
+    // identity.ts is the single source of the name; a literal copy would survive a rename.
+    const copyFiles = readdirSync('src', { recursive: true, encoding: 'utf8' }).filter((file) =>
+      file.endsWith('.copy.ts'),
+    );
+    expect(copyFiles.length).toBeGreaterThan(1);
+    const offenders = copyFiles.filter((file) =>
+      readFileSync(join('src', file), 'utf8').includes(NAME),
+    );
+    expect(offenders).toEqual([]);
   });
 
   for (const locale of LOCALES) {

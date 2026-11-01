@@ -1,3 +1,4 @@
+import { NAME } from '../data/identity.ts';
 import { defineCopy } from './copy.ts';
 
 /**
@@ -5,8 +6,9 @@ import { defineCopy } from './copy.ts';
  * social images (src/lib/og/cards.ts) and the templates the SEO component fills in.
  *
  * Rules (checked by tests/unit/seo.test.ts):
- * - Titles are rendered as "<title> — Mohamed Lakhel" (a title that already
- *   contains the name is used as is) and stay at 60 characters or fewer.
+ * - Titles are rendered as "<title> — NAME" (a title that already contains
+ *   the name is used as is) and stay at 60 characters or fewer. The name
+ *   always comes from NAME (src/data/identity.ts), never a literal.
  * - Descriptions of indexable pages are 110–160 characters.
  * - Titles and descriptions are unique across both locales.
  * - Case studies take their title and description from frontmatter; the SEO
@@ -36,7 +38,7 @@ export type MetaKey =
 export const pageMeta = defineCopy<Record<MetaKey, PageMeta>>({
   en: {
     home: {
-      title: 'Mohamed Lakhel — Senior Software Engineer in Germany',
+      title: `${NAME} — Senior Software Engineer in Germany`,
       description:
         'Senior Software Engineer in Tuttlingen, Germany: cross-platform .NET apps with MAUI, Xamarin and Blazor, ASP.NET Core APIs, Keycloak security and on-device AI.',
     },
@@ -63,7 +65,7 @@ export const pageMeta = defineCopy<Record<MetaKey, PageMeta>>({
     cv: {
       title: 'CV',
       description:
-        'The CV of Mohamed Lakhel, Senior Software Engineer: experience, skills, education and languages, with PDF versions to download in English and German.',
+        `The CV of ${NAME}, Senior Software Engineer: experience, skills, education and languages, with PDF versions to download in English and German.`,
     },
     colophon: {
       title: 'Colophon',
@@ -87,7 +89,7 @@ export const pageMeta = defineCopy<Record<MetaKey, PageMeta>>({
   },
   de: {
     home: {
-      title: 'Mohamed Lakhel — Senior-Softwareentwickler in Deutschland',
+      title: `${NAME} — Senior-Softwareentwickler in Deutschland`,
       description:
         'Senior-Softwareentwickler in Tuttlingen: plattformübergreifende .NET-Apps (MAUI, Xamarin, Blazor), ASP.NET-Core-APIs, Sicherheit mit Keycloak und lokale KI.',
     },
@@ -114,7 +116,7 @@ export const pageMeta = defineCopy<Record<MetaKey, PageMeta>>({
     cv: {
       title: 'Lebenslauf',
       description:
-        'Der Lebenslauf von Mohamed Lakhel, Senior-Softwareentwickler: Erfahrung, Kenntnisse, Ausbildung und Sprachen, als PDF auf Deutsch und Englisch zum Download.',
+        `Der Lebenslauf von ${NAME}, Senior-Softwareentwickler: Erfahrung, Kenntnisse, Ausbildung und Sprachen, als PDF auf Deutsch und Englisch zum Download.`,
     },
     colophon: {
       title: 'Kolophon',
