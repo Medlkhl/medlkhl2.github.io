@@ -1,0 +1,71 @@
+---
+/**
+ * A link that leaves the site: same tab, the arrow-up-right icon and the
+ * visually hidden "(external link)" note, so the accessible name starts with
+ * the visible label and ends with the warning.
+ *
+ * - `rel` passes through, e.g. rel="me" on the owner's own profiles (same tab,
+ *   so no noopener is needed).
+ * - `context` adds hidden text after the label, so repeated labels stay
+ *   distinct: "Watch on YouTube – Head tracking (external link)". Browsers may
+ *   add a space before the hidden span, so the context is joined with a dash,
+ *   which reads the same either way.
+ * - Default: label and icon side by side in one inline-flex box (24px minimum
+ *   target); the icon stays subtle until hover.
+ * - `inline`: the link stays in the text flow (prose, or a card that lays out
+ *   the link's children itself); the icon follows the last word in the link colour.
+ */
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import Icon from './Icon.astro';
+
+interface Props {
+  locale: Locale;
+  href: string;
+  rel?: string;
+  context?: string;
+  inline?: boolean;
+  class?: string;
+}
+
+const { locale, href, rel, context, inline = false, class: className } = Astro.props;
+const hidden = `${context ? ` – ${context}` : ''} ${ui[locale].externalLink}`;
+// The box variant renders its label trimmed: no stray whitespace in the label or the name.
+const label = inline ? '' : (await Astro.slots.render('default')).trim();
+---
+
+<a
+  class:list={['ext-link', inline ? 'ext-link--inline' : 'ext-link--box', className]}
+  href={href}
+  rel={rel}
+>
+  {inline ? <slot /> : <span class="ext-link__label" set:html={label} />}
+  <Icon name="arrow-up-right" size={14} class="ext-link__icon" />
+  <span class="visually-hidden">{hidden}</span>
+</a>
+
+<style>
+  .ext-link--box {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-half);
+    min-height: var(--space-3); /* 24px target */
+  }
+
+  .ext-link--box :global(.ext-link__icon) {
+    flex: none;
+    color: var(--color-text-subtle);
+    transition: color var(--dur-micro) var(--ease-micro);
+  }
+
+  .ext-link--box:hover :global(.ext-link__icon) {
+    color: currentColor;
+  }
+
+  /* Inline: the link keeps the browser's inline box; the icon sits after the last word. */
+  .ext-link--inline :global(.ext-link__icon) {
+    display: inline-block;
+    margin-left: 0.2em;
+    vertical-align: -0.1em;
+  }
+</style>

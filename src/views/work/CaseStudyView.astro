@@ -11,6 +11,7 @@
 import type { CodeLanguage } from 'astro';
 import { Code } from 'astro:components';
 import { render } from 'astro:content';
+import ExternalLink from '../../components/ui/ExternalLink.astro';
 import FactList from '../../components/ui/FactList.astro';
 import Icon from '../../components/ui/Icon.astro';
 import Quote from '../../components/ui/Quote.astro';
@@ -18,7 +19,6 @@ import Rich from '../../components/ui/Rich.astro';
 import Section from '../../components/ui/Section.astro';
 import SectionLabel from '../../components/ui/SectionLabel.astro';
 import StatusChip from '../../components/ui/StatusChip.astro';
-import ExternalLink from '../../components/work/ExternalLink.astro';
 import ProseLink from '../../components/work/ProseLink.astro';
 import { DIAGRAMS } from '../../components/work/diagrams/index.ts';
 import { getRecommendation } from '../../data/recommendations.ts';
@@ -343,7 +343,12 @@ function onlyPlaceholder(text: string): boolean {
                 </figure>
               )}
               {problem.evidence.type === 'link' && (
-                <ExternalLink href={problem.evidence.href} locale={locale} class="evidence-link">
+                <ExternalLink
+                  href={problem.evidence.href}
+                  locale={locale}
+                  inline
+                  class="evidence-link"
+                >
                   <span class="evidence-link__play">
                     <Icon name="play" size={14} />
                   </span>
@@ -437,7 +442,7 @@ function onlyPlaceholder(text: string): boolean {
               <ul role="list" class="link-list">
                 {data.proof.links.map((link) => (
                   <li>
-                    <ExternalLink href={link.href} locale={locale} class="link-list__link">
+                    <ExternalLink href={link.href} locale={locale} inline class="link-list__link">
                       {link.label}
                     </ExternalLink>
                   </li>

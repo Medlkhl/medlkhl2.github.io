@@ -5,6 +5,7 @@ import type { Locale } from '../../i18n/config.ts';
 import { routeHref } from '../../i18n/routes.ts';
 import { ui } from '../../i18n/ui.copy.ts';
 import { cvPdfHref } from '../../lib/cv.ts';
+import ExternalLink from '../ui/ExternalLink.astro';
 import Icon from '../ui/Icon.astro';
 
 interface Props {
@@ -58,14 +59,14 @@ const siteLinks = [
           <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
         </li>
         <li>
-          <a href={LINKS.linkedin} rel="me noopener">
+          <ExternalLink locale={locale} href={LINKS.linkedin} rel="me">
             LinkedIn
-          </a>
+          </ExternalLink>
         </li>
         <li>
-          <a href={LINKS.github} rel="me noopener">
+          <ExternalLink locale={locale} href={LINKS.github} rel="me">
             GitHub
-          </a>
+          </ExternalLink>
         </li>
         <li>
           <a href={cvPdfHref(locale)} download>
@@ -146,8 +147,15 @@ const siteLinks = [
     overflow-wrap: anywhere;
   }
 
+  /* LinkedIn and GitHub: ExternalLink keeps its own inline-flex box and icon. */
+  .site-footer__col :global(.ext-link) {
+    padding-block: 0.3rem;
+    color: var(--color-text-muted);
+  }
+
   .site-footer__col a:hover,
-  .site-footer__legal a:hover {
+  .site-footer__legal a:hover,
+  .site-footer__col :global(.ext-link:hover) {
     color: var(--color-accent);
   }
 
