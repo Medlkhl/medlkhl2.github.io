@@ -65,6 +65,11 @@ const { locale, class: className } = Astro.props;
   }
 
   @media print {
+    /* Block flow fragments more predictably than a grid of groups. */
+    .cv-skills {
+      display: block;
+    }
+
     .cv-skills__group {
       grid-template-columns: 11.5rem minmax(0, 1fr);
       gap: 0 var(--space-2);

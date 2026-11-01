@@ -10,7 +10,10 @@
  *   proportions; components only re-place things in their own @media print.
  * - Site header, footer, navigation, buttons, #stage and the skip link are
  *   hidden; links print as plain text; icons and hidden notes are dropped.
- * - Entries never break inside, and headings stay with what follows.
+ * - Entries and short sections never break inside; a section label shares a
+ *   grid row with its content, so the two cannot be separated (no
+ *   break-after on the labels: in a grid it would propagate to the whole
+ *   section and force breaks inside the next one).
  * - Running footer: "<name> — CV" on the left, "page / pages" on the right.
  *
  * The palette and the print tokens are declared here because tokens.css has
@@ -79,11 +82,6 @@
   .cv a {
     color: inherit !important;
     text-decoration: none !important;
-  }
-
-  .cv h2,
-  .cv h3 {
-    break-after: avoid;
   }
 
   .cv p,

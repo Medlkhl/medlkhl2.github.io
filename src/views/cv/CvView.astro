@@ -65,7 +65,7 @@ const sections = copy.sections;
       </p>
     </CvSection>
 
-    <CvSection id="experience" index={2} label={sections.experience}>
+    <CvSection id="experience" index={2} label={sections.experience} keepTogether={false}>
       <ol role="list" class="cv__entries">
         {experience.map((entry) => (
           <CvEntry

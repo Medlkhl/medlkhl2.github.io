@@ -5,7 +5,9 @@
  * baseline of the content, which starts on column 4, so every text in the CV
  * shares one vertical axis. The label is a direct grid item, so its sticky
  * range is the whole section. Below 48rem the label sits above the content.
- * Print keeps the two columns (see the print rules below).
+ * Print keeps the two columns (see the print rules below). A short section
+ * never breaks across pages (keepTogether), so its label can never be left
+ * alone at the foot of a page; a long one (Experience) breaks between entries.
  */
 import SectionLabel from '../ui/SectionLabel.astro';
 
@@ -13,14 +15,20 @@ interface Props {
   id: string;
   index: number;
   label: string;
+  /** Print: keep the whole section on one page (default). */
+  keepTogether?: boolean;
   class?: string;
 }
 
-const { id, index, label, class: className } = Astro.props;
+const { id, index, label, keepTogether = true, class: className } = Astro.props;
 const headingId = `${id}-title`;
 ---
 
-<section id={id} class:list={['cv-section', className]} aria-labelledby={headingId}>
+<section
+  id={id}
+  class:list={['cv-section', { 'cv-section--keep': keepTogether }, className]}
+  aria-labelledby={headingId}
+>
   <SectionLabel as="h2" id={headingId} index={index} class="cv-section__label">
     {label}
   </SectionLabel>
@@ -78,10 +86,13 @@ const headingId = `${id}-title`;
       padding-block: var(--space-2) var(--space-3);
     }
 
+    .cv-section--keep {
+      break-inside: avoid;
+    }
+
     .cv-section > :global(.cv-section__label) {
       grid-column: 1 / span 3;
       color: var(--color-text);
-      break-after: avoid;
     }
 
     .cv-section__body {
