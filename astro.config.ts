@@ -60,9 +60,17 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      i18n: { defaultLocale: 'en', locales: { en: 'en-GB', de: 'de-DE' } },
+      // hreflang en, de and x-default (= English), the same alternates as every page head.
+      i18n: { defaultLocale: 'en', locales: { en: 'en', de: 'de' } },
       // Internal pages never go into the sitemap.
       filter: (page) => !/\/tokens\/$/.test(page) && !/\/404\/?$/.test(page),
+      namespaces: { news: false, image: false, video: false },
+      serialize(item) {
+        const english = item.links?.find((link) => link.lang === 'en');
+        return english
+          ? { ...item, links: [...(item.links ?? []), { lang: 'x-default', url: english.url }] }
+          : item;
+      },
     }),
   ],
   markdown: {

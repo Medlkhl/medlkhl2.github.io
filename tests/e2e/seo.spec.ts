@@ -122,22 +122,20 @@ test('JSON-LD on the legal pages is a two-step BreadcrumbList', async ({ page })
   }
 });
 
-test('the sitemap lists every public page with alternates and nothing internal', async ({
+test('the sitemap lists every public page with en, de and x-default and nothing internal', async ({
   request,
 }) => {
   const index = await (await request.get('sitemap-index.xml')).text();
   const sitemaps = [...index.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1] ?? '');
   expect(sitemaps.length).toBeGreaterThan(0);
 
-  const entries = new Map<string, string[]>();
+  const entries = new Map<string, Record<string, string>>();
   for (const sitemap of sitemaps) {
     const xml = await (await request.get(toLocal(sitemap))).text();
     for (const [, block = ''] of xml.matchAll(/<url>([\s\S]*?)<\/url>/g)) {
       const loc = /<loc>([^<]+)<\/loc>/.exec(block)?.[1] ?? '';
-      const alternates = [...block.matchAll(/<xhtml:link[^>]*href="([^"]+)"/g)].map(
-        (match) => match[1] ?? '',
-      );
-      entries.set(loc, alternates);
+      const links = block.matchAll(/<xhtml:link[^>]*hreflang="([^"]+)"[^>]*href="([^"]+)"/g);
+      entries.set(loc, Object.fromEntries([...links].map((match) => [match[1], match[2]])));
     }
   }
 
@@ -145,8 +143,12 @@ test('the sitemap lists every public page with alternates and nothing internal',
   for (const { path } of pages) {
     const alternates = entries.get(absolute(path));
     expect(alternates, `${path} is missing from the sitemap`).toBeDefined();
+    // The same alternates as every page head; x-default is the English page.
     const twin = unlocalizePath(path);
-    for (const alt of LOCALES) expect(alternates).toContain(absolute(localePath(alt, twin)));
+    expect(alternates).toEqual({
+      ...Object.fromEntries(LOCALES.map((alt) => [alt, absolute(localePath(alt, twin))])),
+      'x-default': absolute(localePath('en', twin)),
+    });
   }
   const locs = [...entries.keys()];
   expect(locs.filter((loc) => loc.includes('/tokens/'))).toEqual([]);
