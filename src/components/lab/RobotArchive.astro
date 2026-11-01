@@ -2,7 +2,8 @@
 /**
  * The 2019 humanoid-robot archive: the main demo video and every module of
  * src/data/lab.ts (title, description, stack, "Watch on YouTube"). Videos are
- * link-outs, never embeds (no third-party requests, brief section 11).
+ * link-outs, never embeds (no third-party requests, brief section 11). The
+ * demo card is one stretched link, so its play mark opens the video too.
  */
 import { experience } from '../../data/experience.ts';
 import { ROBOT_DEMO_VIDEO, robotModules } from '../../data/lab.ts';
@@ -147,7 +148,9 @@ const project = experience.find((entry) => entry.id === 'dot-it');
     font-variant-numeric: tabular-nums;
   }
 
+  /* The whole card (play mark included) opens the video: a stretched link, one tab stop. */
   .demo {
+    position: relative;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     gap: var(--space-3);
@@ -156,6 +159,28 @@ const project = experience.find((entry) => entry.id === 'dot-it');
     border: var(--hairline) solid var(--color-line);
     border-radius: var(--radius-3);
     background: var(--color-surface);
+    transition: border-color var(--dur-micro) var(--ease-micro);
+  }
+
+  .demo:hover,
+  .demo:focus-within {
+    border-color: var(--color-line-strong);
+  }
+
+  .demo :global(.demo__link)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-3);
+  }
+
+  .demo :global(.demo__link:focus-visible) {
+    outline: none;
+  }
+
+  .demo:has(:global(.demo__link:focus-visible)) {
+    outline: var(--focus-width) solid var(--color-accent);
+    outline-offset: var(--focus-offset);
   }
 
   .demo__mark {
