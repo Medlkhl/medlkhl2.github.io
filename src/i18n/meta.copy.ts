@@ -64,8 +64,7 @@ export const pageMeta = defineCopy<Record<MetaKey, PageMeta>>({
     },
     cv: {
       title: 'CV',
-      description:
-        `The CV of ${NAME}, Senior Software Engineer: experience, skills, education and languages, with PDF versions to download in English and German.`,
+      description: `The CV of ${NAME}, Senior Software Engineer: experience, skills, education and languages, with PDF versions to download in English and German.`,
     },
     colophon: {
       title: 'Colophon',
@@ -115,8 +114,7 @@ export const pageMeta = defineCopy<Record<MetaKey, PageMeta>>({
     },
     cv: {
       title: 'Lebenslauf',
-      description:
-        `Der Lebenslauf von ${NAME}, Senior-Softwareentwickler: Erfahrung, Kenntnisse, Ausbildung und Sprachen, als PDF auf Deutsch und Englisch zum Download.`,
+      description: `Der Lebenslauf von ${NAME}, Senior-Softwareentwickler: Erfahrung, Kenntnisse, Ausbildung und Sprachen, als PDF auf Deutsch und Englisch zum Download.`,
     },
     colophon: {
       title: 'Kolophon',

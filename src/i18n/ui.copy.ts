@@ -104,7 +104,8 @@ export const ui = defineCopy({
       contact: 'Kontakt',
       copyEmail: 'E-Mail kopieren',
       emailCopied: 'E-Mail kopiert',
-      copyFailed: 'Kopieren fehlgeschlagen. Die Adresse ist markiert; bitte Strg+C oder ⌘C drücken.',
+      copyFailed:
+        'Kopieren fehlgeschlagen. Die Adresse ist markiert; bitte Strg+C oder ⌘C drücken.',
       writeEmail: 'E-Mail schreiben',
       readCaseStudy: 'Zur Fallstudie',
       caseStudyFor: 'Fallstudie: {title}',
