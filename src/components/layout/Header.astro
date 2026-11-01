@@ -272,6 +272,13 @@ const items: NavItem[] = [
       gap: 0 var(--space-1);
     }
 
+    /* The brand holds the first row at header height, so opening the menu
+       (the nav wraps below) neither shifts the row nor clips focus rings. */
+    :global(.js) .brand {
+      min-height: var(--header-height);
+      justify-content: center;
+    }
+
     /* Visual row: brand … language, theme, menu; the nav wraps below. The
        toggle sits before the nav in the source so the tab order follows it. */
     .site-header__controls {
@@ -301,8 +308,12 @@ const items: NavItem[] = [
       border-top: var(--hairline) solid var(--color-line);
     }
 
+    /* In a short (landscape) viewport the open panel scrolls on its own. */
     :global(.js) .site-nav[data-open] {
       display: block;
+      max-height: calc(100dvh - var(--header-height));
+      overflow-y: auto;
+      overscroll-behavior: contain;
     }
 
     :global(.js) .site-nav__list {

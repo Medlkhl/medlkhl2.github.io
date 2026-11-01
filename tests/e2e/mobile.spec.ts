@@ -12,11 +12,14 @@ test.describe('mobile navigation (390px)', () => {
     await expect(toggle).toBeVisible();
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     await expect(nav).toBeHidden();
+    const closedY = (await toggle.boundingBox())?.y;
 
     await toggle.click();
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await expect(nav).toBeVisible();
     await expect(nav.locator('a').first()).toBeVisible();
+    // Opening the panel does not shift the header row.
+    expect((await toggle.boundingBox())?.y).toBe(closedY);
 
     await page.keyboard.press('Escape');
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
