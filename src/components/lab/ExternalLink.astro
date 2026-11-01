@@ -2,9 +2,9 @@
 /**
  * A link that leaves the site: same tab, the arrow-up-right icon and the
  * visually hidden "(external link)" note. `context` adds hidden text after the
- * visible label ("Watch on YouTube: Head tracking"), so repeated labels stay
+ * visible label ("Watch on YouTube – Head tracking"), so repeated labels stay
  * distinct while the accessible name still starts with what is on screen.
- * Shared by the Lab, About and Colophon views.
+ * Shared by the Lab and Colophon views.
  */
 import Icon from '../ui/Icon.astro';
 import type { Locale } from '../../i18n/config.ts';
@@ -18,10 +18,11 @@ interface Props {
 }
 
 const { locale, href, context, class: className } = Astro.props;
-// Kept on one line (prettier-ignore) and trimmed, so the accessible name reads
-// "Label: context (external link)" without stray spaces from formatting.
+// Browsers treat the hidden span as a separate box and may add a space before it,
+// so the context is joined with a dash, which reads the same either way:
+// "Watch on YouTube – Head tracking (external link)".
 const label = (await Astro.slots.render('default')).trim();
-const hidden = `${context ? `: ${context}` : ''} ${ui[locale].externalLink}`;
+const hidden = `${context ? ` – ${context}` : ''} ${ui[locale].externalLink}`;
 ---
 
 {/* prettier-ignore */}
