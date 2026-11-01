@@ -1,6 +1,6 @@
 ---
 /**
- * A definition list of facts (quick facts, case-study header, CV header):
+ * A definition list of facts (quick facts, case-study header, About languages):
  * monospace term, regular value, hairline between rows, tabular figures.
  * Values may contain placeholders.
  */
@@ -13,8 +13,12 @@ export interface Fact {
 
 interface Props {
   facts: Fact[];
-  /** 'rows' (term left, value right) or 'stacked' (term above value). */
-  layout?: 'rows' | 'stacked';
+  /**
+   * 'rows' (term left, value right), 'stacked' (term above value) or 'auto':
+   * rows that stack once the list itself is 24rem wide or narrower (a container
+   * query, so it follows the space the list gets, not the viewport).
+   */
+  layout?: 'rows' | 'stacked' | 'auto';
   class?: string;
 }
 
@@ -59,9 +63,20 @@ const { facts, layout = 'rows', class: className } = Astro.props;
     border-bottom: var(--hairline) solid var(--color-line);
   }
 
-  .facts--rows .facts__row {
+  .facts--rows .facts__row,
+  .facts--auto .facts__row {
     grid-template-columns: minmax(7rem, 30%) 1fr;
     align-items: baseline;
+  }
+
+  .facts--auto {
+    container: facts / inline-size;
+  }
+
+  @container facts (max-width: 24rem) {
+    .facts--auto .facts__row {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   .facts__term {

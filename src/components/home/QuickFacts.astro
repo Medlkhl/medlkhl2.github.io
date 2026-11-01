@@ -47,7 +47,7 @@ const facts = [
         <span>{ui[locale].cta.downloadCv}</span>
       </a>
     </header>
-    <FactList facts={facts} />
+    <FactList facts={facts} layout="auto" />
     <div class="facts-card__actions">
       <CopyEmail locale={locale} />
     </div>
@@ -88,7 +88,7 @@ const facts = [
     gap: var(--space-1) var(--space-2);
   }
 
-  /* Narrow cards: terms above values, so the values get the full width. */
+  /* Narrow cards (FactList's "auto" layout puts terms above values there too). */
   @container quick-facts (max-width: 26rem) {
     .facts-card__inner {
       padding: var(--space-2) var(--space-2) var(--space-2);
@@ -103,10 +103,6 @@ const facts = [
     .facts-card__cv {
       margin-inline: calc(-1 * var(--space-1));
       padding-inline: var(--space-1);
-    }
-
-    .facts-card :global(.facts.facts--rows .facts__row) {
-      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>
