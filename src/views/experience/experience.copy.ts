@@ -21,7 +21,6 @@ export const experienceCopy = defineCopy({
       listLabel: 'Roles, newest first',
       duration: 'Duration',
       stack: 'Stack',
-      caseStudy: 'Case study: {title}',
     },
     education: {
       label: 'Education',
@@ -45,7 +44,6 @@ export const experienceCopy = defineCopy({
       listLabel: 'Stationen, die neueste zuerst',
       duration: 'Dauer',
       stack: 'Tech-Stack',
-      caseStudy: 'Fallstudie: {title}',
     },
     education: {
       label: 'Ausbildung',

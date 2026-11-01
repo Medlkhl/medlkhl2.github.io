@@ -19,7 +19,6 @@ export const aboutCopy = defineCopy({
       title: 'Five steps, newest first',
       intro:
         'It started with a Kinect-driven whiteboard in {year} and runs through robotics, a hardware product and an enterprise app to on-device AI today.',
-      caseStudy: 'Case study: {title}',
       experience: '{org} on the experience page',
       steps: {
         holobox: {
@@ -82,7 +81,6 @@ export const aboutCopy = defineCopy({
       title: 'Fünf Stationen, die neueste zuerst',
       intro:
         'Es begann {year} mit einem Kinect-gesteuerten Whiteboard und führte über Robotik, ein Hardwareprodukt und eine Unternehmens-App bis zur KI direkt auf dem Gerät.',
-      caseStudy: 'Fallstudie: {title}',
       experience: '{org} im Werdegang',
       steps: {
         holobox: {

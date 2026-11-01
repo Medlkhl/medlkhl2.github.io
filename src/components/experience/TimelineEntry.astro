@@ -9,6 +9,7 @@ import type { Locale } from '../../i18n/config.ts';
 import { formatDuration } from '../../i18n/format.ts';
 import { workHref } from '../../i18n/routes.ts';
 import { term } from '../../i18n/term.ts';
+import { ui } from '../../i18n/ui.copy.ts';
 import type { Experience } from '../../schemas/data.ts';
 import type { ExperienceCopy } from '../../views/experience/experience.copy.ts';
 import ArrowLink from '../ui/ArrowLink.astro';
@@ -26,7 +27,7 @@ const { entry, locale, copy, workTitles } = Astro.props;
 const duration = entry.end === null ? null : formatDuration(entry.start, entry.end, locale);
 const links = entry.work.map((slug) => ({
   href: workHref(locale, slug),
-  label: copy.caseStudy.replace('{title}', workTitles.get(slug) ?? slug),
+  label: ui[locale].cta.caseStudyFor.replace('{title}', workTitles.get(slug) ?? slug),
 }));
 ---
 

@@ -9,6 +9,7 @@
 import { experience } from '../../data/experience.ts';
 import type { Locale } from '../../i18n/config.ts';
 import { routeHref, workHref } from '../../i18n/routes.ts';
+import { ui } from '../../i18n/ui.copy.ts';
 import type { WorkSlug } from '../../schemas/data.ts';
 import type { AboutCopy } from '../../views/about/about.copy.ts';
 import ArrowLink from '../ui/ArrowLink.astro';
@@ -66,7 +67,7 @@ function linkFor(link: Link): { href: string; label: string } {
   if (link.kind === 'work') {
     return {
       href: workHref(locale, link.slug),
-      label: copy.caseStudy.replace('{title}', workTitles.get(link.slug) ?? link.slug),
+      label: ui[locale].cta.caseStudyFor.replace('{title}', workTitles.get(link.slug) ?? link.slug),
     };
   }
   return {

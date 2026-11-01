@@ -16,7 +16,6 @@ export const colophonCopy = defineCopy({
         'Static HTML first, everything self-hosted, no cookies and no tracking, held to budgets that are measured rather than eyeballed. One typed source produces these pages, the PDF CVs and the structured data.',
       built: 'Last built',
     },
-    planned: 'Planned',
     stack: {
       label: 'Stack',
       title: 'What it is built with',
@@ -243,7 +242,6 @@ export const colophonCopy = defineCopy({
         'Zuerst statisches HTML, alles selbst gehostet, keine Cookies und kein Tracking – gemessen an Budgets, die geprüft statt geschätzt werden. Eine einzige typisierte Quelle erzeugt diese Seiten, die PDF-Lebensläufe und die strukturierten Daten.',
       built: 'Zuletzt gebaut am',
     },
-    planned: 'Geplant',
     stack: {
       label: 'Stack',
       title: 'Womit sie gebaut ist',

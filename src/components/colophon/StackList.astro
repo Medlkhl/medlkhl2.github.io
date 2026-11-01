@@ -4,14 +4,16 @@
  * today, and what later phases add (labelled as planned). Each row: role
  * (mono), tool, and one line on why or how it is used.
  */
+import type { Locale } from '../../i18n/config.ts';
 import type { ColophonCopy } from '../../views/colophon/colophon.copy.ts';
 import PlannedChip from '../ui/PlannedChip.astro';
 
 interface Props {
+  locale: Locale;
   copy: ColophonCopy;
 }
 
-const { copy } = Astro.props;
+const { locale, copy } = Astro.props;
 const groups = [
   { id: 'stack-in-use', title: copy.stack.inUse, items: copy.stack.items, planned: false },
   { id: 'stack-later', title: copy.stack.later, items: copy.stack.laterItems, planned: true },
@@ -25,7 +27,7 @@ const groups = [
         <h3 id={group.id} class="stack__title">
           {group.title}
         </h3>
-        {group.planned && <PlannedChip label={copy.planned} />}
+        {group.planned && <PlannedChip locale={locale} />}
       </div>
       <dl class="stack__list">
         {group.items.map((item) => (

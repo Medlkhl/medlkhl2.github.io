@@ -15,8 +15,6 @@ export const labCopy = defineCopy({
       intro:
         'A preview of HoloBox, the archive of my humanoid robot with its demo videos, and the experiments that will live here next. Videos open on YouTube; nothing is embedded, so this page loads nothing from third parties.',
     },
-    planned: 'Planned',
-    caseStudy: 'Case study: {title}',
     holobox: {
       label: 'Preview',
       title: 'HoloBox',
@@ -73,8 +71,6 @@ export const labCopy = defineCopy({
       intro:
         'Ein Ausblick auf HoloBox, das Archiv meines humanoiden Roboters mit seinen Demovideos und die Experimente, die hier als Nächstes entstehen. Videos öffnen sich auf YouTube; eingebettet ist nichts, die Seite lädt also nichts von Drittanbietern.',
     },
-    planned: 'Geplant',
-    caseStudy: 'Fallstudie: {title}',
     holobox: {
       label: 'Vorschau',
       title: 'HoloBox',

@@ -6,6 +6,7 @@
  */
 import type { Locale } from '../../i18n/config.ts';
 import { workHref } from '../../i18n/routes.ts';
+import { ui } from '../../i18n/ui.copy.ts';
 import type { LabCopy } from '../../views/lab/lab.copy.ts';
 import ArrowLink from '../ui/ArrowLink.astro';
 import PlannedChip from '../ui/PlannedChip.astro';
@@ -27,12 +28,12 @@ const t = copy.holobox;
       <p>{paragraph}</p>
     ))}
     <ArrowLink href={workHref(locale, 'holobox')} class="holobox__link">
-      {copy.caseStudy.replace('{title}', caseStudyTitle)}
+      {ui[locale].cta.caseStudyFor.replace('{title}', caseStudyTitle)}
     </ArrowLink>
   </div>
 
   <div class="holobox__planned">
-    <PlannedChip label={copy.planned} />
+    <PlannedChip locale={locale} />
     <h3 class="holobox__planned-title">{t.spatial.title}</h3>
     <p class="holobox__planned-text">{t.spatial.text}</p>
   </div>

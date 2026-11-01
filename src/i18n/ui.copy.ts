@@ -40,6 +40,8 @@ export const ui = defineCopy({
       copyFailed: 'Copy failed. The address is selected, press Ctrl+C.',
       writeEmail: 'Write an email',
       readCaseStudy: 'Read the case study',
+      /** Link to a named case study, e.g. from a timeline entry. */
+      caseStudyFor: 'Case study: {title}',
       allWork: 'All work',
       fullTimeline: 'Full timeline',
       watchVideo: 'Watch on YouTube',
@@ -50,6 +52,10 @@ export const ui = defineCopy({
       internal: 'Internal',
       'in-development': 'In development',
       completed: 'Completed',
+    },
+    labels: {
+      /** Chip for anything not built yet. */
+      planned: 'Planned',
     },
     footer: {
       sitemap: 'Site',
@@ -99,6 +105,7 @@ export const ui = defineCopy({
       copyFailed: 'Kopieren fehlgeschlagen. Die Adresse ist markiert, bitte Strg+C drücken.',
       writeEmail: 'E-Mail schreiben',
       readCaseStudy: 'Zur Fallstudie',
+      caseStudyFor: 'Fallstudie: {title}',
       allWork: 'Alle Projekte',
       fullTimeline: 'Vollständiger Werdegang',
       watchVideo: 'Auf YouTube ansehen',
@@ -109,6 +116,9 @@ export const ui = defineCopy({
       internal: 'Intern',
       'in-development': 'In Entwicklung',
       completed: 'Abgeschlossen',
+    },
+    labels: {
+      planned: 'Geplant',
     },
     footer: {
       sitemap: 'Seiten',
