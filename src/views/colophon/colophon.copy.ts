@@ -47,7 +47,7 @@ export const colophonCopy = defineCopy({
         {
           role: 'Social images',
           tool: 'Satori and resvg',
-          note: 'Rendered at build time from the title and description of each page.',
+          note: 'Rendered at build time for every page and language, in the site’s own drawing style.',
         },
         {
           role: 'Tests and PDF CVs',
@@ -273,7 +273,7 @@ export const colophonCopy = defineCopy({
         {
           role: 'Social Images',
           tool: 'Satori und resvg',
-          note: 'Beim Build aus Titel und Beschreibung jeder Seite erzeugt.',
+          note: 'Beim Build für jede Seite und Sprache im Zeichenstil der Website erzeugt.',
         },
         {
           role: 'Tests und PDF-Lebensläufe',
