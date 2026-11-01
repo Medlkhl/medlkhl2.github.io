@@ -93,15 +93,28 @@ const { facts, layout = 'rows', class: className } = Astro.props;
     font-variant-numeric: tabular-nums;
   }
 
+  /*
+   * Middots sit in the column gap before each item, so a wrapped line never
+   * ends in one and the first item of a line has none (clipped at the list's
+   * edge). The empty alt text keeps them out of the accessible names.
+   */
   .facts__list {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 0.5em;
+    column-gap: var(--space-3);
+    overflow-x: clip;
   }
 
-  .facts__list li:not(:last-child)::after {
-    content: '·';
-    margin-left: 0.5em;
+  .facts__list li {
+    position: relative;
+  }
+
+  .facts__list li::before {
+    content: '·' / '';
+    position: absolute;
+    right: 100%;
+    width: var(--space-3);
+    text-align: center;
     color: var(--color-text-subtle);
   }
 </style>
