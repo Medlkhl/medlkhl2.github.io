@@ -160,11 +160,21 @@ const siteLinks = [
   }
 
   .site-footer__legal {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: var(--space-1) var(--space-3);
     padding-block: var(--space-3) var(--space-4);
+  }
+
+  /* The rule spans the content width, like the rules inside the page, not the padding. */
+  .site-footer__legal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--grid-margin);
+    right: var(--grid-margin);
     border-top: var(--hairline) solid var(--color-line);
   }
 
