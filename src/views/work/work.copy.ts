@@ -82,7 +82,7 @@ export const workCopy = defineCopy({
       label: 'Fallstudien',
       title: 'Projekte, vom Ergebnis bis zur Architektur',
       intro:
-        'Drei Projekte, alle nach demselben Muster erzählt: zuerst Ergebnis, meine Rolle und das Team, dann die Architektur, die schwierigen Stellen und die Belege.',
+        'Drei Projekte, alle nach demselben Muster erzählt: zuerst das Ergebnis, meine Rolle und das Team, dann die Architektur, die schwierigen Stellen und die Belege.',
       listLabel: 'Fallstudien',
     },
     breadcrumb: 'Pfadnavigation',

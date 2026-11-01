@@ -36,7 +36,7 @@ export const experienceCopy = defineCopy({
       label: 'Erfahrung',
       title: 'Seit {year} entwickle ich Software und Hardware',
       intro:
-        'Alle Stationen, die neueste zuerst: wofür ich verantwortlich war, was ich umgesetzt habe, der Tech-Stack und die passende Fallstudie. Mein Lebenslauf entsteht aus denselben Daten.',
+        'Alle Stationen, die neueste zuerst: wofür ich verantwortlich war, was ich umgesetzt habe, die Technologien und, wo vorhanden, die passende Fallstudie. Mein Lebenslauf entsteht aus denselben Daten.',
       cvOnline: 'Lebenslauf online lesen',
     },
     timeline: {

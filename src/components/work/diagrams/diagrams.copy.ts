@@ -85,7 +85,7 @@ export const diagramCopy = defineCopy({
   },
   de: {
     happ: {
-      app: 'Mobile App · iOS · Android',
+      app: 'Mobile-App · iOS · Android',
       ui: 'UI',
       uiSub: 'Xamarin · .NET MAUI',
       viewModels: 'View-Models',
@@ -105,7 +105,7 @@ export const diagramCopy = defineCopy({
       deploySub: 'iOS · Android',
       signIn: 'Anmeldung',
       tokens: 'Tokens',
-      accessToken: 'Access Token',
+      accessToken: 'Access-Token',
       validate: 'Prüfung',
       data: 'Daten',
       release: 'Release',

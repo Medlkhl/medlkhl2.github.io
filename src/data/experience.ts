@@ -46,7 +46,7 @@ export const experience = z.array(experienceSchema).parse([
       },
       {
         en: 'Coached the development team through structured code reviews and 1:1 coaching sessions.',
-        de: 'Unterstützte und coachte das Entwicklungsteam durch strukturierte Code-Reviews und individuelle Einzel-Coachings.',
+        de: 'Unterstützte und coachte das Entwicklungsteam durch strukturierte Code-Reviews und Einzel-Coachings.',
         source: 'lebenslauf',
       },
       {
@@ -130,7 +130,7 @@ export const experience = z.array(experienceSchema).parse([
       },
       {
         en: 'Worked across 3D design in SolidWorks, Python image processing for sign recognition and lane tracking, Blockly-based visual coding and Node.js.',
-        de: 'Arbeitete mit 3D-Konstruktion in SolidWorks, Bildverarbeitung in Python für Schilderkennung und Spurverfolgung, visueller Programmierung mit Blockly und Node.js.',
+        de: 'Arbeitete mit SolidWorks (3D-Konstruktion), Python (Bildverarbeitung für Schilderkennung und Spurverfolgung), Blockly (visuelle Programmierung) und Node.js.',
         source: 'owner-brief',
       },
     ],

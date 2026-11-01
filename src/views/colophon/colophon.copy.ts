@@ -352,7 +352,7 @@ export const colophonCopy = defineCopy({
       label: 'Budgets',
       title: 'Zahlen entscheiden, wann etwas fertig ist',
       intro:
-        'Die Zielwerte stammen aus dem Projektbriefing und werden an jedem Phasenabschluss geprüft. Die Messwerte werden zum Launch erfasst.',
+        'Die Zielwerte stammen aus dem Projektbriefing und werden bei jedem Phasenabschluss geprüft. Die Messwerte werden zum Launch erfasst.',
       caption: 'Performance-Budget',
       columns: {
         metric: 'Kennzahl',

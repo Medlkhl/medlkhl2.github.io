@@ -20,7 +20,7 @@ export const profile = profileSchema.parse({
   },
   cvSummary: {
     en: 'Senior software engineer with full-stack expertise and experience leading development projects. Specialised in ASP.NET REST APIs, cross-platform .NET MAUI and Xamarin apps, and secure authentication and authorisation with Keycloak (OIDC, OAuth2). Track record in platform migration and in improving project stability. Mentors the team through code reviews and coaching. Committed to high-quality, maintainable software.',
-    de: 'Erfahrener Senior-Softwareentwickler mit umfassender Full-Stack-Expertise und Erfahrung in der Leitung von Entwicklungsprojekten. Spezialisiert auf ASP.NET-REST-APIs, plattformübergreifende Apps mit .NET MAUI und Xamarin sowie sichere Authentifizierung und Autorisierung mit Keycloak (OIDC, OAuth2). Erfolgreich in der Migration von Plattformen und der Optimierung der Projektstabilität. Unterstützt das Team als technischer Mentor durch Code-Reviews und Coaching. Engagiert für hochwertige, wartbare Softwarelösungen.',
+    de: 'Erfahrener Senior-Softwareentwickler mit umfassender Expertise in der Full-Stack-Entwicklung und der Leitung von Entwicklungsprojekten. Spezialisiert auf ASP.NET-REST-APIs, plattformübergreifende Apps mit .NET MAUI und Xamarin sowie sichere Authentifizierung und Autorisierung mit Keycloak (OIDC, OAuth2). Erfolgreich in der Migration von Plattformen und der Optimierung der Projektstabilität. Unterstützt das Team als technischer Mentor durch Code-Reviews und Coaching. Engagiert für hochwertige, wartbare Softwarelösungen.',
   },
   location: {
     city: 'Tuttlingen',

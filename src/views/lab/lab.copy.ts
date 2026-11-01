@@ -75,7 +75,7 @@ export const labCopy = defineCopy({
       label: 'Vorschau',
       title: 'HoloBox',
       paragraphs: [
-        'Ein flacher Bildschirm zeigt einen 3D-Avatar, mit dem man sprechen kann, als stünde er in einem echten Raum hinter dem Glas – möglich macht das eine kopfgekoppelte Off-Axis-Projektion. Sie sprechen, ein lokales Sprachmodell antwortet, und der Avatar spricht die Antwort lippensynchron aus.',
+        'Ein flacher Bildschirm zeigt einen 3D-Avatar, mit dem Sie sprechen können, als stünde er in einem echten Raum hinter dem Glas – möglich macht das eine kopfgekoppelte Off-Axis-Projektion. Sie sprechen, ein lokales Sprachmodell antwortet, und der Avatar spricht die Antwort lippensynchron aus.',
         'Technisch ist HoloBox eine .NET-MAUI-Blazor-Hybrid-App mit Three.js und MediaPipe in der WebView und einem lokalen Gemma-Modell, das über LLamaSharp (GGUF) direkt im App-Prozess läuft – offline, mit geringer Latenz und zuerst für Windows.',
       ],
       spatial: {
@@ -90,7 +90,7 @@ export const labCopy = defineCopy({
         'Mein Abschlussprojekt bei {org} ({year}): die Module, mit denen ein humanoider Roboter seine Umgebung wahrnimmt und selbstständig handelt. Zu den meisten Modulen gibt es ein Demovideo auf YouTube.',
       demoTitle: 'Zentrales Demovideo',
       demoText:
-        'Das Hauptvideo des Roboters, wie es schon auf meinem früheren Portfolio zu sehen war.',
+        'Das Hauptvideo des Roboters, wie es schon in meinem früheren Portfolio zu sehen war.',
       modulesLabel: 'Module',
       stackLabel: 'Technologien',
       organisation: 'Organisation',

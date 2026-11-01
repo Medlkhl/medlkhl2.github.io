@@ -37,10 +37,10 @@ responsibilities:
   - 'Entwickelte und pflegte skalierbare ASP.NET-REST-APIs, integriert in die .NET-MAUI- und Xamarin-Apps – mit reibungsloser Auslieferung für iOS und Android.'
   - 'Behob die in Sicherheitsaudits festgestellten Schwachstellen und implementierte Authentifizierung und Autorisierung mit Keycloak (OIDC, OAuth2).'
   - 'Überführte die Codebasis in MVVM und Clean Architecture und etablierte verbindliche Regeln und Abläufe für Code-Reviews.'
-  - 'Coachte das Team durch strukturierte Code-Reviews und Einzel-Coachings, administrierte die Bereitstellungsumgebungen und unterstützte die Anwender bei der Fehleranalyse.'
+  - 'Begleitete das Team mit strukturierten Code-Reviews und Einzel-Coachings, administrierte die Bereitstellungsumgebungen und unterstützte die Anwender bei der Fehleranalyse.'
 architecture:
   diagram: 'happ'
-  summary: 'Eine plattformübergreifende Mobile App, gegliedert nach MVVM und Clean Architecture, meldet Nutzer über einen Identity Provider an und spricht mit einer ASP.NET-REST-API, die interne Unternehmensdienste anbindet. Alle Bezeichnungen sind neutral; interne Systeme werden nicht gezeigt.'
+  summary: 'Eine plattformübergreifende Mobile-App, gegliedert nach MVVM und Clean Architecture, meldet Nutzer über einen Identity Provider an und spricht mit einer ASP.NET-REST-API, die interne Unternehmensdienste anbindet. Alle Bezeichnungen sind neutral; interne Systeme werden nicht gezeigt.'
   steps:
     - id: 'sign-in'
       label: 'Anmelden'
@@ -59,7 +59,7 @@ architecture:
       detail: 'Die Ergebnisse fließen über die Infrastrukturschicht, den Clean-Architecture-Kern und die MVVM-View-Models zurück in die Oberfläche.'
     - id: 'release'
       label: 'Ausliefern'
-      detail: 'Neue Versionen gehen über die Bereitstellungsumgebungen an iOS und Android.'
+      detail: 'Neue Versionen werden über die Bereitstellungsumgebungen für iOS und Android ausgeliefert.'
   decisions:
     - title: 'Identität über Keycloak und OpenID Connect'
       choice: 'Authentifizierung und Autorisierung laufen über Keycloak mit OpenID Connect und OAuth2 – gemeinsam für App und API.'
@@ -79,7 +79,7 @@ problems:
       text: '[ASSET: anonymisierter Vorher-nachher-Vergleich der Migration, nach Freigabe]'
   - title: 'Befunde aus Sicherheitsaudits beheben'
     challenge: 'Sicherheitsaudits deckten Schwachstellen auf, die behoben werden mussten; Authentifizierung und Autorisierung brauchten eine sichere Umsetzung nach Standard.'
-    approach: 'Ich habe die Befunde behoben und Authentifizierung und Autorisierung mit Keycloak über OpenID Connect und OAuth2 umgesetzt: Die App meldet Nutzer über den Identity Provider an, und die API autorisiert jede Anfrage anhand ihres Access Tokens. [DETAIL: verwendeter OIDC-Flow]'
+    approach: 'Ich habe die Befunde behoben und Authentifizierung und Autorisierung mit Keycloak über OpenID Connect und OAuth2 umgesetzt: Die App meldet Nutzer über den Identity Provider an, und die API autorisiert jede Anfrage anhand ihres Access-Tokens. [DETAIL: verwendeter OIDC-Flow]'
     evidence:
       type: 'placeholder'
       text: '[CODE: anonymisierter Auszug der Token-Prüfung in der API]'
@@ -100,7 +100,7 @@ results:
     - 'Die Migration von React Native zu Xamarin ist abgeschlossen, die Architektur folgt den Technologiestandards des Unternehmens.'
     - 'Die in Sicherheitsaudits festgestellten Schwachstellen sind behoben; Anmeldung und Zugriffskontrolle laufen über Keycloak mit OIDC und OAuth2.'
     - 'Die Codebasis folgt MVVM und Clean Architecture, verbindliche Regeln und Abläufe für Code-Reviews sind etabliert.'
-    - 'APIs und Apps erreichten iOS und Android reibungslos; die langfristige Stabilität und Wartbarkeit von HAPP ist gesichert.'
+    - 'APIs und Apps wurden reibungslos für iOS und Android ausgeliefert; die langfristige Stabilität und Wartbarkeit von HAPP wurde gesichert.'
   next: '[DETAIL: nächste Schritte]'
 proof:
   placeholder: '[RECOMMENDATION: Empfehlung aus dem Umfeld von Anton-Haering]'
@@ -118,7 +118,7 @@ In derselben Rolle habe ich Integrationen mit internen Unternehmensdiensten entw
 
 [DETAIL: Ablauf und Umfang der Migration]
 
-### Kapitel zwei: die Entwicklung von HAPP leiten (2024–2025)
+### Kapitel zwei: Leitung der Entwicklung von HAPP (2024–2025)
 
 Im Juli 2024 habe ich als Senior-Softwareentwickler die Leitung der Entwicklung von HAPP übernommen – mit einem klaren Ziel: langfristige Stabilität und Wartbarkeit.
 
