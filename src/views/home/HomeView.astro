@@ -95,6 +95,7 @@ const workTitles = new Map(
     label={t.capabilities.label}
     title={t.capabilities.title}
     intro={t.capabilities.intro}
+    navTarget=""
   >
     <CapabilityList locale={locale} copy={t.capabilities} />
   </Section>
@@ -105,6 +106,7 @@ const workTitles = new Map(
     label={t.recommendations.label}
     title={t.recommendations.title}
     intro={t.recommendations.intro}
+    navTarget=""
   >
     <RecommendationList locale={locale} copy={t.recommendations} workTitles={workTitles} />
   </Section>

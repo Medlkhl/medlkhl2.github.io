@@ -166,7 +166,8 @@ flowchart LR
 | `tests/e2e/a11y.spec.ts`        | axe (WCAG 2.2 AA) on every page and `/tokens/`, in both themes                                                                                |
 | `tests/e2e/privacy.spec.ts`     | On every page: zero third-party requests, no cookies, no embeds, no `tel:` links or phone numbers                                             |
 | `tests/e2e/nojs.spec.ts`        | The home page's first screen without JavaScript at 1440 × 900 and 390 × 844, every page renders, the theme follows the system                 |
-| `tests/e2e/mobile.spec.ts`      | The menu at 390 px (Escape returns focus), 44 px controls, no horizontal scroll                                                               |
+| `tests/e2e/mobile.spec.ts`      | The menu at 390 px (tab order, steady row, Escape returns focus), 44 px controls, no horizontal scroll                                        |
+| `tests/e2e/header.spec.ts`      | The home page's section highlight (set, cleared, kept below the last section)                                                                 |
 | `tests/e2e/seo.spec.ts`         | Head metadata, social images, JSON-LD, unique titles and descriptions, the sitemap's hreflang set, robots.txt, the 404, legal pages           |
 | `tests/e2e/cv.spec.ts`          | PDF downloads (file name, `application/pdf`, at most 2 pages), hreflang on the other-language link, the print sheet                           |
 | `tests/e2e/screenshots.spec.ts` | Gate screenshots of every route, both locales and themes, at 1440 × 900 and 390 × 844 (only with `SCREENSHOTS=1`)                             |

@@ -3,7 +3,8 @@
  * Sticky site header: name, main navigation, language switch and theme toggle.
  * - The current page is marked with aria-current="page".
  * - On the home page the link of the section in view is highlighted
- *   (IntersectionObserver; sections opt in with data-nav-target="<key>").
+ *   (IntersectionObserver; sections opt in with data-nav-target="<key>", and
+ *   parts without a nav link carry an empty data-nav-target, which clears it).
  * - Mobile: a disclosure menu with JavaScript; without it the links wrap into a row.
  * Scripts bind on astro:page-load and clean up on astro:before-swap (ClientRouter).
  */
@@ -379,18 +380,32 @@ const items: NavItem[] = [
   }
 
   function bindSectionHighlight() {
-    const sections = document.querySelectorAll<HTMLElement>('[data-nav-target]');
+    const sections = [...document.querySelectorAll<HTMLElement>('[data-nav-target]')];
     if (!sections.length || !('IntersectionObserver' in window)) return;
     const links = document.querySelectorAll<HTMLElement>('[data-nav-section]');
+    const last = sections[sections.length - 1];
+    // Sections crossing a thin band just above the middle of the viewport, and
+    // whether the last section has scrolled above it (the footer is in view).
+    const inBand = new Set<Element>();
+    let pastLast = false;
     observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          const key = (entry.target as HTMLElement).dataset.navTarget;
-          links.forEach((link) =>
-            link.toggleAttribute('data-active', link.dataset.navSection === key),
-          );
+          if (entry.isIntersecting) inBand.add(entry.target);
+          else inBand.delete(entry.target);
+          if (entry.target === last)
+            pastLast =
+              !entry.isIntersecting &&
+              entry.boundingClientRect.bottom <= (entry.rootBounds?.top ?? 0);
         }
+        // The last crossing section in document order wins; an empty key (hero,
+        // sections without a nav link) or no section at all clears the highlight.
+        const crossing = sections.filter((section) => inBand.has(section));
+        const current = crossing[crossing.length - 1] ?? (pastLast ? last : undefined);
+        const key = current?.dataset.navTarget;
+        links.forEach((link) =>
+          link.toggleAttribute('data-active', Boolean(key) && link.dataset.navSection === key),
+        );
       },
       { rootMargin: '-45% 0px -50% 0px' },
     );

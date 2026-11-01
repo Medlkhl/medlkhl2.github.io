@@ -7,7 +7,9 @@
  * view (position: sticky), so hovering a layer shows where it sits.
  *
  * data-stack-root marks the common ancestor of the figure and the list for
- * the :has() highlight rules. A faint blueprint grid sits behind it all.
+ * the :has() highlight rules; the empty data-nav-target clears the header's
+ * section highlight while the hero is in view. A faint blueprint grid sits
+ * behind it all.
  * The list holds about 30 links, so a link that is visually hidden until
  * focused lets keyboard users skip straight to 01 Selected work (#work).
  */
@@ -32,7 +34,7 @@ const { locale, copy, workTitles } = Astro.props;
 const cta = ui[locale].cta;
 ---
 
-<div class="hero" data-stack-root>
+<div class="hero" data-stack-root data-nav-target="">
   <div class="hero__backdrop blueprint" aria-hidden="true"></div>
   <div class="container hero__grid">
     <header class="hero__intro">
