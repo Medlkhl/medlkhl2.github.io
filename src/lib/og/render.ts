@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Resvg } from '@resvg/resvg-js';
 import satori from 'satori';
+import sharp from 'sharp';
 import { layers } from '../../data/layers.ts';
 import { colors, grid } from '../../styles/tokens.ts';
 import { OG_HEIGHT, OG_WIDTH } from '../og.ts';
@@ -9,8 +10,9 @@ import type { OgCard } from './cards.ts';
 import { stackShape } from './stack.ts';
 
 /**
- * Build-time social images (1200 × 630 PNG, ≤ 120 KB): Satori lays out an
- * element tree into SVG and resvg rasterises it. The look is the site's own:
+ * Build-time social images (1200 × 630 PNG, ≤ 120 KB, about 30 KB in practice):
+ * Satori lays out an element tree into SVG, resvg rasterises it and sharp
+ * stores it as a palette PNG. The look is the site's own:
  * graphite, a faint blueprint grid, Geist and Geist Mono, a mono kicker, hairline
  * rules and the exploded architecture stack drawn as an isometric figure. The
  * only colour is the cobalt accent on the slab a case study is about.
@@ -233,6 +235,11 @@ function headlineSize(text: string): number {
   return Math.min(bySentence, Math.floor(TEXT_WIDTH / (longestWord * 0.53)));
 }
 
+/** Three lines at 26 px; a long case-study outcome gets four lines at 23 px instead of an ellipsis. */
+function ledeStyle(text: string): Record<string, unknown> {
+  return text.length <= 125 ? { fontSize: 26, lineClamp: 3 } : { fontSize: 23, lineClamp: 4 };
+}
+
 function kicker(card: OgCard): SatoriNode {
   return h(
     'div',
@@ -384,10 +391,9 @@ export function cardTree(card: OgCard): SatoriNode {
                     {
                       style: {
                         marginTop: 24,
-                        fontSize: 26,
+                        ...ledeStyle(card.lede),
                         lineHeight: 1.42,
                         color: C['text-muted'],
-                        lineClamp: 3,
                         textWrap: 'pretty',
                       },
                     },
@@ -410,5 +416,11 @@ export async function renderOgImage(card: OgCard): Promise<Buffer> {
     height: OG_HEIGHT,
     fonts: await loadFonts(),
   });
-  return new Resvg(svg, { fitTo: { mode: 'width', value: OG_WIDTH } }).render().asPng();
+  const png = new Resvg(svg, { fitTo: { mode: 'width', value: OG_WIDTH } }).render().asPng();
+  // A 256-colour palette is visually lossless for this flat graphite artwork
+  // and about a third of the size of the RGBA original.
+  return sharp(png)
+    .removeAlpha()
+    .png({ palette: true, quality: 100, effort: 10, compressionLevel: 9 })
+    .toBuffer();
 }
