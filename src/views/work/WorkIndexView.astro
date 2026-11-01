@@ -1,8 +1,9 @@
 ---
 /**
- * /work/ and /de/work/: every published case study, in `order`, as a wide
- * WorkCard row. Target of the "Work" navigation item and of the case studies'
- * breadcrumbs. No client JavaScript.
+ * /work/ and /de/work/: a statement h1, like the other subpages, then every
+ * published case study, in `order`, as a wide WorkCard row. Target of the
+ * "Work" navigation item and of the case studies' breadcrumbs. No client
+ * JavaScript.
  */
 import Section from '../../components/ui/Section.astro';
 import WorkCard from '../../components/work/WorkCard.astro';
@@ -35,7 +36,7 @@ const entries = await getWork(locale);
   <Section
     id="work"
     label={t.label}
-    title={meta.title}
+    title={t.title}
     intro={t.intro}
     headingLevel={1}
     rule={false}

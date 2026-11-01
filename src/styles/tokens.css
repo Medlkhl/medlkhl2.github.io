@@ -50,6 +50,7 @@
   --space-12: 6rem; /* 96px */
   --space-16: 8rem; /* 128px */
   --section-gap: clamp(var(--space-10), 9vw, var(--space-16));
+  --page-top: var(--section-gap); /* above every page's header, so all pages start at one height */
 
   /* ---- Grid ------------------------------------------------------------ */
   --grid-columns: 12;

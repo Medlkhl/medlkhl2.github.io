@@ -10,6 +10,8 @@ export const workCopy = defineCopy({
   en: {
     index: {
       label: 'Case studies',
+      /** The page's statement h1 (the page title stays "Work"). */
+      title: 'Projects, from outcome to architecture',
       intro:
         'Three projects, each told the same way: the result, my role and the team first, then the architecture, the hard problems and the evidence.',
       listLabel: 'Case studies',
@@ -75,6 +77,7 @@ export const workCopy = defineCopy({
   de: {
     index: {
       label: 'Fallstudien',
+      title: 'Projekte, vom Ergebnis bis zur Architektur',
       intro:
         'Drei Projekte, alle nach demselben Muster erzählt: zuerst Ergebnis, meine Rolle und das Team, dann die Architektur, die schwierigen Stellen und die Belege.',
       listLabel: 'Fallstudien',
