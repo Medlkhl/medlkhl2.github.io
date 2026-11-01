@@ -1,16 +1,27 @@
 import { defineCopy } from './copy.ts';
 
 /**
- * Title and meta description of every registered route, per locale.
- * Titles are rendered as "<title> — Mohamed Lakhel" except on the home page.
- * Case studies take their title and description from frontmatter.
+ * Head metadata of every registered route, per locale, plus the text of the
+ * social images (src/lib/og/cards.ts) and the templates the SEO component fills in.
+ *
+ * Rules (checked by tests/unit/seo.test.ts):
+ * - Titles are rendered as "<title> — Mohamed Lakhel" (a title that already
+ *   contains the name is used as is) and stay at 60 characters or fewer.
+ * - Descriptions of indexable pages are 110–160 characters.
+ * - Titles and descriptions are unique across both locales.
+ * - Case studies take their title and description from frontmatter; the SEO
+ *   component adds "· Case study" / "· Fallstudie" so the twins stay distinct.
+ * - Templates use {title}, {name} and {role}; nothing here may state a fact
+ *   that is not in src/data/* or the brief.
  */
 export interface PageMeta {
+  /** Page name for <title>, without the site name. */
   title: string;
+  /** Meta description (110–160 characters for indexable pages). */
   description: string;
 }
 
-type MetaKey =
+export type MetaKey =
   | 'home'
   | 'work'
   | 'experience'
@@ -25,74 +36,75 @@ type MetaKey =
 export const pageMeta = defineCopy<Record<MetaKey, PageMeta>>({
   en: {
     home: {
-      title: 'Mohamed Lakhel — Senior Software Engineer',
+      title: 'Mohamed Lakhel — Senior Software Engineer in Germany',
       description:
-        'Senior Software Engineer in Germany: cross-platform .NET (MAUI, Xamarin, ASP.NET Core, Blazor), secure enterprise apps with Keycloak and OIDC, and on-device AI.',
+        'Senior Software Engineer in Tuttlingen, Germany: cross-platform .NET apps with MAUI, Xamarin and Blazor, ASP.NET Core APIs, Keycloak security and on-device AI.',
     },
     work: {
       title: 'Work',
       description:
-        'Case studies: leading an internal enterprise app, an on-device AI avatar in .NET MAUI, and an earlier humanoid-robot project.',
+        'Case studies: migrating and then leading an internal enterprise app, an on-device AI avatar in .NET MAUI, and a humanoid robot from my graduation project.',
     },
     experience: {
       title: 'Experience',
       description:
-        'Software and hardware engineering since 2018, newest first: Anton-Haering, GoMyCode, a humanoid-robot graduation project and a Kinect internship.',
+        'Software and hardware engineering since 2018, newest first: two roles at Anton-Haering, GoMyCode, a humanoid-robot graduation project and a Kinect internship.',
     },
     lab: {
-      title: 'Lab',
+      title: 'Lab: experiments and earlier work',
       description:
-        'Experiments and earlier work: the humanoid-robot archive with demo videos, a HoloBox preview and the experiments still to come.',
+        'A preview of HoloBox, the archive of my humanoid robot with its demo videos on YouTube, and the small experiments that will appear here next.',
     },
     about: {
       title: 'About',
       description:
-        'Software that connects people and machines: how a Kinect whiteboard led to robotics, enterprise apps and on-device AI, and how I work.',
+        'Software that connects people and machines: how a Kinect whiteboard led to robotics, enterprise apps and on-device AI, and how I work as an engineer.',
     },
     cv: {
       title: 'CV',
       description:
-        'The CV of Mohamed Lakhel, Senior Software Engineer: experience, skills, education and languages, also as a PDF.',
+        'The CV of Mohamed Lakhel, Senior Software Engineer: experience, skills, education and languages, with PDF versions to download in English and German.',
     },
     colophon: {
       title: 'Colophon',
       description:
-        'How this site is built: Astro, static HTML, self-hosted fonts, no cookies, and the performance and accessibility budgets it is held to.',
+        'How this site is built: Astro and static HTML, self-hosted fonts, no cookies and no tracking, and the performance and accessibility budgets it is held to.',
     },
     impressum: {
       title: 'Legal notice (Impressum)',
-      description: 'Legal notice (Impressum) under § 5 DDG. The German version is binding.',
+      description:
+        'Legal notice for this website under § 5 DDG: who is responsible for it and how to reach me by email. The German version is the legally binding one.',
     },
     datenschutz: {
       title: 'Privacy policy',
       description:
-        'How this site handles personal data: GitHub Pages hosting and server logs, contact by email, no cookies and no analytics.',
+        'How this website handles personal data: hosting on GitHub Pages and its server logs, contact by email, your rights, and no cookies, analytics or tracking.',
     },
     notFound: {
       title: 'Page not found',
-      description: 'The page you were looking for does not exist.',
+      description: 'The page you were looking for does not exist or has moved.',
     },
   },
   de: {
     home: {
-      title: 'Mohamed Lakhel — Senior-Softwareentwickler',
+      title: 'Mohamed Lakhel — Senior-Softwareentwickler in Deutschland',
       description:
-        'Senior-Softwareentwickler in Deutschland: plattformübergreifendes .NET (MAUI, Xamarin, ASP.NET Core, Blazor), sichere Unternehmens-Apps mit Keycloak und OIDC sowie KI direkt auf dem Gerät.',
+        'Senior-Softwareentwickler in Tuttlingen: plattformübergreifende .NET-Apps (MAUI, Xamarin, Blazor), ASP.NET-Core-APIs, Sicherheit mit Keycloak und lokale KI.',
     },
     work: {
       title: 'Projekte',
       description:
-        'Fallstudien: die Leitung einer internen Unternehmens-App, ein KI-Avatar mit lokalem Sprachmodell in .NET MAUI und ein früheres Projekt mit einem humanoiden Roboter.',
+        'Fallstudien: Migration und Entwicklungsleitung einer internen Unternehmens-App, ein KI-Avatar mit lokalem Sprachmodell und ein humanoider Roboter.',
     },
     experience: {
       title: 'Erfahrung',
       description:
-        'Software- und Hardwareentwicklung seit 2018, neueste zuerst: Anton-Haering, GoMyCode, ein Abschlussprojekt mit humanoidem Roboter und ein Kinect-Praktikum.',
+        'Software- und Hardwareentwicklung seit 2018: zwei Rollen bei Anton-Haering, GoMyCode, ein Abschlussprojekt mit humanoidem Roboter und ein Kinect-Praktikum.',
     },
     lab: {
-      title: 'Lab',
+      title: 'Lab: Experimente und frühere Arbeiten',
       description:
-        'Experimente und frühere Arbeiten: das Archiv des humanoiden Roboters mit Demovideos, ein Ausblick auf HoloBox und kommende Experimente.',
+        'Ein Ausblick auf HoloBox, das Archiv meines humanoiden Roboters mit Demovideos auf YouTube und die kleinen Experimente, die hier als Nächstes erscheinen.',
     },
     about: {
       title: 'Über mich',
@@ -102,25 +114,161 @@ export const pageMeta = defineCopy<Record<MetaKey, PageMeta>>({
     cv: {
       title: 'Lebenslauf',
       description:
-        'Der Lebenslauf von Mohamed Lakhel, Senior-Softwareentwickler: Erfahrung, Kenntnisse, Ausbildung und Sprachen, auch als PDF.',
+        'Der Lebenslauf von Mohamed Lakhel, Senior-Softwareentwickler: Erfahrung, Kenntnisse, Ausbildung und Sprachen, als PDF auf Deutsch und Englisch zum Download.',
     },
     colophon: {
       title: 'Kolophon',
       description:
-        'Wie diese Website gebaut ist: Astro, statisches HTML, selbst gehostete Schriften, keine Cookies – und die Performance- und Barrierefreiheitsbudgets, an denen sie sich messen lässt.',
+        'Astro, statisches HTML, selbst gehostete Schriften, keine Cookies, kein Tracking: wie diese Website gebaut ist und an welchen Budgets sie sich messen lässt.',
     },
     impressum: {
       title: 'Impressum',
-      description: 'Impressum gemäß § 5 DDG.',
+      description:
+        'Impressum dieser Website nach § 5 DDG: wer für die Inhalte verantwortlich ist und wie Sie mich per E-Mail erreichen. Diese deutsche Fassung ist verbindlich.',
     },
     datenschutz: {
       title: 'Datenschutzerklärung',
       description:
-        'Wie diese Website mit personenbezogenen Daten umgeht: Hosting bei GitHub Pages und Server-Logs, Kontakt per E-Mail, keine Cookies und keine Analyse.',
+        'Wie diese Website mit Ihren Daten umgeht: Hosting bei GitHub Pages und Server-Logs, Kontakt per E-Mail, Ihre Rechte – ohne Cookies, Analyse oder Tracking.',
     },
     notFound: {
       title: 'Seite nicht gefunden',
-      description: 'Die gesuchte Seite existiert nicht.',
+      description: 'Die gesuchte Seite gibt es nicht, oder sie ist umgezogen.',
     },
   },
 });
+
+/** Templates the SEO component fills in ({title}, {name}, {role}). */
+export const metaTemplates = defineCopy({
+  en: {
+    /** Case-study titles, so "HAPP" and its German twin get distinct titles. */
+    caseStudyTitle: '{title} · Case study',
+    /** Used while a case study's summary still contains a placeholder (never put "[TODO: …]" in a snippet). */
+    caseStudyDescription:
+      '{title}: a case study by {name}, {role}, covering the context, my role, the architecture, the hard problems and the results.',
+    /** Same rule for any other page whose description still contains a placeholder. */
+    pageDescription:
+      '{title}: a page from the portfolio of {name}, {role} in Germany, with case studies, experience, the CV and contact details.',
+    /** og:image:alt and twitter:image:alt; {title} is the full page title. */
+    imageAlt: '{title}: title card with a drawing of stacked architecture layers',
+  },
+  de: {
+    caseStudyTitle: '{title} · Fallstudie',
+    caseStudyDescription:
+      '{title}: eine Fallstudie von {name}, {role}, mit Kontext, meiner Rolle, der Architektur, den schwierigsten Problemen und den Ergebnissen.',
+    pageDescription:
+      '{title}: eine Seite aus dem Portfolio von {name}, {role} in Deutschland, mit Fallstudien, Werdegang, Lebenslauf und Kontakt.',
+    imageAlt: '{title}: Titelkarte mit einer Zeichnung gestapelter Architekturschichten',
+  },
+});
+
+/** Text on the social image of each page (kicker label, headline, lede). The home card is built from src/data/profile.ts. */
+export interface SocialCardCopy {
+  /** Mono kicker label; the number in front comes from src/lib/og/cards.ts. */
+  label: string;
+  headline: string;
+  /** One sentence, at most about 110 characters (three lines on the card). */
+  lede: string;
+}
+
+export type SocialCardKey = Exclude<MetaKey, 'home' | 'notFound'>;
+
+export const socialCopy = defineCopy({
+  en: {
+    cards: {
+      work: {
+        label: 'Work',
+        headline: 'Case studies',
+        lede: 'Migrating and then leading an internal enterprise app, an on-device AI avatar and a humanoid robot.',
+      },
+      experience: {
+        label: 'Experience',
+        headline: 'From robotics to enterprise apps',
+        lede: 'Software and hardware engineering since 2018, newest first.',
+      },
+      lab: {
+        label: 'Lab',
+        headline: 'Experiments and an archive',
+        lede: 'A preview of HoloBox and the archive of my humanoid robot, with its demo videos.',
+      },
+      about: {
+        label: 'About',
+        headline: 'Software that connects people and machines',
+        lede: 'From a Kinect whiteboard to robotics, enterprise apps and on-device AI.',
+      },
+      cv: {
+        label: 'CV',
+        headline: 'My CV at a glance',
+        lede: 'Experience, skills, education and languages. As a PDF in English and German.',
+      },
+      colophon: {
+        label: 'Colophon',
+        headline: 'How this site is built',
+        lede: 'Astro, static HTML and self-hosted fonts. No cookies, no tracking, strict budgets.',
+      },
+      impressum: {
+        label: 'Legal',
+        headline: 'Legal notice',
+        lede: 'Information under § 5 DDG. The German version is legally binding.',
+      },
+      datenschutz: {
+        label: 'Legal',
+        headline: 'Privacy policy',
+        lede: 'Hosted on GitHub Pages. No cookies, no analytics, no tracking.',
+      },
+    } satisfies Record<SocialCardKey, SocialCardCopy>,
+    caseStudy: 'Case study',
+    layer: 'Layer',
+  },
+  de: {
+    cards: {
+      work: {
+        label: 'Projekte',
+        headline: 'Fallstudien',
+        lede: 'Migration und Entwicklungsleitung einer Unternehmens-App, ein KI-Avatar mit lokalem Sprachmodell und ein humanoider Roboter.',
+      },
+      experience: {
+        label: 'Erfahrung',
+        headline: 'Von der Robotik zu Unternehmens-Apps',
+        lede: 'Software- und Hardwareentwicklung seit 2018, die neueste Station zuerst.',
+      },
+      lab: {
+        label: 'Lab',
+        headline: 'Experimente und ein Archiv',
+        lede: 'Ein Ausblick auf HoloBox und das Archiv meines humanoiden Roboters mit seinen Demovideos.',
+      },
+      about: {
+        label: 'Über mich',
+        headline: 'Software, die Menschen und Maschinen verbindet',
+        lede: 'Vom Kinect-Whiteboard über die Robotik zu Unternehmens-Apps und KI auf dem Gerät.',
+      },
+      cv: {
+        label: 'Lebenslauf',
+        headline: 'Mein Lebenslauf auf einen Blick',
+        lede: 'Erfahrung, Kenntnisse, Ausbildung und Sprachen. Als PDF auf Deutsch und Englisch.',
+      },
+      colophon: {
+        label: 'Kolophon',
+        headline: 'Wie diese Website gebaut ist',
+        lede: 'Astro, statisches HTML und selbst gehostete Schriften. Keine Cookies, kein Tracking, klare Budgets.',
+      },
+      impressum: {
+        label: 'Rechtliches',
+        headline: 'Impressum',
+        lede: 'Angaben gemäß § 5 DDG und der Weg, mich per E-Mail zu erreichen.',
+      },
+      datenschutz: {
+        label: 'Rechtliches',
+        headline: 'Datenschutzerklärung',
+        lede: 'Gehostet bei GitHub Pages. Keine Cookies, keine Analyse, kein Tracking.',
+      },
+    } satisfies Record<SocialCardKey, SocialCardCopy>,
+    caseStudy: 'Fallstudie',
+    layer: 'Schicht',
+  },
+});
+
+/** Replaces {key} tokens in a template; unknown tokens are left untouched. */
+export function fillTemplate(template: string, values: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (token, key: string) => values[key] ?? token);
+}
