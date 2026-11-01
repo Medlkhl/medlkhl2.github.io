@@ -35,4 +35,13 @@ test.describe('theme', () => {
     );
     expect(scheme).toBe('light');
   });
+
+  test('data-save-data is set on load and kept across client-side navigation', async ({ page }) => {
+    await page.goto('');
+    const html = page.locator('html');
+    await expect(html).toHaveAttribute('data-save-data', /^(on|off)$/);
+    await page.locator('.site-nav a[href$="/lab/"]').first().click();
+    await expect(page).toHaveURL(/\/lab\/$/);
+    await expect(html).toHaveAttribute('data-save-data', /^(on|off)$/);
+  });
 });

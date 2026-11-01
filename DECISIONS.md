@@ -82,7 +82,7 @@ A dated, ADR-style log. Each entry records the decision, the alternatives and wh
 
 ## 2026-11-01 · D-014 · Themes and the no-flash script
 
-- **Decision.** `data-theme="graphite" | "paper"` on `<html>`. An inline script (generated from the same keys as `src/lib/prefs.ts`) sets the theme, motion and 3D attributes before first paint and again on `astro:after-swap`. A first visit follows `prefers-color-scheme`. Without JavaScript, a media query applies the paper palette for light-mode systems.
+- **Decision.** `data-theme="graphite" | "paper"` on `<html>`. An inline script (generated from the same keys as `src/lib/prefs.ts`) sets the theme, motion, Save-Data and 3D attributes before first paint and again on `astro:after-swap`. A first visit follows `prefers-color-scheme`. Without JavaScript, a media query applies the paper palette for light-mode systems.
 
 ## 2026-11-01 · D-015 · ClientRouter now, motion later
 

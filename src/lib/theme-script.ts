@@ -19,6 +19,9 @@ export const themeScript = `(() => {
     root.dataset.motion = motion === 'full' || motion === 'reduced'
       ? motion
       : query('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full';
+    const connection = navigator.connection;
+    root.dataset.saveData = (connection && connection.saveData === true)
+      || query('(prefers-reduced-data: reduce)').matches ? 'on' : 'off';
     root.setAttribute('data-3d', 'off');
     root.classList.remove('no-js');
     root.classList.add('js');
