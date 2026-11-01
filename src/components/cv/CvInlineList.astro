@@ -1,0 +1,59 @@
+---
+/**
+ * A real list set inline: "C# · .NET MAUI · Xamarin".
+ * - The middots are generated content with empty alternative text, so screen
+ *   readers announce a list of items, not "dot".
+ * - Each item carries its separator in front, inside the column gap; the list
+ *   clips horizontally, so an item that starts a line drops its separator and
+ *   no line ever begins or ends with a stray middot, on screen or on paper.
+ * - Items never break inside; lines wrap between them.
+ */
+interface Props {
+  items: readonly string[];
+  /** 'mono' for technology names, 'sans' for prose-like items. */
+  variant?: 'mono' | 'sans';
+  class?: string;
+}
+
+const { items, variant = 'sans', class: className, ...rest } = Astro.props;
+---
+
+<ul role="list" class:list={['cv-inline', `cv-inline--${variant}`, className]} {...rest}>
+  {items.map((item) => (
+    <li class="cv-inline__item">{item}</li>
+  ))}
+</ul>
+
+<style>
+  .cv-inline {
+    --cv-inline-sep: var(--space-2);
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--cv-inline-sep);
+    overflow-x: clip;
+  }
+
+  .cv-inline__item {
+    white-space: nowrap;
+  }
+
+  .cv-inline__item::before {
+    content: '·' / '';
+    display: inline-block;
+    width: var(--cv-inline-sep);
+    margin-left: calc(-1 * var(--cv-inline-sep));
+    text-align: center;
+    color: var(--color-text-subtle);
+  }
+
+  .cv-inline--mono {
+    --cv-inline-sep: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0;
+  }
+
+  .cv-inline--sans {
+    --cv-inline-sep: var(--space-3);
+  }
+</style>

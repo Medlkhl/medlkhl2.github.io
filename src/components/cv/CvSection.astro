@@ -1,0 +1,91 @@
+---
+/**
+ * One CV section on the CV grid: the monospace label ("02 — Experience") is the
+ * section heading and sits in the key column (columns 1–3) on the first
+ * baseline of the content, which starts on column 4, so every text in the CV
+ * shares one vertical axis. The label is a direct grid item, so its sticky
+ * range is the whole section. Below 48rem the label sits above the content.
+ * Print keeps the two columns (see the print rules below).
+ */
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  id: string;
+  index: number;
+  label: string;
+  class?: string;
+}
+
+const { id, index, label, class: className } = Astro.props;
+const headingId = `${id}-title`;
+---
+
+<section id={id} class:list={['cv-section', className]} aria-labelledby={headingId}>
+  <SectionLabel as="h2" id={headingId} index={index} class="cv-section__label">
+    {label}
+  </SectionLabel>
+  <div class="cv-section__body">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .cv-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+    padding-block: var(--space-6);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .cv-section__body {
+    min-width: 0;
+  }
+
+  @media (min-width: 48rem) {
+    /* Label and content share their first baseline. */
+    .cv-section {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      align-items: baseline;
+      padding-block: var(--space-8);
+    }
+
+    /* The label stays in view while its section scrolls past the sticky site header. */
+    .cv-section > :global(.cv-section__label) {
+      grid-column: 1 / span 3;
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-4));
+    }
+
+    .cv-section__body {
+      grid-column: 4 / -1;
+    }
+  }
+
+  /* Wide screens: a reading measure of seven columns. */
+  @media (min-width: 64rem) {
+    .cv-section__body {
+      grid-column: 4 / span 7;
+    }
+  }
+
+  @media print {
+    .cv-section {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      align-items: baseline;
+      padding-block: var(--space-2) var(--space-3);
+    }
+
+    .cv-section > :global(.cv-section__label) {
+      grid-column: 1 / span 3;
+      color: var(--color-text);
+      break-after: avoid;
+    }
+
+    .cv-section__body {
+      grid-column: 4 / -1;
+    }
+  }
+</style>

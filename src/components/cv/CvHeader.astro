@@ -1,0 +1,191 @@
+---
+/**
+ * CV header on the CV grid: the portrait in the key column, then name (the
+ * page's only h1), title, the contact line and the PDF downloads in the body
+ * column. In print the downloads disappear and the portrait shrinks to an A4
+ * photo; the rest keeps its place.
+ */
+import { Picture } from 'astro:assets';
+import portrait from '../../assets/portrait.png';
+import Icon from '../ui/Icon.astro';
+import CvContact from './CvContact.astro';
+import { NAME } from '../../data/identity.ts';
+import { profile } from '../../data/profile.ts';
+import { LOCALE_META, type Locale, otherLocale } from '../../i18n/config.ts';
+import { cvPdfHref, CV_PDF } from '../../lib/cv.ts';
+import type { CvCopy } from '../../views/cv/cv.copy.ts';
+
+interface Props {
+  locale: Locale;
+  copy: CvCopy;
+}
+
+const { locale, copy } = Astro.props;
+const other = otherLocale(locale);
+---
+
+<header class="cv-header">
+  <div class="cv-header__key">
+    <Picture
+      src={portrait}
+      formats={['avif', 'webp']}
+      fallbackFormat="jpg"
+      width={160}
+      height={160}
+      widths={[96, 160, 240, 320]}
+      sizes="(min-width: 48rem) 10rem, 5.5rem"
+      quality="high"
+      alt={copy.portraitAlt.replace('{name}', NAME)}
+      loading="eager"
+      decoding="async"
+      class="cv-header__portrait"
+    />
+  </div>
+
+  <div class="cv-header__body">
+    <p class="label cv-header__kicker">{copy.kicker}</p>
+    <h1 id="cv-name" class="cv-header__name">
+      {profile.name}
+    </h1>
+    <p class="cv-header__role">{profile.role[locale]}</p>
+    <CvContact locale={locale} copy={copy} class="cv-header__contact" />
+
+    <div class="cv-header__actions" role="group" aria-label={copy.actions.label}>
+      <a
+        class="btn btn--primary"
+        href={cvPdfHref(locale)}
+        download={CV_PDF[locale]}
+        type="application/pdf"
+      >
+        <Icon name="download" />
+        <span>{copy.actions.download}</span>
+      </a>
+      <a
+        class="btn"
+        href={cvPdfHref(other)}
+        download={CV_PDF[other]}
+        type="application/pdf"
+        hreflang={LOCALE_META[other].htmlLang}
+      >
+        <Icon name="download" />
+        <span>{copy.actions.otherLanguage}</span>
+      </a>
+      <p class="cv-header__note">{copy.actions.note}</p>
+    </div>
+  </div>
+</header>
+
+<style>
+  .cv-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+    padding-block: var(--space-6) var(--space-8);
+  }
+
+  .cv-header__key :global(.cv-header__portrait) {
+    width: 5.5rem;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-2);
+    background: var(--color-surface-2);
+  }
+
+  .cv-header__body {
+    display: grid;
+    justify-items: start;
+    min-width: 0;
+  }
+
+  .cv-header__name {
+    margin-top: var(--space-2);
+    font-size: var(--step-5);
+  }
+
+  .cv-header__role {
+    margin-top: var(--space-1);
+    font-size: var(--step-1);
+    color: var(--color-text-muted);
+  }
+
+  .cv-header__body :global(.cv-header__contact) {
+    margin-top: var(--space-3);
+  }
+
+  .cv-header__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    margin-top: var(--space-4);
+  }
+
+  .cv-header__note {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.02em;
+    color: var(--color-text-subtle);
+  }
+
+  @media (min-width: 48rem) {
+    .cv-header {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      padding-block: var(--space-10) var(--space-8);
+    }
+
+    .cv-header__key {
+      grid-column: 1 / span 3;
+    }
+
+    .cv-header__body {
+      grid-column: 4 / -1;
+    }
+
+    .cv-header__key :global(.cv-header__portrait) {
+      width: 10rem;
+    }
+  }
+
+  @media print {
+    .cv-header {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      padding-block: 0 var(--space-4);
+      break-inside: avoid;
+    }
+
+    .cv-header__key {
+      grid-column: 1 / span 3;
+    }
+
+    .cv-header__body {
+      grid-column: 4 / -1;
+      align-content: start;
+    }
+
+    .cv-header__key :global(.cv-header__portrait) {
+      width: var(--print-photo-size);
+    }
+
+    .cv-header__name {
+      margin-top: var(--space-1);
+      font-size: var(--step-4);
+    }
+
+    .cv-header__role {
+      margin-top: var(--space-half);
+      font-size: var(--step-0);
+    }
+
+    .cv-header__body :global(.cv-header__contact) {
+      margin-top: var(--space-2);
+    }
+
+    .cv-header__actions {
+      display: none;
+    }
+  }
+</style>
