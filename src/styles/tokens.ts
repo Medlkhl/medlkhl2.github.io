@@ -120,6 +120,19 @@ export const radii = { 0: 0, 1: 2, 2: 4, 3: 8, pill: 999 } as const;
 /** Target sizes in rem (WCAG 2.2 AA): 24px minimum for inline links, 44px for controls. */
 export const targets = { minRem: 1.5, controlRem: 2.75 } as const;
 
+/**
+ * Print (the A4 CV sheet): the paper palette on a white page (bg) without
+ * shadows, a 9.5pt root that every rem token scales with, page margins and
+ * the printed portrait size.
+ */
+export const print = {
+  bg: '#ffffff',
+  fontSizePt: 9.5,
+  leading: 1.42,
+  marginMm: { top: 15, side: 17, bottom: 17 },
+  photoMm: 26,
+} as const;
+
 export const zIndex = {
   stage: 0,
   content: 1,

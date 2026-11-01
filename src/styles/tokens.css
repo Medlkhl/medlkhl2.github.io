@@ -5,7 +5,8 @@
  *
  * Themes: graphite (dark, default) and paper (light), set as data-theme on <html>
  * by an inline script before first paint. Without JavaScript the theme follows
- * prefers-color-scheme (see the media query below).
+ * prefers-color-scheme (see the media query below). Print always uses the paper
+ * palette on a white page (the print block at the end).
  * Colour rule: neutrals plus one accent (cobalt), used only for interaction and highlights.
  */
 
@@ -98,6 +99,14 @@
   /* Custom "camera" ease: slow start, fast middle, soft landing. */
   --ease-camera: cubic-bezier(0.7, 0, 0.2, 1);
   --stagger: 40ms; /* per item; inherits its parent token's easing */
+
+  /* ---- Print (the A4 CV sheet in print.css) ----------------------------- */
+  --print-font-size: 9.5pt; /* the print root: every rem token scales with it */
+  --print-leading: 1.42;
+  --print-margin-top: 15mm;
+  --print-margin-side: 17mm;
+  --print-margin-bottom: 17mm;
+  --print-photo-size: 26mm;
 }
 
 /* ---- Graphite: dark, the default ---------------------------------------- */
@@ -166,6 +175,31 @@
     --color-hatch: rgb(20 22 25 / 0.08);
     --color-header: rgb(246 246 243 / 0.88);
     --shadow-1: 0 1px 0 rgb(20 22 25 / 0.06), 0 12px 32px -18px rgb(20 22 25 / 0.28);
+  }
+}
+
+/* ---- Print: the paper palette on a white page, whatever the theme -------- */
+@media print {
+  :root[data-theme],
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #eeeeea;
+    --color-text: #141619;
+    --color-text-muted: #454a52;
+    --color-text-subtle: #5c616a;
+    --color-line: #dcdcd6;
+    --color-line-strong: #7b8089;
+    --color-accent: #1f4bd8;
+    --color-accent-hover: #1738a6;
+    --color-accent-ink: #ffffff;
+    --color-accent-soft: rgb(31 75 216 / 0.09);
+    --color-grid: rgb(20 22 25 / 0.05);
+    --color-grid-major: rgb(20 22 25 / 0.085);
+    --color-hatch: rgb(20 22 25 / 0.08);
+    --color-header: rgb(246 246 243 / 0.88);
+    --shadow-1: none;
   }
 }
 

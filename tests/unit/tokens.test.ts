@@ -7,6 +7,7 @@ import {
   THEMES,
   colors,
   motion,
+  print,
   space,
   targets,
 } from '../../src/styles/tokens.ts';
@@ -18,9 +19,9 @@ function normalize(value: string): string {
   return value.replace(/\s+/g, ' ').replace(/\(\s/g, '(').replace(/\s\)/g, ')').trim();
 }
 
-/** Custom properties declared inside the first block that starts with `selector {`. */
-function block(selector: string): Record<string, string> {
-  const start = css.indexOf(`${selector} {`);
+/** Custom properties declared inside the first block that starts with `selector {` (after `from`). */
+function block(selector: string, from = 0): Record<string, string> {
+  const start = css.indexOf(`${selector} {`, from);
   if (start === -1) throw new Error(`No block for ${selector}`);
   const end = css.indexOf('}', start);
   const body = css.slice(start, end);
@@ -44,6 +45,30 @@ describe('tokens.css and tokens.ts stay in sync', () => {
 
   it('the no-JS fallback duplicates the whole paper block', () => {
     expect(noJs).toEqual(paper);
+  });
+
+  it('print forces the paper palette on a white page, without shadows, in every theme', () => {
+    const at = css.indexOf('@media print {');
+    expect(css.slice(at)).toMatch(
+      /^@media print \{\s*:root\[data-theme\],\s*:root:not\(\[data-theme\]\) \{/,
+    );
+    const printed = block(':root:not([data-theme])', at);
+    const { '--color-bg': bg, '--shadow-1': shadow, ...rest } = printed;
+    const { '--color-bg': paperBg, '--shadow-1': paperShadow, ...paperRest } = paper;
+    expect(bg).toBe(print.bg);
+    expect(shadow).toBe('none');
+    expect(rest).toEqual(paperRest);
+    expect([paperBg, paperShadow]).not.toEqual([bg, shadow]);
+  });
+
+  it('print tokens match', () => {
+    const root = block(':root');
+    expect(root['--print-font-size']).toBe(`${print.fontSizePt}pt`);
+    expect(root['--print-leading']).toBe(String(print.leading));
+    expect(root['--print-margin-top']).toBe(`${print.marginMm.top}mm`);
+    expect(root['--print-margin-side']).toBe(`${print.marginMm.side}mm`);
+    expect(root['--print-margin-bottom']).toBe(`${print.marginMm.bottom}mm`);
+    expect(root['--print-photo-size']).toBe(`${print.photoMm}mm`);
   });
 
   it('spacing, targets and motion match', () => {

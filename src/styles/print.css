@@ -16,44 +16,18 @@
  *   section and force breaks inside the next one).
  * - Running footer: "<name> — CV" on the left, "page / pages" on the right.
  *
- * The palette and the print tokens are declared here because tokens.css has
- * no print block yet; they repeat the paper values (keep them in sync).
+ * No raw colours or print sizes here: the paper palette on white comes from
+ * the print block in tokens.css, the root size, leading, page margins and
+ * photo size from its --print-* tokens.
  */
 
 @media print {
   html:root[data-theme],
   html:root:not([data-theme]) {
-    color-scheme: light;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
 
-    /* Paper palette (tokens.css), with the page itself white. */
-    --color-bg: #ffffff;
-    --color-surface: #ffffff;
-    --color-surface-2: #eeeeea;
-    --color-text: #141619;
-    --color-text-muted: #454a52;
-    --color-text-subtle: #5c616a;
-    --color-line: #dcdcd6;
-    --color-line-strong: #7b8089;
-    --color-accent: #1f4bd8;
-    --color-accent-hover: #1738a6;
-    --color-accent-ink: #ffffff;
-    --color-accent-soft: rgb(31 75 216 / 0.09);
-    --color-grid: rgb(20 22 25 / 0.05);
-    --color-grid-major: rgb(20 22 25 / 0.085);
-    --color-hatch: rgb(20 22 25 / 0.08);
-    --color-header: rgb(246 246 243 / 0.88);
-    --shadow-1: none;
-
-    /* Print tokens. The root size is the unit every other size derives from. */
-    --print-font-size: 9.5pt;
-    --print-leading: 1.42;
-    --print-margin-top: 15mm;
-    --print-margin-side: 17mm;
-    --print-margin-bottom: 17mm;
-    --print-photo-size: 26mm;
-
+    /* The root size is the unit every other size derives from. */
     font-size: var(--print-font-size);
     line-height: var(--print-leading);
     background: var(--color-bg);
