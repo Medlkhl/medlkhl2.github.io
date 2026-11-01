@@ -1,0 +1,11 @@
+dist/
+.astro/
+node_modules/
+reports/
+playwright-report/
+test-results/
+.lighthouseci/
+docs/screenshots/
+pnpm-lock.yaml
+# The brief is a verbatim export and must never be reformatted.
+PORTFOLIO_BRIEF.md
