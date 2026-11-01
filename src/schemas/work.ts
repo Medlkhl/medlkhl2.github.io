@@ -37,8 +37,8 @@ const evidence = z.discriminatedUnion('type', [
 export const workSchema = z.strictObject({
   // 1 · Header
   title: nonEmpty,
-  /** Card text and meta description (≤ 200 characters). */
-  summary: z.string().trim().min(20).max(200),
+  /** Card text and meta description: at most 160 characters, where search results cut. */
+  summary: z.string().trim().min(20).max(160),
   /** One-line outcome under the title. */
   outcome: nonEmpty,
   status: z.enum(WORK_STATUSES),
