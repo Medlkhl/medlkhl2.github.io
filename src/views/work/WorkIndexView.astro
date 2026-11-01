@@ -1,12 +1,59 @@
 ---
-import StubPage from '../../components/layout/StubPage.astro';
+/**
+ * /work/ and /de/work/: every published case study, in `order`, as a wide
+ * WorkCard row. Target of the "Work" navigation item and of the case studies'
+ * breadcrumbs. No client JavaScript.
+ */
+import Section from '../../components/ui/Section.astro';
+import WorkCard from '../../components/work/WorkCard.astro';
+import { SCENE_SHOTS } from '../../data/scene.ts';
 import type { Locale } from '../../i18n/config.ts';
+import { pageMeta } from '../../i18n/meta.copy.ts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ogImagePath } from '../../lib/og.ts';
+import { getWork } from '../../lib/work.ts';
+import { workCopy } from './work.copy.ts';
 
 interface Props {
   locale: Locale;
 }
 
 const { locale } = Astro.props;
+const meta = pageMeta[locale].work;
+const t = workCopy[locale].index;
+const entries = await getWork(locale);
 ---
 
-<StubPage locale={locale} routeKey="work" />
+<BaseLayout
+  locale={locale}
+  title={meta.title}
+  description={meta.description}
+  path="/work/"
+  ogImage={ogImagePath(locale, 'work')}
+  sceneShot={SCENE_SHOTS.work}
+>
+  <Section
+    id="work"
+    label={t.label}
+    title={meta.title}
+    intro={t.intro}
+    headingLevel={1}
+    rule={false}
+    class="work-index"
+  >
+    <ul role="list" class="work-index__list" aria-label={t.listLabel}>
+      {entries.map((entry) => (
+        <li>
+          <WorkCard entry={entry} locale={locale} headingLevel={2} variant="row" />
+        </li>
+      ))}
+    </ul>
+  </Section>
+</BaseLayout>
+
+<style>
+  .work-index__list {
+    display: grid;
+    gap: var(--space-3);
+  }
+</style>
