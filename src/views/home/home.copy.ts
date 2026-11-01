@@ -53,7 +53,7 @@ export const homeCopy = defineCopy({
     recommendations: {
       label: 'Recommendations',
       title: 'In their words',
-      intro: 'What people I have studied and worked with say about my work.',
+      intro: 'What people who know my work say about it.',
       verbatim: 'Verbatim excerpt.',
       related: 'Related case study',
     },
@@ -114,7 +114,7 @@ export const homeCopy = defineCopy({
     recommendations: {
       label: 'Empfehlungen',
       title: 'In ihren Worten',
-      intro: 'Was Menschen, mit denen ich studiert und gearbeitet habe, über meine Arbeit sagen.',
+      intro: 'Was Menschen, die meine Arbeit kennen, darüber sagen.',
       verbatim: 'Wörtlicher Auszug aus dem englischen Original.',
       related: 'Zugehörige Fallstudie',
     },
