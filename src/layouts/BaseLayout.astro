@@ -1,0 +1,108 @@
+---
+/**
+ * The one layout every page uses.
+ * - Inline theme script first in <head>: no flash of the wrong theme.
+ * - Self-hosted Geist via the Astro Fonts API; only the latin subsets are preloaded.
+ * - <ClientRouter /> is the backbone of the persistent 3D canvas (Phase 3);
+ *   transition:animate="none" keeps Phase 1 free of motion.
+ * - #stage is the persistent, empty, decorative canvas container.
+ * - <body data-scene-shot data-active-layer> exposes the scene hook of each page.
+ */
+import { ClientRouter } from 'astro:transitions';
+import Fonts from '../components/layout/Fonts.astro';
+import Footer from '../components/layout/Footer.astro';
+import Header from '../components/layout/Header.astro';
+import SkipLink from '../components/layout/SkipLink.astro';
+import Seo from '../components/seo/Seo.astro';
+import { NO_SCENE } from '../data/scene.ts';
+import { LOCALE_META, type Locale } from '../i18n/config.ts';
+import { ogImagePath } from '../lib/og.ts';
+import { themeScript } from '../lib/theme-script.ts';
+import { withBase } from '../lib/url.ts';
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  /** Unlocalized path ('/about/'); null for pages without a locale twin (404, /tokens/). */
+  path: string | null;
+  ogImage?: string;
+  ogType?: 'website' | 'article' | 'profile';
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+  /** Phase 3 camera shot for this page, e.g. 'cam_home'. */
+  sceneShot?: string;
+  /** Phase 3 highlighted layer, e.g. 'layer_identity'. */
+  activeLayer?: string;
+  /** Hide the header and footer (used by print-first pages if ever needed). */
+  bare?: boolean;
+  /** Overrides <html lang> (the bilingual 404 page). */
+  htmlLang?: string;
+}
+
+const {
+  locale,
+  title,
+  description,
+  path,
+  ogImage = ogImagePath(locale, 'home'),
+  ogType,
+  noindex,
+  jsonLd,
+  sceneShot = NO_SCENE,
+  activeLayer = NO_SCENE,
+  bare = false,
+  htmlLang = LOCALE_META[locale].htmlLang,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={htmlLang} class="no-js" transition:animate="none">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline set:html={themeScript} />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#101113" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f6f3" media="(prefers-color-scheme: light)" />
+    <Fonts />
+    <Seo
+      locale={locale}
+      title={title}
+      description={description}
+      path={path}
+      ogImage={ogImage}
+      ogType={ogType}
+      noindex={noindex}
+      jsonLd={jsonLd}
+    />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="icon" href={withBase('/favicon-32.png')} sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
+    <ClientRouter />
+  </head>
+  <body data-scene-shot={sceneShot} data-active-layer={activeLayer}>
+    <SkipLink locale={locale} />
+    <div id="stage" aria-hidden="true" transition:persist="stage"></div>
+    {!bare && <Header locale={locale} path={path} />}
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    {!bare && <Footer locale={locale} />}
+  </body>
+</html>
+
+<style>
+  #stage {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-stage);
+    pointer-events: none;
+  }
+
+  #stage:empty {
+    display: none;
+  }
+</style>

@@ -1,0 +1,54 @@
+---
+/**
+ * Case-study template (foundation stub). The work workstream replaces this
+ * with the full nine-part template from brief §5.
+ */
+import { render } from 'astro:content';
+import Rich from '../../components/ui/Rich.astro';
+import StatusChip from '../../components/ui/StatusChip.astro';
+import type { Locale } from '../../i18n/config.ts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ogImagePath } from '../../lib/og.ts';
+import { type WorkEntry, workSlug } from '../../lib/work.ts';
+
+interface Props {
+  entry: WorkEntry;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+const slug = workSlug(entry);
+const { Content } = await render(entry);
+const data = entry.data;
+---
+
+<BaseLayout
+  locale={locale}
+  title={data.title}
+  description={data.summary}
+  path={`/work/${slug}/`}
+  ogImage={ogImagePath(locale, `work-${slug}`)}
+  ogType="article"
+  sceneShot={data.scene.shot}
+  activeLayer={data.scene.layer}
+>
+  <article class="container stub">
+    <StatusChip status={data.status} locale={locale} />
+    <h1>{data.title}</h1>
+    <p class="muted">
+      <Rich text={data.outcome} />
+    </p>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .stub {
+    display: grid;
+    gap: var(--space-3);
+    padding-block: var(--space-10);
+    justify-items: start;
+  }
+</style>

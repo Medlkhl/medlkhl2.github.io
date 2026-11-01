@@ -1,0 +1,35 @@
+---
+/**
+ * Monospace section label in the "02 — Experience" style.
+ * Renders as <p> by default; pass `as="h2"` when the label is the section heading.
+ */
+interface Props {
+  index?: number | string;
+  as?: 'p' | 'span' | 'h2' | 'h3';
+  id?: string;
+  class?: string;
+}
+
+const { index, as: Tag = 'p', id, class: className } = Astro.props;
+const number = index === undefined ? undefined : String(index).padStart(2, '0');
+---
+
+<Tag class:list={['label', className]} id={id}>
+  {number && (
+    <>
+      <span class="label__index">{number}</span>
+      <span class="label__dash" aria-hidden="true">
+        —
+      </span>
+    </>
+  )}
+  <span class="label__text">
+    <slot />
+  </span>
+</Tag>
+
+<style>
+  .label__index {
+    color: var(--color-text-muted);
+  }
+</style>

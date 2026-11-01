@@ -1,0 +1,13 @@
+---
+import View from '../../views/work/CaseStudyView.astro';
+import { getWork, workSlug } from '../../lib/work.ts';
+
+export async function getStaticPaths() {
+  const entries = await getWork('en');
+  return entries.map((entry) => ({ params: { slug: workSlug(entry) }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+---
+
+<View entry={entry} locale="en" />

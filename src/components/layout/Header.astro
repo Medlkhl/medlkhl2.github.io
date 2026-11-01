@@ -1,0 +1,386 @@
+---
+/**
+ * Sticky site header: name, main navigation, language switch and theme toggle.
+ * - The current page is marked with aria-current="page".
+ * - On the home page the link of the section in view is highlighted
+ *   (IntersectionObserver; sections opt in with data-nav-target="<key>").
+ * - Mobile: a disclosure menu with JavaScript; without it the links wrap into a row.
+ * Scripts bind on astro:page-load and clean up on astro:before-swap (ClientRouter).
+ */
+import { profile } from '../../data/profile.ts';
+import { LOCALE_META, type Locale, otherLocale } from '../../i18n/config.ts';
+import { localePath, routeHref, unlocalizePath } from '../../i18n/routes.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import { withBase } from '../../lib/url.ts';
+import Icon from '../ui/Icon.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  locale: Locale;
+  /** Unlocalized path of the current page ('/about/'); null when the page has no locale twin. */
+  path: string | null;
+}
+
+const { locale, path } = Astro.props;
+const t = ui[locale];
+const current = path ? unlocalizePath(path) : null;
+const other = otherLocale(locale);
+const switchHref = path ? withBase(localePath(other, path)) : null;
+
+type NavItem = { key: string; href: string; label: string; active: boolean; section?: string };
+const items: NavItem[] = [
+  {
+    key: 'work',
+    href: routeHref(locale, 'work'),
+    label: t.nav.work,
+    active: current?.startsWith('/work/') ?? false,
+    section: 'work',
+  },
+  {
+    key: 'experience',
+    href: routeHref(locale, 'experience'),
+    label: t.nav.experience,
+    active: current === '/experience/',
+    section: 'experience',
+  },
+  { key: 'lab', href: routeHref(locale, 'lab'), label: t.nav.lab, active: current === '/lab/' },
+  {
+    key: 'about',
+    href: routeHref(locale, 'about'),
+    label: t.nav.about,
+    active: current === '/about/',
+  },
+  { key: 'cv', href: routeHref(locale, 'cv'), label: t.nav.cv, active: current === '/cv/' },
+  {
+    key: 'contact',
+    href: routeHref(locale, 'home', 'contact'),
+    label: t.nav.contact,
+    active: false,
+    section: 'contact',
+  },
+];
+---
+
+<header class="site-header" data-site-header>
+  <div class="container site-header__inner">
+    <a
+      class="brand"
+      href={routeHref(locale, 'home')}
+      aria-current={current === '/' ? 'page' : undefined}
+    >
+      <span class="brand__name">{profile.name}</span>
+      <span class="brand__role">{profile.role[locale]}</span>
+    </a>
+
+    <nav id="site-nav" class="site-nav" aria-label={t.nav.label} data-site-nav>
+      <ul role="list" class="site-nav__list">
+        {items.map((item) => (
+          <li>
+            <a
+              class="site-nav__link"
+              href={item.href}
+              aria-current={item.active ? 'page' : undefined}
+              data-nav-section={item.section}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="site-header__controls">
+      {switchHref && (
+        <a
+          class="lang-switch"
+          href={switchHref}
+          hreflang={LOCALE_META[other].htmlLang}
+          lang={LOCALE_META[other].htmlLang}
+          data-lang-switch={other}
+        >
+          {t.language.switchText}
+          <span class="visually-hidden"> ({t.language.switchLabel})</span>
+        </a>
+      )}
+      <ThemeToggle locale={locale} />
+      <button
+        type="button"
+        class="menu-toggle js-only"
+        aria-expanded="false"
+        aria-controls="site-nav"
+        data-menu-toggle
+        data-label-open={t.nav.menu}
+        data-label-close={t.nav.closeMenu}
+      >
+        <span class="menu-toggle__icon menu-toggle__icon--open">
+          <Icon name="menu" size={20} />
+        </span>
+        <span class="menu-toggle__icon menu-toggle__icon--close">
+          <Icon name="close" size={20} />
+        </span>
+        <span class="visually-hidden" data-menu-label>
+          {t.nav.menu}
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    border-bottom: var(--hairline) solid var(--color-line);
+    background: var(--color-header);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+    backdrop-filter: saturate(140%) blur(10px);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--header-height);
+  }
+
+  .brand {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    margin-right: auto;
+    padding-block: var(--space-1);
+    text-decoration: none;
+    line-height: 1.2;
+  }
+
+  .brand:hover {
+    color: inherit;
+  }
+
+  .brand__name {
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  .brand__role {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.02em;
+    color: var(--color-text-subtle);
+  }
+
+  .site-nav__list {
+    display: flex;
+    align-items: center;
+    gap: var(--space-half);
+  }
+
+  .site-nav__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    text-decoration: none;
+  }
+
+  .site-nav__link::after {
+    content: '';
+    position: absolute;
+    left: var(--space-1);
+    right: var(--space-1);
+    bottom: 0.55rem;
+    height: var(--hairline);
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-micro) var(--ease-micro);
+  }
+
+  .site-nav__link:hover,
+  .site-nav__link[aria-current='page'],
+  .site-nav__link[data-active] {
+    color: var(--color-text);
+  }
+
+  .site-nav__link[aria-current='page']::after,
+  .site-nav__link[data-active]::after {
+    transform: scaleX(1);
+    background: var(--color-accent);
+  }
+
+  .site-header__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-half);
+  }
+
+  .lang-switch {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--radius-2);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .lang-switch:hover {
+    color: var(--color-text);
+  }
+
+  .menu-toggle {
+    display: none;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-2);
+    background: transparent;
+    color: var(--color-text);
+  }
+
+  .menu-toggle__icon {
+    grid-area: 1 / 1;
+    display: grid;
+  }
+
+  .menu-toggle[aria-expanded='false'] .menu-toggle__icon--close,
+  .menu-toggle[aria-expanded='true'] .menu-toggle__icon--open {
+    display: none;
+  }
+
+  @media (max-width: 1023.98px) {
+    .brand__role {
+      display: none;
+    }
+  }
+
+  @media (max-width: 859.98px) {
+    .site-header__inner {
+      flex-wrap: wrap;
+      gap: 0 var(--space-1);
+    }
+
+    /* Without JavaScript the links wrap into a second row. */
+    .site-nav {
+      order: 3;
+      width: 100%;
+      overflow-x: auto;
+      padding-bottom: var(--space-half);
+    }
+
+    :global(.js) .menu-toggle {
+      display: inline-grid;
+    }
+
+    /* With JavaScript the second row becomes a disclosure panel. */
+    :global(.js) .site-nav {
+      display: none;
+      padding: var(--space-1) 0 var(--space-2);
+      border-top: var(--hairline) solid var(--color-line);
+    }
+
+    :global(.js) .site-nav[data-open] {
+      display: block;
+    }
+
+    :global(.js) .site-nav__list {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    :global(.js) .site-nav__link {
+      width: 100%;
+      font-size: var(--step-0);
+    }
+
+    :global(.js) .site-nav__link::after {
+      display: none;
+    }
+
+    :global(.js) .site-nav__link[aria-current='page'] {
+      color: var(--color-accent);
+    }
+  }
+</style>
+
+<script>
+  import { setPref } from '../../lib/prefs.ts';
+
+  let observer: IntersectionObserver | undefined;
+
+  function bindMenu() {
+    const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+    const nav = document.querySelector<HTMLElement>('[data-site-nav]');
+    const label = toggle?.querySelector<HTMLElement>('[data-menu-label]');
+    if (!toggle || !nav || toggle.dataset.bound === 'true') return;
+    toggle.dataset.bound = 'true';
+
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      nav.toggleAttribute('data-open', open);
+      if (label)
+        label.textContent = (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? '';
+    };
+
+    toggle.addEventListener('click', () =>
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true'),
+    );
+    nav.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+  }
+
+  function bindLanguageSwitch() {
+    document.querySelectorAll<HTMLAnchorElement>('[data-lang-switch]').forEach((link) => {
+      link.addEventListener('click', () => {
+        const target = link.dataset.langSwitch;
+        if (target === 'en' || target === 'de') setPref('lang', target);
+      });
+    });
+  }
+
+  function bindSectionHighlight() {
+    const sections = document.querySelectorAll<HTMLElement>('[data-nav-target]');
+    if (!sections.length || !('IntersectionObserver' in window)) return;
+    const links = document.querySelectorAll<HTMLElement>('[data-nav-section]');
+    observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const key = (entry.target as HTMLElement).dataset.navTarget;
+          links.forEach((link) =>
+            link.toggleAttribute('data-active', link.dataset.navSection === key),
+          );
+        }
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    sections.forEach((section) => observer?.observe(section));
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    bindMenu();
+    bindLanguageSwitch();
+    bindSectionHighlight();
+  });
+
+  document.addEventListener('astro:before-swap', () => {
+    observer?.disconnect();
+    observer = undefined;
+  });
+</script>

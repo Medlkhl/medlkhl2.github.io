@@ -1,0 +1,16 @@
+---
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import type { WorkStatus } from '../../schemas/work.ts';
+
+interface Props {
+  status: WorkStatus;
+  locale: Locale;
+}
+
+const { status, locale } = Astro.props;
+---
+
+<span class="chip chip--status" data-status={status}>
+  {ui[locale].status[status]}
+</span>

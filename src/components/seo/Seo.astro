@@ -1,0 +1,81 @@
+---
+/**
+ * Head metadata for one page: title, description, canonical URL, hreflang
+ * alternates, robots, Open Graph, Twitter and JSON-LD. Every URL is absolute
+ * and respects SITE_URL + BASE_PATH.
+ */
+import { NAME } from '../../data/identity.ts';
+import { LOCALE_META, LOCALES, type Locale } from '../../i18n/config.ts';
+import { localePath } from '../../i18n/routes.ts';
+import { OG_HEIGHT, OG_WIDTH } from '../../lib/og.ts';
+import { absoluteUrl, withBase } from '../../lib/url.ts';
+
+export interface SeoProps {
+  locale: Locale;
+  /** Page title without the site name; titles that already contain the name are used as is. */
+  title: string;
+  description: string;
+  /** Unlocalized path ('/about/', '/work/happ/'); null for pages without a locale twin. */
+  path: string | null;
+  /** Social image path without base, e.g. '/og/en/about.png'. */
+  ogImage: string;
+  ogType?: 'website' | 'article' | 'profile';
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+}
+
+const {
+  locale,
+  title,
+  description,
+  path,
+  ogImage,
+  ogType = 'website',
+  noindex = false,
+  jsonLd = [],
+} = Astro.props as SeoProps;
+
+const fullTitle = title.includes(NAME) ? title : `${title} — ${NAME}`;
+const canonical = path ? absoluteUrl(localePath(locale, path)) : null;
+const alternates = path
+  ? LOCALES.map((alt) => ({ hreflang: alt, href: absoluteUrl(localePath(alt, path)) }))
+  : [];
+const xDefault = path ? absoluteUrl(localePath('en', path)) : null;
+const imageUrl = absoluteUrl(ogImage);
+const serialize = (data: Record<string, unknown>) => JSON.stringify(data).replace(/</g, '\\u003c');
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+{canonical && <link rel="canonical" href={canonical} />}
+{alternates.map((alt) => (
+  <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+))}
+{xDefault && <link rel="alternate" hreflang="x-default" href={xDefault} />}
+<meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'} />
+<link rel="sitemap" href={withBase('/sitemap-index.xml')} />
+
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={NAME} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+{canonical && <meta property="og:url" content={canonical} />}
+<meta property="og:locale" content={LOCALE_META[locale].og} />
+{path &&
+  LOCALES.filter((alt) => alt !== locale).map((alt) => (
+    <meta property="og:locale:alternate" content={LOCALE_META[alt].og} />
+  ))}
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content={String(OG_WIDTH)} />
+<meta property="og:image:height" content={String(OG_HEIGHT)} />
+<meta property="og:image:alt" content={fullTitle} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+
+{jsonLd.map((data) => (
+  <script type="application/ld+json" set:html={serialize(data)} />
+))}

@@ -1,0 +1,12 @@
+---
+import StubPage from '../../components/layout/StubPage.astro';
+import type { Locale } from '../../i18n/config.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<StubPage locale={locale} routeKey="experience" />

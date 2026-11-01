@@ -1,0 +1,94 @@
+---
+/**
+ * Theme switch (graphite ↔ paper). Needs JavaScript, so it is hidden until the
+ * inline script marks <html class="js">; without JS the system preference applies.
+ */
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = ui[locale].theme;
+---
+
+<button
+  type="button"
+  class="theme-toggle js-only"
+  data-theme-toggle
+  data-label-to-paper={t.toPaper}
+  data-label-to-graphite={t.toGraphite}
+  aria-label={t.toPaper}
+  title={t.toPaper}
+>
+  <span class="theme-toggle__icon theme-toggle__icon--sun">
+    <Icon name="sun" size={18} />
+  </span>
+  <span class="theme-toggle__icon theme-toggle__icon--moon">
+    <Icon name="moon" size={18} />
+  </span>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: var(--hairline) solid transparent;
+    border-radius: var(--radius-2);
+    background: transparent;
+    color: var(--color-text-muted);
+    transition:
+      color var(--dur-micro) var(--ease-micro),
+      border-color var(--dur-micro) var(--ease-micro);
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-text);
+    border-color: var(--color-line-strong);
+  }
+
+  .theme-toggle__icon {
+    grid-area: 1 / 1;
+    display: grid;
+  }
+
+  /* Graphite shows the sun (switch to paper); paper shows the moon. */
+  :global([data-theme='paper']) .theme-toggle__icon--sun,
+  :global(:root:not([data-theme='paper'])) .theme-toggle__icon--moon {
+    display: none;
+  }
+</style>
+
+<script>
+  import { getEffective, toggleTheme } from '../../lib/prefs.ts';
+
+  function syncLabel(button: HTMLButtonElement) {
+    const label =
+      getEffective().theme === 'graphite'
+        ? button.dataset.labelToPaper
+        : button.dataset.labelToGraphite;
+    if (label) {
+      button.setAttribute('aria-label', label);
+      button.title = label;
+    }
+  }
+
+  function bindThemeToggle() {
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((button) => {
+      syncLabel(button);
+      if (button.dataset.bound === 'true') return;
+      button.dataset.bound = 'true';
+      button.addEventListener('click', () => {
+        toggleTheme();
+        syncLabel(button);
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', bindThemeToggle);
+</script>
