@@ -28,12 +28,8 @@ import { normalizeBase } from '../../src/lib/url.ts';
 import type { WorkFrontmatter } from '../../src/schemas/work.ts';
 import { datenschutzCopy } from '../../src/views/datenschutz/datenschutz.copy.ts';
 import { impressumCopy } from '../../src/views/impressum/impressum.copy.ts';
-import { legalCopy } from '../../src/views/impressum/legal.copy.ts';
-import {
-  LEGAL_FEATURES,
-  type LegalSection,
-  visibleSections,
-} from '../../src/views/impressum/legal.ts';
+import { legalCopy } from '../../src/views/legal/legal.copy.ts';
+import { LEGAL_FEATURES, type LegalSection, visibleSections } from '../../src/views/legal/legal.ts';
 import { WORK_DIR, readMdx, workFiles } from './helpers.ts';
 
 const ROOT = `${SITE_URL.replace(/\/+$/, '')}${normalizeBase(BASE_PATH)}`;

@@ -1,5 +1,5 @@
 import { defineCopy } from '../../i18n/copy.ts';
-import type { LegalPageCopy } from './legal.ts';
+import type { LegalPageCopy } from '../legal/legal.ts';
 
 /**
  * Impressum under § 5 DDG (Digitale-Dienste-Gesetz, in force since 14 May

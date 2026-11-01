@@ -1,5 +1,5 @@
 import { defineCopy } from '../../i18n/copy.ts';
-import type { LegalPageCopy } from '../impressum/legal.ts';
+import type { LegalPageCopy } from '../legal/legal.ts';
 
 /**
  * Datenschutzerklärung (brief §11). It describes what the site really does:
@@ -7,7 +7,7 @@ import type { LegalPageCopy } from '../impressum/legal.ts';
  * analytics, no third-party requests, local storage only for the visitor's own
  * theme and language choice, and plain external links. The spatial-view
  * section is written already and stays hidden until LEGAL_FEATURES.spatialView
- * is switched on (src/views/impressum/legal.ts).
+ * is switched on (src/views/legal/legal.ts).
  *
  * The German text is binding. Orientation, not legal advice: the owner has it
  * checked before launch (OPEN_QUESTIONS.md). Facts about GitHub and Google are
