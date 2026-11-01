@@ -14,6 +14,7 @@ A dated, ADR-style log. Each entry records the decision, the alternatives and wh
 ## 2026-11-01 · D-002 · Previews are CI artifacts
 
 - **Decision.** GitHub Pages cannot host per-branch previews, so every CI run uploads the built site (`site`), screenshots, the Playwright report and the Lighthouse reports as artifacts per branch and PR.
+- **Phase 0 gate.** Brief §12's Phase 0 item "a preview URL is live" is therefore not met before the first merge: CI deploys only on pushes to the default branch (D-001), and the per-branch preview is the `site` artifact served with `pnpm preview`. The public URL, <https://medlkhl.github.io/medlkhl2.github.io/>, goes live with the first push to `main` after the merge, once Settings → Pages → Source is set to GitHub Actions; that run is the first one through `upload-pages-artifact`, `deploy-pages` and the `github-pages` environment, so it gets checked.
 - **Upgrade.** Cloudflare Pages preview deploys (D-001).
 
 ## 2026-11-01 · D-003 · Astro 6.4.8, not Astro 7
@@ -192,7 +193,7 @@ A dated, ADR-style log. Each entry records the decision, the alternatives and wh
 ## 2026-11-01 · D-034 · QA suites beyond the smoke tests
 
 - **Decision.** Next to smoke, keyboard (now including the home page's "Skip the parts list" link), theme and axe, Playwright checks the Phase 1 promises on every run:
-  - `i18n.spec.ts`: the language switch on every page lands on its twin, hreflang alternates point at the twins, the choice is stored, and the 404 page has no switch;
+  - `i18n.spec.ts`: the language switch on every page lands on its twin and stores nothing (the privacy policy names only the theme), hreflang alternates point at the twins, and the 404 page has no switch;
   - `privacy.spec.ts`: on every page, zero third-party requests, no cookies, no embeds, no `tel:` links or phone numbers;
   - `nojs.spec.ts`: without JavaScript, the home page's first screen shows the name, role, positioning line and the three buttons at 1440 × 900 and 390 × 844 in both languages, every page renders, and the theme follows the system;
   - `mobile.spec.ts`: at 390 px the menu opens and closes (Escape returns focus) and controls are at least 44 px; no page (every page in both locales, `/tokens/` and the 404) scrolls horizontally at 320 or 390 px;
