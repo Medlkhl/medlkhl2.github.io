@@ -1,0 +1,44 @@
+---
+/**
+ * A link that leaves the site: same tab, the arrow-up-right icon and the
+ * visually hidden "(external link)" note, so the accessible name still starts
+ * with the visible label.
+ */
+import Icon from '../ui/Icon.astro';
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+
+interface Props {
+  locale: Locale;
+  href: string;
+  rel?: string;
+  class?: string;
+}
+
+const { locale, href, rel, class: className, ...rest } = Astro.props;
+---
+
+<a class:list={['external-link', className]} href={href} rel={rel} {...rest}>
+  <span>
+    <slot />
+  </span>
+  <Icon name="arrow-up-right" size={14} />
+  <span class="visually-hidden">{` ${ui[locale].externalLink}`}</span>
+</a>
+
+<style>
+  .external-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-half);
+  }
+
+  .external-link :global(.icon) {
+    flex: none;
+    color: var(--color-text-subtle);
+  }
+
+  .external-link:hover :global(.icon) {
+    color: currentColor;
+  }
+</style>

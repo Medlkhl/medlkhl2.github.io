@@ -1,14 +1,152 @@
 ---
-import StubPage from '../../components/layout/StubPage.astro';
+/**
+ * Home page ("/" and "/de/"), brief §5: hero with quick facts and Fig. 1 (the
+ * exploded stack and its parts list), then 01 Selected work, 02 Experience,
+ * 03 Capabilities, 04 Recommendations and 05 Contact. Static HTML, no client
+ * script of its own; the copy lives in home.copy.ts, the facts in src/data/.
+ */
+import CapabilityList from '../../components/home/CapabilityList.astro';
+import ContactBlock from '../../components/home/ContactBlock.astro';
+import ExperienceTimeline from '../../components/home/ExperienceTimeline.astro';
+import HomeHero from '../../components/home/HomeHero.astro';
+import RecommendationList from '../../components/home/RecommendationList.astro';
+import Icon from '../../components/ui/Icon.astro';
+import Section from '../../components/ui/Section.astro';
+import WorkCard from '../../components/work/WorkCard.astro';
+import { SCENE_SHOTS } from '../../data/scene.ts';
 import type { Locale } from '../../i18n/config.ts';
+import { pageMeta } from '../../i18n/meta.copy.ts';
+import { routeHref } from '../../i18n/routes.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ogImagePath } from '../../lib/og.ts';
+import { personJsonLd, websiteJsonLd } from '../../lib/structured-data.ts';
+import { getFeaturedWork, getWork, workSlug } from '../../lib/work.ts';
+import { homeCopy } from './home.copy.ts';
 
 interface Props {
   locale: Locale;
 }
 
 const { locale } = Astro.props;
+const t = homeCopy[locale];
+const cta = ui[locale].cta;
+const meta = pageMeta[locale].home;
+const featured = await getFeaturedWork(locale);
+const workTitles = new Map(
+  (await getWork(locale)).map((entry) => [workSlug(entry), entry.data.title]),
+);
 ---
 
-<StubPage locale={locale} routeKey="home">
-  <section id="contact" data-nav-target="contact" aria-label="Contact"></section>
-</StubPage>
+<BaseLayout
+  locale={locale}
+  title={meta.title}
+  description={meta.description}
+  path="/"
+  ogImage={ogImagePath(locale, 'home')}
+  sceneShot={SCENE_SHOTS.home}
+  jsonLd={[websiteJsonLd(locale), personJsonLd(locale)]}
+>
+  <HomeHero locale={locale} copy={t} workTitles={workTitles} />
+
+  <Section
+    id="work"
+    index={1}
+    label={t.work.label}
+    title={t.work.title}
+    intro={t.work.intro}
+    navTarget="work"
+  >
+    <ul role="list" class="work-grid">
+      {featured.map((entry) => (
+        <li>
+          <WorkCard entry={entry} locale={locale} headingLevel={3} />
+        </li>
+      ))}
+    </ul>
+    <p class="more">
+      <a class="more__link" href={routeHref(locale, 'work')}>
+        <span>{cta.allWork}</span>
+        <Icon name="arrow-right" />
+      </a>
+    </p>
+  </Section>
+
+  <Section
+    id="experience"
+    index={2}
+    label={t.experience.label}
+    title={t.experience.title}
+    intro={t.experience.intro}
+    navTarget="experience"
+  >
+    <ExperienceTimeline locale={locale} copy={t.experience} />
+    <p class="more">
+      <a class="more__link" href={routeHref(locale, 'experience')}>
+        <span>{cta.fullTimeline}</span>
+        <Icon name="arrow-right" />
+      </a>
+    </p>
+  </Section>
+
+  <Section
+    id="capabilities"
+    index={3}
+    label={t.capabilities.label}
+    title={t.capabilities.title}
+    intro={t.capabilities.intro}
+  >
+    <CapabilityList locale={locale} copy={t.capabilities} />
+  </Section>
+
+  <Section
+    id="recommendations"
+    index={4}
+    label={t.recommendations.label}
+    title={t.recommendations.title}
+    intro={t.recommendations.intro}
+  >
+    <RecommendationList locale={locale} copy={t.recommendations} workTitles={workTitles} />
+  </Section>
+
+  <Section
+    id="contact"
+    index={5}
+    label={t.contact.label}
+    title={t.contact.title}
+    intro={t.contact.intro}
+    navTarget="contact"
+  >
+    <ContactBlock locale={locale} copy={t.contact} />
+  </Section>
+</BaseLayout>
+
+<style>
+  .work-grid {
+    display: grid;
+    gap: var(--grid-gutter);
+  }
+
+  .work-grid > li {
+    display: grid;
+  }
+
+  .more {
+    margin-top: var(--space-4);
+  }
+
+  .more__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 2.75rem;
+    font-size: var(--step--1);
+    font-weight: var(--weight-medium);
+  }
+
+  @media (min-width: 64rem) {
+    .work-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

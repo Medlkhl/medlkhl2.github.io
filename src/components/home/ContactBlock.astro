@@ -1,0 +1,130 @@
+---
+/**
+ * Contact sheet at the end of the home page: email (mailto plus copy button),
+ * LinkedIn and GitHub (rel="me", external), the CV download and the location.
+ * Laid out like the quick facts: monospace terms, hairline rows.
+ */
+import CopyEmail from '../ui/CopyEmail.astro';
+import Icon from '../ui/Icon.astro';
+import ExternalLink from './ExternalLink.astro';
+import { profile } from '../../data/profile.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import { cvPdfHref } from '../../lib/cv.ts';
+import type { HomeCopy } from '../../views/home/home.copy.ts';
+
+interface Props {
+  locale: Locale;
+  copy: HomeCopy['contact'];
+  class?: string;
+}
+
+const { locale, copy, class: className, ...rest } = Astro.props;
+---
+
+<dl class:list={['contact', className]} {...rest}>
+  <div class="contact__row">
+    <dt class="contact__term">{copy.email}</dt>
+    <dd class="contact__value">
+      <CopyEmail locale={locale} variant="primary" class="contact__email" />
+    </dd>
+  </div>
+  <div class="contact__row">
+    <dt class="contact__term">{copy.profiles}</dt>
+    <dd class="contact__value">
+      <ul role="list" class="contact__links">
+        <li>
+          <ExternalLink locale={locale} href={profile.links.linkedin} rel="me">
+            LinkedIn
+          </ExternalLink>
+        </li>
+        <li>
+          <ExternalLink locale={locale} href={profile.links.github} rel="me">
+            GitHub
+          </ExternalLink>
+        </li>
+      </ul>
+    </dd>
+  </div>
+  <div class="contact__row">
+    <dt class="contact__term">{copy.cv}</dt>
+    <dd class="contact__value">
+      <a class="btn" href={cvPdfHref(locale)} download>
+        <Icon name="download" />
+        <span>{ui[locale].cta.downloadCvPdf}</span>
+      </a>
+    </dd>
+  </div>
+  <div class="contact__row">
+    <dt class="contact__term">{copy.location}</dt>
+    <dd class="contact__value contact__place">
+      <Icon name="pin" />
+      <span>{profile.location.label[locale]}</span>
+    </dd>
+  </div>
+</dl>
+
+<style>
+  .contact {
+    display: grid;
+    margin: 0;
+    max-width: 52rem;
+  }
+
+  .contact__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+    padding-block: var(--space-2);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .contact__row:last-child {
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .contact__term {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .contact__value {
+    margin: 0;
+    min-width: 0;
+  }
+
+  /* The address is the main action here, so it is set larger than elsewhere. */
+  .contact :global(.contact__email .copy-email__link) {
+    font-size: var(--step-1);
+    overflow-wrap: anywhere;
+  }
+
+  .contact__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-4);
+  }
+
+  .contact__links :global(a) {
+    min-height: 2.75rem;
+  }
+
+  .contact__place {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 2.75rem;
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 40rem) {
+    .contact__row {
+      grid-template-columns: 9rem minmax(0, 1fr);
+      align-items: center;
+      gap: var(--space-3);
+    }
+  }
+</style>

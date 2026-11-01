@@ -1,0 +1,174 @@
+---
+/**
+ * The HTML mirror of Fig. 1: the parts list. A real ordered list of the layers
+ * in logical order (top to bottom), each with its number, label, description,
+ * links to its skills (the matching capability group, "#cap-<id>") and to the
+ * case studies that involve it. Every item is reachable by keyboard through its
+ * links; hover and focus highlight the matching slab (rules in StackFigure).
+ * Items carry id="layer-<id>", so a link to #layer-<id> highlights it as well.
+ */
+import { layers } from '../../data/layers.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { workHref } from '../../i18n/routes.ts';
+import type { HomeCopy } from '../../views/home/home.copy.ts';
+
+interface Props {
+  locale: Locale;
+  copy: HomeCopy['stack'];
+  /** Case-study titles by slug (published entries of this locale). */
+  workTitles: Map<string, string>;
+  class?: string;
+}
+
+const { locale, copy, workTitles, class: className, ...rest } = Astro.props;
+const ordered = [...layers].sort((first, second) => first.index - second.index);
+const pad = (value: number) => String(value).padStart(2, '0');
+---
+
+<ol role="list" class:list={['legend', className]} {...rest}>
+  {ordered.map((layer) => {
+    const work = layer.work.flatMap((slug) => {
+      const title = workTitles.get(slug);
+      return title ? [{ slug, title }] : [];
+    });
+    return (
+      <li class="legend__item" id={`layer-${layer.id}`} data-layer-item={layer.id}>
+        <span class="legend__index">{pad(layer.index)}</span>
+        <div class="legend__body">
+          <h3 class="legend__name">{layer.label[locale]}</h3>
+          <p class="legend__desc">{layer.description[locale]}</p>
+          <dl class="legend__refs">
+            <div class="legend__ref">
+              <dt class="legend__term">{copy.skills}</dt>
+              <dd>
+                <ul role="list" class="legend__links">
+                  {layer.skills.map((skill) => (
+                    <li>
+                      <a href={`#cap-${skill.capability}`}>{skill.name}</a>
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+            {work.length > 0 && (
+              <div class="legend__ref">
+                <dt class="legend__term">{copy.work}</dt>
+                <dd>
+                  <ul role="list" class="legend__links">
+                    {work.map((entry) => (
+                      <li>
+                        <a href={workHref(locale, entry.slug)}>{entry.title}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
+          </dl>
+        </div>
+      </li>
+    );
+  })}
+</ol>
+
+<style>
+  .legend {
+    display: grid;
+    margin: 0;
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .legend__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: var(--space-1);
+    padding-block: var(--space-2) var(--space-3);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  /* Highlight: the rule above the item turns cobalt, with number and name. */
+  .legend__item::before {
+    content: '';
+    position: absolute;
+    top: calc(-1 * var(--hairline));
+    left: 0;
+    right: 0;
+    height: var(--hairline);
+    background: var(--hl, transparent);
+  }
+
+  .legend__index {
+    padding-top: 0.3em;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: var(--weight-medium);
+    color: var(--hl, var(--color-text-subtle));
+    font-variant-numeric: tabular-nums;
+  }
+
+  .legend__body {
+    display: grid;
+    gap: var(--space-half);
+    min-width: 0;
+  }
+
+  .legend__name {
+    font-size: var(--step-1);
+    color: var(--hl, var(--color-text));
+  }
+
+  .legend__desc {
+    max-width: 60ch;
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  .legend__refs {
+    display: grid;
+    margin-top: var(--space-1);
+  }
+
+  .legend__ref {
+    display: grid;
+    grid-template-columns: 6.75rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--space-1);
+  }
+
+  .legend__term {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .legend__ref dd {
+    margin: 0;
+  }
+
+  .legend__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-2);
+  }
+
+  .legend__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+    font-size: var(--step--1);
+    color: var(--color-text);
+  }
+
+  .legend__links a:hover {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 29.99rem) {
+    .legend__item {
+      grid-template-columns: 1.75rem minmax(0, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,112 @@
+---
+/**
+ * Quick-facts card on the first screen: role, experience, core stack,
+ * languages and location from src/data/*, plus the two recruiter actions
+ * (download the CV, copy the email). Availability and work mode stay off the
+ * card until the owner confirms them (OPEN_QUESTIONS.md).
+ */
+import CopyEmail from '../ui/CopyEmail.astro';
+import FactList from '../ui/FactList.astro';
+import Icon from '../ui/Icon.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import { profile } from '../../data/profile.ts';
+import { languages } from '../../data/skills.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import { cvPdfHref } from '../../lib/cv.ts';
+import type { HomeCopy } from '../../views/home/home.copy.ts';
+
+interface Props {
+  locale: Locale;
+  copy: HomeCopy['facts'];
+  class?: string;
+}
+
+const { locale, copy, class: className, ...rest } = Astro.props;
+
+const facts = [
+  { term: copy.role, value: profile.role[locale] },
+  { term: copy.experience, value: profile.yearsOfExperience.label[locale] },
+  { term: copy.coreStack, value: [...profile.coreStack] },
+  {
+    term: copy.languages,
+    value: languages.map((language) => `${language.name[locale]} (${language.level[locale]})`),
+  },
+  { term: copy.location, value: profile.location.label[locale] },
+];
+---
+
+<section class:list={['facts-card', className]} aria-labelledby="quick-facts-title" {...rest}>
+  <div class="facts-card__inner">
+    <header class="facts-card__header">
+      <SectionLabel as="h2" id="quick-facts-title">
+        {copy.title}
+      </SectionLabel>
+      <a class="btn btn--ghost facts-card__cv" href={cvPdfHref(locale)} download>
+        <Icon name="download" />
+        <span>{ui[locale].cta.downloadCv}</span>
+      </a>
+    </header>
+    <FactList facts={facts} />
+    <div class="facts-card__actions">
+      <CopyEmail locale={locale} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .facts-card {
+    container: quick-facts / inline-size;
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-3);
+    background: var(--color-surface);
+  }
+
+  .facts-card__inner {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3) var(--space-2);
+  }
+
+  .facts-card__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-1);
+  }
+
+  /* Align the ghost button's label with the card's right edge. */
+  .facts-card__cv {
+    margin-right: calc(-1 * var(--space-2));
+  }
+
+  .facts-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+  }
+
+  /* Narrow cards: terms above values, so the values get the full width. */
+  @container quick-facts (max-width: 26rem) {
+    .facts-card__inner {
+      padding: var(--space-2) var(--space-2) var(--space-2);
+    }
+
+    .facts-card__header {
+      row-gap: 0;
+    }
+
+    /* Negative margins on both sides: aligned right when it shares the row
+       with the title, aligned with the title when a long label wraps. */
+    .facts-card__cv {
+      margin-inline: calc(-1 * var(--space-1));
+      padding-inline: var(--space-1);
+    }
+
+    .facts-card :global(.facts.facts--rows .facts__row) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

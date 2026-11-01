@@ -1,0 +1,118 @@
+---
+/**
+ * Condensed timeline for the home page: every entry of src/data/experience.ts,
+ * newest first, with dates in <time>, role, organisation and the one-line
+ * summary. The full timeline lives on /experience/.
+ */
+import { experience } from '../../data/experience.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { formatYearMonth, toDateTimeAttribute } from '../../i18n/format.ts';
+import type { HomeCopy } from '../../views/home/home.copy.ts';
+
+interface Props {
+  locale: Locale;
+  copy: HomeCopy['experience'];
+  class?: string;
+}
+
+const { locale, copy, class: className, ...rest } = Astro.props;
+---
+
+<ol role="list" class:list={['timeline', className]} {...rest}>
+  {experience.map((entry) => (
+    <li class="timeline__item">
+      <p class="timeline__dates">
+        <time datetime={toDateTimeAttribute(entry.start)}>
+          {formatYearMonth(entry.start, locale)}
+        </time>
+        <span class="timeline__dash">–</span>
+        {entry.end === null ? (
+          <span>{copy.present}</span>
+        ) : (
+          <time datetime={toDateTimeAttribute(entry.end)}>
+            {formatYearMonth(entry.end, locale)}
+          </time>
+        )}
+      </p>
+      <div class="timeline__body">
+        <h3 class="timeline__role">{entry.role[locale]}</h3>
+        <p class="timeline__org">
+          {entry.org}
+          <span class="timeline__sep" aria-hidden="true">
+            ·
+          </span>
+          <span class="timeline__place">{entry.location[locale]}</span>
+        </p>
+        <p class="timeline__summary">{entry.summary[locale]}</p>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .timeline {
+    display: grid;
+    margin: 0;
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .timeline__item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+    padding-block: var(--space-3);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .timeline__dates {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.4em;
+    padding-top: 0.15em;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .timeline__body {
+    display: grid;
+    gap: var(--space-half);
+    max-width: 44rem;
+  }
+
+  .timeline__role {
+    font-size: var(--step-1);
+  }
+
+  .timeline__org {
+    color: var(--color-text-muted);
+  }
+
+  .timeline__sep {
+    margin-inline: 0.4em;
+    color: var(--color-text-subtle);
+  }
+
+  .timeline__summary {
+    margin-top: var(--space-half);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  @media (min-width: 48rem) {
+    .timeline__item {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+    }
+
+    .timeline__dates {
+      grid-column: 1 / span 3;
+    }
+
+    .timeline__body {
+      grid-column: 4 / -1;
+    }
+  }
+</style>
