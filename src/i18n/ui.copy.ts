@@ -132,7 +132,7 @@ export const ui = defineCopy({
     },
     externalLink: '(externer Link)',
     placeholderLegend:
-      'Markierungen in eckigen Klammern wie [METRIC: …] sind Platzhalter für Inhalte, die noch geliefert werden.',
+      'Markierungen in eckigen Klammern wie [METRIC: …] sind Platzhalter für Inhalte, die noch nachgereicht werden.',
   },
 });
 

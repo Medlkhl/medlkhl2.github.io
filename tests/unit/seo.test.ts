@@ -292,12 +292,21 @@ describe('legal pages', () => {
   });
 
   it('the provider address is a set of placeholders until the owner supplies it', () => {
-    for (const locale of LOCALES) {
-      expect(legalCopy[locale].address.slice(0, 3)).toEqual([
+    // Each locale words its own labels; the binding German pages show German ones.
+    const placeholders = {
+      en: [
         '[NAME: full legal name]',
         '[ADDRESS: street and house number]',
         '[ADDRESS: postcode and city]',
-      ]);
+      ],
+      de: [
+        '[NAME: vollständiger Name]',
+        '[ADDRESS: Straße und Hausnummer]',
+        '[ADDRESS: Postleitzahl und Ort]',
+      ],
+    };
+    for (const locale of LOCALES) {
+      expect(legalCopy[locale].address.slice(0, 3)).toEqual(placeholders[locale]);
       // The postal address appears only on the Impressum (owner rule); the privacy
       // policy names the controller and points to the Impressum for the address.
       const blocksOf = (copy: (typeof pages)[keyof typeof pages]) =>

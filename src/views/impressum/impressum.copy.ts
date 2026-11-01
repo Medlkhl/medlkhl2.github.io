@@ -74,7 +74,7 @@ export const impressumCopy = defineCopy<LegalPageCopy>({
         blocks: [
           {
             type: 'p',
-            text: 'Verantwortlich für den Inhalt nach § 18 Abs. 2 Medienstaatsvertrag (MStV): [NAME: full legal name], Anschrift wie oben.',
+            text: 'Verantwortlich für den Inhalt nach § 18 Abs. 2 Medienstaatsvertrag (MStV): [NAME: vollständiger Name], Anschrift wie oben.',
           },
         ],
       },

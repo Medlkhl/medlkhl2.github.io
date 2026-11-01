@@ -4,7 +4,8 @@ import { defineCopy } from '../../i18n/copy.ts';
  * Strings shared by the Impressum and the Datenschutzerklärung. The German
  * pages are the binding versions; the English pages say so and link to them.
  * Name and postal address stay placeholders until the owner supplies them
- * (OPEN_QUESTIONS.md); they appear only on the legal pages.
+ * (OPEN_QUESTIONS.md), with German labels on the German pages; they appear
+ * only on the legal pages.
  */
 export const legalCopy = defineCopy({
   en: {
@@ -28,9 +29,9 @@ export const legalCopy = defineCopy({
   de: {
     label: 'Rechtliches',
     address: [
-      '[NAME: full legal name]',
-      '[ADDRESS: street and house number]',
-      '[ADDRESS: postcode and city]',
+      '[NAME: vollständiger Name]',
+      '[ADDRESS: Straße und Hausnummer]',
+      '[ADDRESS: Postleitzahl und Ort]',
       'Deutschland',
     ],
     email: 'E-Mail',
