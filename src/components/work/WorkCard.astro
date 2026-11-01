@@ -1,0 +1,149 @@
+---
+/**
+ * Case-study card for the home page, the /work/ index and the Lab.
+ * The whole card is one link (the title), so it is a single tab stop; the
+ * rest of the card is reachable to pointer users through a stretched link.
+ */
+import Icon from '../ui/Icon.astro';
+import Rich from '../ui/Rich.astro';
+import StatusChip from '../ui/StatusChip.astro';
+import type { Locale } from '../../i18n/config.ts';
+import { formatRange } from '../../i18n/format.ts';
+import { workHref } from '../../i18n/routes.ts';
+import { ui } from '../../i18n/ui.copy.ts';
+import { type WorkEntry, workSlug } from '../../lib/work.ts';
+
+interface Props {
+  entry: WorkEntry;
+  locale: Locale;
+  /** Heading level of the card title inside its section. */
+  headingLevel?: 2 | 3;
+  /** Show the stack chips (default true). */
+  showStack?: boolean;
+  class?: string;
+}
+
+const { entry, locale, headingLevel = 3, showStack = true, class: className } = Astro.props;
+const data = entry.data;
+const Heading = headingLevel === 2 ? 'h2' : 'h3';
+const href = workHref(locale, workSlug(entry));
+const range = formatRange(data.timeframe.start, data.timeframe.end, locale);
+---
+
+<article class:list={['work-card', className]} data-work={workSlug(entry)}>
+  <div class="work-card__meta">
+    <StatusChip status={data.status} locale={locale} />
+    <span class="work-card__range mono">
+      <Rich text={range} />
+    </span>
+  </div>
+  <Heading class="work-card__title">
+    <a class="work-card__link" href={href}>
+      {data.title}
+    </a>
+  </Heading>
+  <p class="work-card__outcome">
+    <Rich text={data.outcome} />
+  </p>
+  <p class="work-card__summary">
+    <Rich text={data.summary} />
+  </p>
+  {showStack && (
+    <ul role="list" class="work-card__stack">
+      {data.stack.slice(0, 6).map((item) => (
+        <li class="chip">{item}</li>
+      ))}
+    </ul>
+  )}
+  <span class="work-card__cta" aria-hidden="true">
+    {ui[locale].cta.readCaseStudy}
+    <Icon name="arrow-right" />
+  </span>
+</article>
+
+<style>
+  .work-card {
+    position: relative;
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    padding: var(--space-4);
+    border: var(--hairline) solid var(--color-line);
+    border-radius: var(--radius-3);
+    background: var(--color-surface);
+    transition: border-color var(--dur-micro) var(--ease-micro);
+  }
+
+  .work-card:hover,
+  .work-card:focus-within {
+    border-color: var(--color-line-strong);
+  }
+
+  .work-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-1);
+  }
+
+  .work-card__range {
+    font-size: var(--step--2);
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .work-card__title {
+    font-size: var(--step-2);
+    line-height: var(--leading-snug);
+  }
+
+  .work-card__link {
+    text-decoration: none;
+  }
+
+  /* Stretched link: the whole card is clickable, the title is the only tab stop. */
+  .work-card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .work-card__link:focus-visible {
+    outline: none;
+  }
+
+  .work-card:has(.work-card__link:focus-visible) {
+    outline: var(--focus-width) solid var(--color-accent);
+    outline-offset: var(--focus-offset);
+  }
+
+  .work-card__outcome {
+    font-weight: var(--weight-medium);
+  }
+
+  .work-card__summary {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  .work-card__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-half);
+  }
+
+  .work-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+    font-size: var(--step--1);
+    color: var(--color-accent);
+  }
+
+  .work-card:hover .work-card__cta {
+    color: var(--color-accent-hover);
+  }
+</style>
