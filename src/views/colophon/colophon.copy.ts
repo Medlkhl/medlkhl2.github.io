@@ -14,6 +14,7 @@ export const colophonCopy = defineCopy({
       title: 'How this site is built',
       intro:
         'Static HTML first, everything self-hosted, no cookies and no tracking, held to budgets that are measured rather than eyeballed. One typed source produces these pages, the PDF CVs and the structured data.',
+      built: 'Last built',
     },
     planned: 'Planned',
     stack: {
@@ -47,7 +48,7 @@ export const colophonCopy = defineCopy({
         {
           role: 'Social images',
           tool: 'Satori and resvg',
-          note: 'Rendered at build time from the title of each page.',
+          note: 'Rendered at build time from the title and description of each page.',
         },
         {
           role: 'Tests and PDF CVs',
@@ -167,6 +168,26 @@ export const colophonCopy = defineCopy({
           ],
         },
         {
+          title: 'Accessibility (WCAG 2.2 AA)',
+          rows: [
+            {
+              metric: 'Serious axe issues',
+              target: '0, in both themes',
+              measuredWith: 'axe in Playwright',
+            },
+            {
+              metric: 'Text contrast',
+              target: '≥\u00a04.5:1; ≥\u00a03:1 for large text and controls',
+              measuredWith: 'Token unit tests, axe',
+            },
+            {
+              metric: 'Touch targets',
+              target: '≥\u00a024\u00a0×\u00a024\u00a0CSS\u00a0px; 44\u00a0px for controls',
+              measuredWith: 'axe (target size)',
+            },
+          ],
+        },
+        {
           title: '3D stage (planned)',
           rows: [
             {
@@ -220,6 +241,7 @@ export const colophonCopy = defineCopy({
       title: 'Wie diese Website gebaut ist',
       intro:
         'Zuerst statisches HTML, alles selbst gehostet, keine Cookies und kein Tracking – gemessen an Budgets, die geprüft statt geschätzt werden. Eine einzige typisierte Quelle erzeugt diese Seiten, die PDF-Lebensläufe und die strukturierten Daten.',
+      built: 'Zuletzt gebaut am',
     },
     planned: 'Geplant',
     stack: {
@@ -253,7 +275,7 @@ export const colophonCopy = defineCopy({
         {
           role: 'Social Images',
           tool: 'Satori und resvg',
-          note: 'Beim Build aus dem Titel jeder Seite erzeugt.',
+          note: 'Beim Build aus Titel und Beschreibung jeder Seite erzeugt.',
         },
         {
           role: 'Tests und PDF-Lebensläufe',
@@ -285,7 +307,7 @@ export const colophonCopy = defineCopy({
         {
           role: '3D',
           tool: 'three.js auf WebGPU mit TSL',
-          note: 'Eine dauerhafte Canvas als progressive Erweiterung, mit WebGL 2 als Rückfallebene.',
+          note: 'Ein dauerhaftes Canvas als progressive Erweiterung, mit WebGL 2 als Rückfallebene.',
         },
         {
           role: 'Bewegung',
@@ -340,7 +362,7 @@ export const colophonCopy = defineCopy({
         measuredWith: 'Gemessen mit',
         measured: 'Gemessen',
       },
-      measuredPlaceholder: '[METRIC: wird zum Launch gemessen]',
+      measuredPlaceholder: '[METRIC: Messung zum Launch]',
       groups: [
         {
           title: 'Jede Seite',
@@ -369,6 +391,26 @@ export const colophonCopy = defineCopy({
               metric: 'Lighthouse auf klassischen Seiten',
               target: '≥ 95 in allen vier Kategorien',
               measuredWith: 'Lighthouse CI',
+            },
+          ],
+        },
+        {
+          title: 'Barrierefreiheit (WCAG 2.2 AA)',
+          rows: [
+            {
+              metric: 'Schwerwiegende axe-Befunde',
+              target: '0, in beiden Farbschemata',
+              measuredWith: 'axe in Playwright',
+            },
+            {
+              metric: 'Textkontrast',
+              target: '≥\u00a04,5:1; ≥\u00a03:1 für große Schrift und Bedienelemente',
+              measuredWith: 'Unit-Tests der Tokens, axe',
+            },
+            {
+              metric: 'Zielgrößen',
+              target: '≥\u00a024\u00a0×\u00a024\u00a0CSS-px; 44\u00a0px für Bedienelemente',
+              measuredWith: 'axe (Zielgröße)',
             },
           ],
         },

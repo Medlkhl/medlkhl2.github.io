@@ -28,3 +28,10 @@ const datetime = (value: string) => (isYearMonth(value) || isYear(value) ? value
 
 {/* prettier-ignore */}
 <span class:list={['date-range', className]}><time datetime={datetime(start)}>{from}</time>{SEPARATOR}{end === null ? <span>{to}</span> : <time datetime={datetime(end)}>{to}</time>}</span>
+
+<style>
+  /* Each end stays on one line; a narrow column may break only around the dash. */
+  .date-range time {
+    white-space: nowrap;
+  }
+</style>

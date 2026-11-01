@@ -26,7 +26,7 @@ export const labCopy = defineCopy({
       ],
       spatial: {
         title: 'Spatial view',
-        text: 'A head-tracked spatial view will demonstrate the same technique on this page: the scene follows your head through the webcam, as if the screen were a window. It will be opt-in. The camera starts only after a click, the video never leaves your device, and mouse or tilt parallax is the fallback.',
+        text: 'A head-tracked spatial view will demonstrate the same technique on this page: the scene follows your head through the webcam, as if the screen were a window. It is designed to be opt-in: the camera starts only after a click, the video never leaves your device, and mouse or tilt parallax is the fallback.',
       },
     },
     robot: {
@@ -84,7 +84,7 @@ export const labCopy = defineCopy({
       ],
       spatial: {
         title: 'Räumliche Ansicht',
-        text: 'Eine kopfgesteuerte räumliche Ansicht wird dieselbe Technik auf dieser Seite vorführen: Die Szene folgt per Webcam Ihrem Kopf, als wäre der Bildschirm ein Fenster. Sie startet nur auf Wunsch: Die Kamera läuft erst nach einem Klick, das Video verlässt Ihr Gerät nie, und ohne Kamera übernimmt eine Parallaxe per Maus oder Neigung.',
+        text: 'Eine kopfgesteuerte räumliche Ansicht wird dieselbe Technik auf dieser Seite vorführen: Die Szene folgt per Webcam Ihrem Kopf, als wäre der Bildschirm ein Fenster. Sie ist als Opt-in geplant: Die Kamera startet erst nach einem Klick, das Video verlässt Ihr Gerät nie, und ohne Kamera übernimmt eine Parallaxe per Maus oder Neigung.',
       },
     },
     robot: {

@@ -32,13 +32,11 @@ const t = copy.holobox;
     </a>
   </div>
 
-  <aside class="holobox__planned" aria-labelledby="spatial-view-title">
+  <div class="holobox__planned">
     <PlannedChip label={copy.planned} />
-    <h3 id="spatial-view-title" class="holobox__planned-title">
-      {t.spatial.title}
-    </h3>
+    <h3 class="holobox__planned-title">{t.spatial.title}</h3>
     <p class="holobox__planned-text">{t.spatial.text}</p>
-  </aside>
+  </div>
 </div>
 
 <style>

@@ -14,6 +14,7 @@ import ExternalLink from '../../components/lab/ExternalLink.astro';
 import Section from '../../components/ui/Section.astro';
 import { SCENE_SHOTS } from '../../data/scene.ts';
 import type { Locale } from '../../i18n/config.ts';
+import { formatDate } from '../../i18n/format.ts';
 import { pageMeta } from '../../i18n/meta.copy.ts';
 import { ROUTES } from '../../i18n/routes.ts';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -27,6 +28,10 @@ interface Props {
 const { locale } = Astro.props;
 const t = colophonCopy[locale];
 const meta = pageMeta[locale].colophon;
+
+// The build date and generator: the one fact on this page that changes with every build.
+const builtOn = new Date();
+const builtIso = builtOn.toISOString().slice(0, 10);
 
 const CREDIT_LINKS = {
   geist: 'https://github.com/vercel/geist-font',
@@ -42,7 +47,10 @@ const CREDIT_LINKS = {
   ogImage={ogImagePath(locale, 'colophon')}
   sceneShot={SCENE_SHOTS.colophon}
 >
-  <PageHeader label={t.header.label} title={t.header.title} intro={t.header.intro} />
+  <PageHeader label={t.header.label} title={t.header.title} intro={t.header.intro}>
+    {/* prettier-ignore */}
+    <p class="build-meta">{t.header.built} <time datetime={builtIso}>{formatDate(builtOn, locale)}</time><span class="visually-hidden">, </span><span class="build-meta__sep" aria-hidden="true">·</span><span>{Astro.generator}</span></p>
+  </PageHeader>
 
   <Section id="stack" index={1} label={t.stack.label} title={t.stack.title} intro={t.stack.intro}>
     <StackList copy={t} />
@@ -83,6 +91,18 @@ const CREDIT_LINKS = {
 </BaseLayout>
 
 <style>
+  .build-meta {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.02em;
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .build-meta__sep {
+    margin-inline: 0.6em;
+  }
+
   .credits {
     display: grid;
     max-width: var(--measure);
