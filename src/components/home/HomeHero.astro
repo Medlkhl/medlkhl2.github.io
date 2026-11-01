@@ -147,7 +147,10 @@ const cta = ui[locale].cta;
     margin-top: var(--space-1);
   }
 
-  /* Phones: buttons share each row, so none is left hanging on its own. */
+  /*
+   * Phones: the primary button takes the first row in both locales and the two
+   * others share the second, so none is left hanging on its own.
+   */
   @media (max-width: 29.99rem) {
     .hero__actions {
       align-self: stretch;
@@ -155,6 +158,10 @@ const cta = ui[locale].cta;
 
     .hero__actions > .btn {
       flex: 1 1 auto;
+    }
+
+    .hero__actions > .btn--primary {
+      flex-basis: 100%;
     }
   }
 
