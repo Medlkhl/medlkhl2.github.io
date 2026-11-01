@@ -96,7 +96,8 @@ src/
   schemas/                Zod schemas for data and case studies (common.ts: l10n, term, dates, placeholders)
   i18n/                   Locales, routes, formatting (Intl), term() for skill and stack terms, UI copy, page meta
   lib/                    URL helpers, preferences, theme script, placeholders (+ rehype plugin), contrast,
-                          CV/PDF names, JSON-LD builders, work collection helpers, og.ts (social image paths)
+                          CV/PDF names, JSON-LD builders, work collection helpers, lead-in.ts (case-study
+                          "Label: text" items), og.ts (social image paths)
     og/                   cards.ts (what each social image says), stack.ts (isometric stack geometry),
                           render.ts (Satori, resvg, sharp)
   styles/                 tokens.css (source of truth, print tokens included), tokens.ts (typed mirror),

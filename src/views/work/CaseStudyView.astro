@@ -27,6 +27,7 @@ import { formatRange } from '../../i18n/format.ts';
 import { routeHref, workHref } from '../../i18n/routes.ts';
 import { ui } from '../../i18n/ui.copy.ts';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { leadIn } from '../../lib/lead-in.ts';
 import { ogImagePath } from '../../lib/og.ts';
 import { hasPlaceholder, splitPlaceholders } from '../../lib/placeholders.ts';
 import { breadcrumbJsonLd } from '../../lib/structured-data.ts';
@@ -91,14 +92,6 @@ const all = await getWork(locale);
 const index = all.findIndex((item) => workSlug(item) === slug);
 const previous = index > 0 ? all[index - 1] : undefined;
 const next = index >= 0 ? all[index + 1] : undefined;
-
-/** "Legacy code: a React Native app…" → bold lead-in plus the rest, which now starts a sentence. */
-function leadIn(text: string): { lead?: string; rest: string } {
-  const match = /^([^:[\]]{2,48}):\s+([\s\S]+)$/.exec(text);
-  if (!match?.[1] || !match[2]) return { rest: text };
-  const rest = match[2];
-  return { lead: match[1], rest: rest.charAt(0).toLocaleUpperCase(locale) + rest.slice(1) };
-}
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -191,7 +184,7 @@ function onlyPlaceholder(text: string): boolean {
           <h3 class="case-kicker">{t.context.constraints}</h3>
           <ul role="list" class="rule-list">
             {data.constraints.map((item) => {
-              const { lead, rest } = leadIn(item);
+              const { lead, rest } = leadIn(item, locale);
               return (
                 <li class="rule-list__item">
                   {lead && <strong class="rule-list__lead">{lead}</strong>}
