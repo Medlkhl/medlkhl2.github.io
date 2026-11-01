@@ -101,6 +101,12 @@ function leadIn(text: string): { lead?: string; rest: string } {
 }
 
 const pad = (n: number) => String(n).padStart(2, '0');
+
+/** True when a string is nothing but one placeholder, e.g. "[DETAIL: next milestones]". */
+function onlyPlaceholder(text: string): boolean {
+  const segments = splitPlaceholders(text.trim());
+  return segments.length === 1 && segments[0]?.type === 'placeholder';
+}
 ---
 
 <BaseLayout
@@ -386,7 +392,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
           <ul role="list" class="outcomes">
             {data.results.outcomes.map((outcome) => (
               <li class="outcome">
-                <Icon name="check" size={16} class="outcome__icon" />
+                {onlyPlaceholder(outcome) ? (
+                  <span aria-hidden="true" />
+                ) : (
+                  <Icon name="check" size={16} class="outcome__icon" />
+                )}
                 <span>
                   <Rich text={outcome} />
                 </span>
