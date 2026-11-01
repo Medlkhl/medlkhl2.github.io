@@ -91,7 +91,7 @@ scene:
 
 A screen is flat, but we judge depth partly by how a scene shifts as we move our head. HoloBox tracks the viewer’s head and redraws the scene from exactly that viewpoint, so the avatar seems to stand inside a box behind the glass rather than on its surface.
 
-### How it fits together
+### How it works
 
 The app is a .NET MAUI Blazor Hybrid application. Its WebView runs Three.js for the avatar and MediaPipe for face tracking. The .NET side runs a Gemma model in-process through LLamaSharp, loaded from a GGUF file. Speech recognition turns what the viewer says into text, the model answers, and text-to-speech gives the avatar its voice, with lip-sync. [CONFIRM: speech and voice engines]
 

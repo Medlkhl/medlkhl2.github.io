@@ -91,7 +91,7 @@ scene:
 
 Ein Bildschirm ist flach – Tiefe erkennen wir aber auch daran, wie sich eine Szene verschiebt, wenn wir den Kopf bewegen. HoloBox verfolgt den Kopf des Betrachters und zeichnet die Szene genau aus diesem Blickwinkel neu. So scheint der Avatar in einem Kasten hinter dem Glas zu stehen statt auf seiner Oberfläche.
 
-### Wie alles zusammenspielt
+### Wie es funktioniert
 
 Die App ist eine .NET-MAUI-Blazor-Hybrid-Anwendung. In ihrer WebView laufen Three.js für den Avatar und MediaPipe für das Gesichtstracking. Auf der .NET-Seite läuft ein Gemma-Modell über LLamaSharp direkt im Prozess, geladen aus einer GGUF-Datei. Die Spracherkennung macht aus dem Gesagten Text, das Modell antwortet, und die Sprachsynthese gibt dem Avatar eine Stimme, lippensynchron. [CONFIRM: Engines für Spracherkennung und Sprachausgabe]
 
