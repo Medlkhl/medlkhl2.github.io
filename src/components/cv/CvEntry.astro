@@ -3,7 +3,7 @@
  * One dated CV entry (a role or a degree), rendered as the <li> of an <ol>:
  *   Title (h3)                                   07/2024 – 12/2025
  *   Organisation · Place
- *   • Highlights
+ *   – Highlights
  *   STACK  C# · .NET MAUI · …
  * Dates are numeric ("07/2024", or a year for degrees) in <time> elements,
  * right-aligned on the title line from 40rem and in print, under it on phones.
@@ -63,7 +63,7 @@ const datetime = (value: string) => toDateTimeAttribute(value) ?? value;
     </h3>
     <p class="cv-entry__when">
       <time datetime={datetime(start)}>{date(start)}</time>
-      <span class="cv-entry__dash">–</span>
+      <span>–</span>
       {end === null ? <span>{present}</span> : <time datetime={datetime(end)}>{date(end)}</time>}
     </p>
   </div>
