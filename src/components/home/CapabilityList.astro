@@ -1,0 +1,151 @@
+---
+/**
+ * The capability groups of src/data/skills.ts: title, summary, skill chips and
+ * the layers of Fig. 1 they belong to. Each group has id="cap-<id>" (the target
+ * of the skill links in the parts list); each layer reference links back to
+ * its item in the parts list, which highlights the slab through :target.
+ */
+import { getLayer } from '../../data/layers.ts';
+import { capabilities } from '../../data/skills.ts';
+import type { Locale } from '../../i18n/config.ts';
+import type { HomeCopy } from '../../views/home/home.copy.ts';
+
+interface Props {
+  locale: Locale;
+  copy: HomeCopy['capabilities'];
+  class?: string;
+}
+
+const { locale, copy, class: className, ...rest } = Astro.props;
+const pad = (value: number) => String(value).padStart(2, '0');
+---
+
+<ul role="list" class:list={['caps', className]} {...rest}>
+  {capabilities.map((capability) => {
+    const related = capability.layers.map((id) => getLayer(id));
+    return (
+      <li class="cap" id={`cap-${capability.id}`}>
+        <div class="cap__head">
+          <h3 class="cap__title">{capability.title[locale]}</h3>
+          <div class="cap__layers">
+            <p class="cap__term" id={`cap-${capability.id}-layers`}>
+              {copy.layers}
+            </p>
+            <ul role="list" class="cap__layer-list" aria-labelledby={`cap-${capability.id}-layers`}>
+              {related.map((layer) => (
+                <li>
+                  <a href={`#layer-${layer.id}`}>
+                    <span class="cap__layer-index">{pad(layer.index)}</span>
+                    <span>{layer.label[locale]}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div class="cap__body">
+          <p class="cap__summary">{capability.summary[locale]}</p>
+          <ul role="list" class="cap__skills">
+            {capability.skills.map((skill) => (
+              <li class="chip">{skill}</li>
+            ))}
+          </ul>
+        </div>
+      </li>
+    );
+  })}
+</ul>
+
+<style>
+  .caps {
+    display: grid;
+    margin: 0;
+    border-bottom: var(--hairline) solid var(--color-line);
+  }
+
+  .cap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+    padding-block: var(--space-4);
+    border-top: var(--hairline) solid var(--color-line);
+  }
+
+  .cap__head {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+
+  .cap__title {
+    font-size: var(--step-2);
+  }
+
+  .cap__layers {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-half) var(--space-2);
+  }
+
+  .cap__term {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .cap__layer-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-2);
+  }
+
+  .cap__layer-list a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    min-height: 1.75rem;
+    font-size: var(--step--1);
+  }
+
+  .cap__layer-index {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cap__body {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+
+  .cap__summary {
+    max-width: 60ch;
+    color: var(--color-text-muted);
+  }
+
+  .cap__skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  @media (min-width: 48rem) {
+    .cap {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+    }
+
+    .cap__head {
+      grid-column: 1 / span 5;
+    }
+
+    .cap__body {
+      grid-column: 6 / -1;
+    }
+  }
+</style>
