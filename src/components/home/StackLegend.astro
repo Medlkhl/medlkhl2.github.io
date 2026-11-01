@@ -6,6 +6,9 @@
  * case studies that involve it. Every item is reachable by keyboard through its
  * links; hover and focus highlight the matching slab (rules in StackFigure).
  * Items carry id="layer-<id>", so a link to #layer-<id> highlights it as well.
+ * Compact by design, so 01 Selected work follows soon after the hero: each
+ * kind of reference is one line with its term inline, and the description
+ * shows only from 64rem (below that the list is the figure's key).
  */
 import { layers } from '../../data/layers.ts';
 import type { Locale } from '../../i18n/config.ts';
@@ -79,12 +82,13 @@ const pad = (value: number) => String(value).padStart(2, '0');
     border-bottom: var(--hairline) solid var(--color-line);
   }
 
+  /* Compact: name, then one line per kind of reference; the description only from 64rem. */
   .legend__item {
     position: relative;
     display: grid;
     grid-template-columns: 2.25rem minmax(0, 1fr);
     gap: var(--space-1);
-    padding-block: var(--space-2) var(--space-3);
+    padding-block: var(--space-1) var(--space-2);
     border-top: var(--hairline) solid var(--color-line);
   }
 
@@ -100,7 +104,7 @@ const pad = (value: number) => String(value).padStart(2, '0');
   }
 
   .legend__index {
-    padding-top: 0.3em;
+    padding-top: 0.15em;
     font-family: var(--font-mono);
     font-size: var(--step--1);
     font-weight: var(--weight-medium);
@@ -115,29 +119,36 @@ const pad = (value: number) => String(value).padStart(2, '0');
   }
 
   .legend__name {
-    font-size: var(--step-1);
+    font-size: var(--step-0);
     color: var(--hl, var(--color-text));
   }
 
   .legend__desc {
-    max-width: 60ch;
+    max-width: 64ch;
     color: var(--color-text-muted);
     font-size: var(--step--1);
+    line-height: 1.5;
   }
 
+  /* Skills and case studies share a line when they fit. */
   .legend__refs {
-    display: grid;
-    margin-top: var(--space-1);
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--space-3);
+    margin: 0;
   }
 
+  /* The term sits inline and the links wrap beside it, under each other (a hanging indent). */
   .legend__ref {
-    display: grid;
-    grid-template-columns: 6.75rem minmax(0, 1fr);
+    display: flex;
     align-items: baseline;
-    gap: var(--space-1);
+    column-gap: var(--space-1);
+    min-width: 0;
+    max-width: 100%;
   }
 
   .legend__term {
+    flex: none;
     font-family: var(--font-mono);
     font-size: var(--step--2);
     letter-spacing: var(--tracking-label);
@@ -146,6 +157,8 @@ const pad = (value: number) => String(value).padStart(2, '0');
   }
 
   .legend__ref dd {
+    flex: 0 1 auto;
+    min-width: 0;
     margin: 0;
   }
 
@@ -155,16 +168,31 @@ const pad = (value: number) => String(value).padStart(2, '0');
     gap: 0 var(--space-2);
   }
 
+  .legend__links > li {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Long German compounds ("Bereitstellungsumgebungen") break instead of overflowing at 320px. */
   .legend__links a {
     display: inline-flex;
     align-items: center;
-    min-height: 1.75rem;
+    max-width: 100%;
+    min-height: var(--target-compact);
     font-size: var(--step--1);
     color: var(--color-text);
+    overflow-wrap: anywhere;
+    hyphens: auto;
   }
 
   .legend__links a:hover {
     color: var(--color-accent);
+  }
+
+  @media (max-width: 63.99rem) {
+    .legend__desc {
+      display: none;
+    }
   }
 
   @media (max-width: 29.99rem) {
