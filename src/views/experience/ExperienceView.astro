@@ -6,6 +6,7 @@
  * size are deliberately absent until the owner confirms them (DECISIONS D-018).
  */
 import PageHeader from '../../components/about/PageHeader.astro';
+import ArrowLink from '../../components/experience/ArrowLink.astro';
 import CompactSection from '../../components/experience/CompactSection.astro';
 import EducationEntry from '../../components/experience/EducationEntry.astro';
 import TimelineEntry from '../../components/experience/TimelineEntry.astro';
@@ -88,10 +89,7 @@ const title = t.header.title.replace('{year}', firstYear ?? '');
           <Icon name="download" />
           <span>{t.cv.otherLanguage}</span>
         </a>
-        <a class="cv-band__link" href={routeHref(locale, 'cv')}>
-          <span>{t.header.cvOnline}</span>
-          <Icon name="arrow-right" />
-        </a>
+        <ArrowLink href={routeHref(locale, 'cv')}>{t.header.cvOnline}</ArrowLink>
       </div>
     </div>
   </CompactSection>
@@ -118,26 +116,5 @@ const title = t.header.title.replace('{year}', firstYear ?? '');
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-1) var(--space-2);
-  }
-
-  .cv-band__link {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    min-height: 2.75rem;
-    color: var(--color-accent);
-    font-size: var(--step--1);
-    font-weight: var(--weight-medium);
-    text-decoration: none;
-  }
-
-  .cv-band__link:hover {
-    color: var(--color-accent-hover);
-  }
-
-  .cv-band__link:hover span {
-    text-decoration: underline;
-    text-decoration-thickness: var(--hairline);
-    text-underline-offset: 0.22em;
   }
 </style>

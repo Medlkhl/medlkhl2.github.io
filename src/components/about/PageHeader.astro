@@ -4,10 +4,11 @@
  * mono label, the page's only h1, an optional intro (prop or "intro" slot)
  * and actions (default slot).
  *
- * An optional figure (slot "figure", e.g. the portrait) sits in its own grid
- * area: right of the text from 64rem, between the heading and the intro below
- * that. The text never depends on it, so removing or hiding the figure leaves
- * a complete header (the text simply keeps its width).
+ * From 64rem the header is a 12-column grid: the text takes columns 1–8, or
+ * 1–7 when there is a figure (slot "figure", e.g. the portrait), which then
+ * takes 9–12 in its own grid area. Below 64rem the figure sits between the
+ * heading and the intro. The text never depends on it, so removing or hiding
+ * the figure leaves a complete header.
  */
 import SectionLabel from '../ui/SectionLabel.astro';
 
@@ -28,7 +29,7 @@ const hasIntroSlot = Astro.slots.has('intro');
 
 <header class:list={['page-header', className]}>
   <div class:list={['container', 'page-header__grid', { 'page-header__grid--figure': hasFigure }]}>
-    <SectionLabel class="page-header__label">{label}</SectionLabel>
+    <SectionLabel>{label}</SectionLabel>
     <h1 id={id} class="page-header__title">
       {title}
     </h1>
@@ -63,7 +64,6 @@ const hasIntroSlot = Astro.slots.has('intro');
   }
 
   .page-header__title {
-    max-width: 22ch;
     margin-top: var(--space-2);
     font-size: var(--step-5);
   }
@@ -93,16 +93,17 @@ const hasIntroSlot = Astro.slots.has('intro');
   }
 
   @media (min-width: 64rem) {
-    /*
-     * Text in columns 1–7, the figure in 9–12 across every row. The last row
-     * is 1fr, so a figure taller than the text never spreads the text apart.
-     */
-    .page-header__grid--figure {
+    /* The last row is 1fr, so a figure taller than the text never spreads the text apart. */
+    .page-header__grid {
       display: grid;
       grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
       grid-template-rows: repeat(4, auto) 1fr;
       column-gap: var(--grid-gutter);
       align-items: start;
+    }
+
+    .page-header__grid > * {
+      grid-column: 1 / span 8;
     }
 
     .page-header__grid--figure > * {

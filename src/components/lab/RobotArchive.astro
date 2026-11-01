@@ -10,6 +10,7 @@ import type { Locale } from '../../i18n/config.ts';
 import { workHref } from '../../i18n/routes.ts';
 import { ui } from '../../i18n/ui.copy.ts';
 import type { LabCopy } from '../../views/lab/lab.copy.ts';
+import ArrowLink from '../experience/ArrowLink.astro';
 import DateRange from '../experience/DateRange.astro';
 import Icon from '../ui/Icon.astro';
 import ExternalLink from './ExternalLink.astro';
@@ -63,10 +64,9 @@ const project = experience.find((entry) => entry.id === 'dot-it');
           </div>
         </dl>
       )}
-      <a class="robot__case" href={workHref(locale, 'humanoid-robot')}>
-        <span>{copy.caseStudy.replace('{title}', caseStudyTitle)}</span>
-        <Icon name="arrow-right" />
-      </a>
+      <ArrowLink href={workHref(locale, 'humanoid-robot')}>
+        {copy.caseStudy.replace('{title}', caseStudyTitle)}
+      </ArrowLink>
     </div>
   </div>
 
@@ -125,7 +125,7 @@ const project = experience.find((entry) => entry.id === 'dot-it');
 
   .robot__fact {
     display: grid;
-    grid-template-columns: minmax(7rem, 40%) minmax(0, 1fr);
+    grid-template-columns: minmax(var(--space-16), 40%) minmax(0, 1fr);
     gap: var(--space-2);
     align-items: baseline;
     padding-block: var(--space-1);
@@ -160,8 +160,8 @@ const project = experience.find((entry) => entry.id === 'dot-it');
   .demo__mark {
     display: grid;
     place-items: center;
-    width: 3.5rem;
-    height: 3.5rem;
+    width: var(--space-6);
+    height: var(--space-6);
     border: var(--hairline) solid var(--color-line-strong);
     border-radius: var(--radius-2);
     color: var(--color-text);
@@ -184,31 +184,9 @@ const project = experience.find((entry) => entry.id === 'dot-it');
 
   .demo :global(.demo__link),
   .module :global(.module__link) {
-    min-height: 2.75rem;
+    min-height: 2.75rem; /* 44px target, as .btn */
     font-size: var(--step--1);
     font-weight: var(--weight-medium);
-  }
-
-  .robot__case {
-    display: inline-flex;
-    align-items: center;
-    justify-self: start;
-    gap: var(--space-1);
-    min-height: 2.75rem;
-    color: var(--color-accent);
-    font-size: var(--step--1);
-    font-weight: var(--weight-medium);
-    text-decoration: none;
-  }
-
-  .robot__case:hover {
-    color: var(--color-accent-hover);
-  }
-
-  .robot__case:hover span {
-    text-decoration: underline;
-    text-decoration-thickness: var(--hairline);
-    text-underline-offset: 0.22em;
   }
 
   .modules {

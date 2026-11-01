@@ -10,7 +10,7 @@ import { formatDuration } from '../../i18n/format.ts';
 import { workHref } from '../../i18n/routes.ts';
 import type { Experience } from '../../schemas/data.ts';
 import type { ExperienceCopy } from '../../views/experience/experience.copy.ts';
-import Icon from '../ui/Icon.astro';
+import ArrowLink from './ArrowLink.astro';
 import DateRange from './DateRange.astro';
 
 interface Props {
@@ -61,10 +61,7 @@ const links = entry.work.map((slug) => ({
       <ul role="list" class="entry__links">
         {links.map((link) => (
           <li>
-            <a class="entry__link" href={link.href}>
-              <span>{link.label}</span>
-              <Icon name="arrow-right" />
-            </a>
+            <ArrowLink href={link.href}>{link.label}</ArrowLink>
           </li>
         ))}
       </ul>
@@ -98,7 +95,6 @@ const links = entry.work.map((slug) => ({
   .entry__duration {
     color: var(--color-text-subtle);
     font-size: var(--step--2);
-    letter-spacing: 0.02em;
   }
 
   .entry__body {
@@ -122,7 +118,7 @@ const links = entry.work.map((slug) => ({
   }
 
   .entry__sep {
-    margin-inline: 0.5em;
+    margin-inline: var(--space-1);
     color: var(--color-text-subtle);
   }
 
@@ -144,7 +140,7 @@ const links = entry.work.map((slug) => ({
     content: '';
     position: absolute;
     left: 0;
-    top: 0.8em;
+    top: calc(var(--leading-normal) * 0.5em); /* the middle of the first line */
     width: var(--space-2);
     border-top: var(--hairline) solid var(--color-line-strong);
   }
@@ -162,27 +158,6 @@ const links = entry.work.map((slug) => ({
     gap: 0 var(--space-3);
   }
 
-  .entry__link {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    min-height: 2.75rem;
-    color: var(--color-accent);
-    font-size: var(--step--1);
-    font-weight: var(--weight-medium);
-    text-decoration: none;
-  }
-
-  .entry__link:hover {
-    color: var(--color-accent-hover);
-  }
-
-  .entry__link:hover span {
-    text-decoration: underline;
-    text-decoration-thickness: var(--hairline);
-    text-underline-offset: 0.22em;
-  }
-
   @media (min-width: 48rem) {
     .entry {
       grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
@@ -194,7 +169,7 @@ const links = entry.work.map((slug) => ({
       flex-direction: column;
       align-content: start;
       gap: var(--space-half);
-      padding-top: 0.45em;
+      padding-top: var(--space-1);
     }
 
     .entry__body {

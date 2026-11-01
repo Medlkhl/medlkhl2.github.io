@@ -11,7 +11,7 @@ import type { Locale } from '../../i18n/config.ts';
 import { routeHref, workHref } from '../../i18n/routes.ts';
 import type { WorkSlug } from '../../schemas/data.ts';
 import type { AboutCopy } from '../../views/about/about.copy.ts';
-import Icon from '../ui/Icon.astro';
+import ArrowLink from '../experience/ArrowLink.astro';
 import StatusChip from '../ui/StatusChip.astro';
 
 interface Props {
@@ -104,10 +104,7 @@ const items = steps.map((step) => {
       <div class="thread__body">
         <h3 class="thread__title">{copy.steps[step.key].title}</h3>
         <p class="thread__text">{copy.steps[step.key].text}</p>
-        <a class="thread__link" href={step.href}>
-          <span>{step.label}</span>
-          <Icon name="arrow-right" />
-        </a>
+        <ArrowLink href={step.href}>{step.label}</ArrowLink>
       </div>
     </li>
   ))}
@@ -115,9 +112,11 @@ const items = steps.map((step) => {
 
 <style>
   .thread {
-    --node: 0.5625rem; /* 9px square node */
-    --rail-x: calc(var(--node) / 2);
-    --node-top: 0.55rem;
+    /* An odd node size centres the 1px rail exactly; the node sits mid-row. */
+    --node: calc(var(--space-1) + var(--hairline));
+    --row: var(--space-4);
+    --rail-x: calc((var(--node) - var(--hairline)) / 2);
+    --node-top: calc((var(--row) - var(--node)) / 2);
   }
 
   .thread__step {
@@ -161,7 +160,6 @@ const items = steps.map((step) => {
     height: var(--node);
     border: var(--hairline) solid var(--color-line-strong);
     background: var(--color-bg);
-    transform: translateX(0.5px);
   }
 
   .thread__step--current::after {
@@ -170,11 +168,13 @@ const items = steps.map((step) => {
   }
 
   .thread__when {
-    min-height: 1.75rem;
+    display: flex;
+    align-items: center;
+    align-self: start;
+    min-height: var(--row);
     font-family: var(--font-mono);
     font-size: var(--step--1);
     font-variant-numeric: tabular-nums;
-    line-height: 1.75rem;
   }
 
   .thread__body {
@@ -189,28 +189,6 @@ const items = steps.map((step) => {
 
   .thread__text {
     color: var(--color-text-muted);
-  }
-
-  .thread__link {
-    display: inline-flex;
-    align-items: center;
-    justify-self: start;
-    gap: var(--space-1);
-    min-height: 2.75rem;
-    color: var(--color-accent);
-    font-size: var(--step--1);
-    font-weight: var(--weight-medium);
-    text-decoration: none;
-  }
-
-  .thread__link:hover {
-    color: var(--color-accent-hover);
-  }
-
-  .thread__link:hover span {
-    text-decoration: underline;
-    text-decoration-thickness: var(--hairline);
-    text-underline-offset: 0.22em;
   }
 
   @media (min-width: 64rem) {

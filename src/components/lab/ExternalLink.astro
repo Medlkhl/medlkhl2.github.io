@@ -33,7 +33,7 @@ const hidden = `${context ? ` – ${context}` : ''} ${ui[locale].externalLink}`;
     display: inline-flex;
     align-items: center;
     gap: var(--space-half);
-    min-height: 1.5rem;
+    min-height: var(--space-3); /* 24px target */
   }
 
   .ext-link :global(.ext-link__icon) {

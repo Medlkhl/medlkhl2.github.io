@@ -2,9 +2,9 @@
 /**
  * The owner's portrait (src/assets/portrait.png, 1024 × 1024) through
  * astro:assets <Picture> as AVIF and WebP with a JPEG fallback. Square from
- * 64rem, where it sits beside the header text (about 22rem wide); a 4:3 crop
- * of the full column below that. Above the fold on every viewport, so it is
- * loaded eagerly with high priority.
+ * 64rem, where it fills the header's figure area (columns 9–12, at most about
+ * 24rem); below that a 4:3 crop, full width on phones and half the column from
+ * 40rem. Above the fold on every viewport, so it loads eagerly with high priority.
  */
 import { Picture } from 'astro:assets';
 import portrait from '../../assets/portrait.png';
@@ -24,7 +24,7 @@ const { alt, class: className } = Astro.props;
     formats={['avif', 'webp']}
     fallbackFormat="jpg"
     widths={[320, 480, 640, 800, 1024]}
-    sizes="(min-width: 24rem) 22rem, calc(100vw - 2rem)"
+    sizes="(min-width: 76rem) 24rem, (min-width: 64rem) 30vw, (min-width: 40rem) 50vw, 100vw"
     quality={70}
     loading="eager"
     fetchpriority="high"
@@ -35,7 +35,6 @@ const { alt, class: className } = Astro.props;
 <style>
   .portrait {
     position: relative;
-    max-width: 22rem;
     overflow: hidden;
     border: var(--hairline) solid var(--color-line);
     border-radius: var(--radius-3);
@@ -55,9 +54,15 @@ const { alt, class: className } = Astro.props;
     object-position: 50% 22%;
   }
 
+  @media (min-width: 40rem) {
+    .portrait {
+      width: 50%;
+    }
+  }
+
   @media (min-width: 64rem) {
     .portrait {
-      margin-left: auto;
+      width: 100%;
     }
 
     .portrait :global(img) {
