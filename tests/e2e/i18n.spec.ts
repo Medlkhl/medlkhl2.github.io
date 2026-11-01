@@ -20,8 +20,8 @@ test.describe('language switch lands on the equivalent page', () => {
       await expect(page).toHaveURL(new RegExp(`${expected.replace(/\//g, '\\/')}$`));
       await expect(page.locator('html')).toHaveAttribute('lang', target);
       await expect(page.locator('h1')).toHaveCount(1);
-      // The choice is remembered for later phases (no automatic redirect).
-      expect(await page.evaluate(() => localStorage.getItem('pref:lang'))).toBe(target);
+      // Nothing is stored: the privacy policy names only the theme (no automatic redirect either).
+      expect(await page.evaluate(() => localStorage.getItem('pref:lang'))).toBeNull();
       expect(errors).toEqual([]);
     });
   }

@@ -346,8 +346,6 @@ const items: NavItem[] = [
 </style>
 
 <script>
-  import { setPref } from '../../lib/prefs.ts';
-
   /** Releases everything bound for the current page (listeners, the observer). */
   let controller: AbortController | undefined;
 
@@ -388,19 +386,6 @@ const items: NavItem[] = [
     );
   }
 
-  function bindLanguageSwitch(signal: AbortSignal) {
-    document.querySelectorAll<HTMLAnchorElement>('[data-lang-switch]').forEach((link) => {
-      link.addEventListener(
-        'click',
-        () => {
-          const target = link.dataset.langSwitch;
-          if (target === 'en' || target === 'de') setPref('lang', target);
-        },
-        { signal },
-      );
-    });
-  }
-
   function bindSectionHighlight(signal: AbortSignal) {
     const sections = [...document.querySelectorAll<HTMLElement>('[data-nav-target]')];
     if (!sections.length || !('IntersectionObserver' in window)) return;
@@ -439,7 +424,6 @@ const items: NavItem[] = [
     controller?.abort();
     controller = new AbortController();
     bindMenu(controller.signal);
-    bindLanguageSwitch(controller.signal);
     bindSectionHighlight(controller.signal);
   });
 

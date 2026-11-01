@@ -122,7 +122,7 @@ tests/e2e/                Playwright: smoke, keyboard, theme, language, axe, pri
 
 - Tokens: `src/styles/tokens.css` defines colour (graphite and paper), type, space, grid, lines, radii, z-layers, focus, touch targets, motion and print. `src/styles/tokens.ts` mirrors them for code; a unit test fails if they drift.
 - `data-theme` on `<html>` is set before first paint by an inline script (`src/lib/theme-script.ts`) and re-applied on `astro:after-swap`.
-- `src/lib/prefs.ts` is the typed preferences module (theme, motion, 3D, language). It persists choices, honours `prefers-reduced-motion` and `Save-Data`, writes `data-theme`, `data-motion`, `data-save-data` and `data-3d` on `<html>`, and emits `prefs:change` on `document`, also for live OS changes while a preference follows the system (`watchSystemPrefs()`, started once by the theme toggle).
+- `src/lib/prefs.ts` is the typed preferences module (theme, motion, 3D, language). It persists choices, honours `prefers-reduced-motion` and `Save-Data`, writes `data-theme`, `data-motion`, `data-save-data` and `data-3d` on `<html>`, and emits `prefs:change` on `document`, also for live OS changes while a preference follows the system (`watchSystemPrefs()`, started once by the theme toggle). Only the theme toggle writes to it today; the language switch stores nothing, as the privacy policy says.
 - In print, a block at the end of `tokens.css` forces the paper palette on white whatever the theme; the CV's A4 sheet (`src/styles/print.css`) takes its root size, leading, page margins and photo size from the `--print-*` tokens.
 
 ## Hooks for later phases (inert in Phase 1)
@@ -163,7 +163,7 @@ flowchart LR
 | `tests/e2e/smoke.spec.ts`       | Every route in both locales; unknown URLs get the 404 page                                                                                                                          |
 | `tests/e2e/keyboard.spec.ts`    | Skip link to main, the home page's "Skip the parts list" link, visible focus                                                                                                        |
 | `tests/e2e/theme.spec.ts`       | First visit follows the system, the choice persists, `color-scheme` matches, `data-save-data` survives swaps, a live OS switch relabels the toggle, `theme-color` follows the theme |
-| `tests/e2e/i18n.spec.ts`        | The language switch lands on the twin and remembers the choice, hreflang alternates, no switch on the 404 page                                                                      |
+| `tests/e2e/i18n.spec.ts`        | The language switch lands on the twin and stores nothing, hreflang alternates, no switch on the 404 page                                                                            |
 | `tests/e2e/a11y.spec.ts`        | axe (WCAG 2.2 AA) on every page and `/tokens/`, in both themes; `/tokens/` also at 320 px                                                                                           |
 | `tests/e2e/privacy.spec.ts`     | On every page: zero third-party requests, no cookies, no embeds, no `tel:` links or phone numbers                                                                                   |
 | `tests/e2e/nojs.spec.ts`        | The home page's first screen without JavaScript at 1440 × 900 and 390 × 844, header links unclipped at 320 and 390 px, every page renders, the theme follows the system             |

@@ -30,6 +30,7 @@ What the owner needs to answer or supply, most important first. Items marked **[
    - that contact emails are stored and processed by Google (Gmail), as the privacy policy says, or which mail provider applies;
    - the supervisory authority, given as the LfDI Baden-Württemberg because you live in Tuttlingen;
    - the optional Impressum line "Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV" naming you: keep or drop?
+   - the local-storage section, now narrowed to the colour theme: the language switch no longer stores the choice, because nothing read it back. If a later phase uses a stored language, the section has to name it again.
 9. **[CONFIRM] Portrait in the PDF CVs.** Your portrait appears on About, on the CV page and in both downloadable PDFs, which get forwarded. Site use is approved (ASSETS.md); may it also go into the PDFs?
 
 ## 2. Content to supply (by impact)

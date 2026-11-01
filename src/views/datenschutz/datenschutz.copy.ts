@@ -5,7 +5,7 @@ import type { LegalPageCopy } from '../legal/legal.ts';
  * Datenschutzerklärung (brief §11). It describes what the site really does:
  * GitHub Pages hosting and its server logs, contact by email, no cookies, no
  * analytics, no third-party requests, local storage only for the visitor's own
- * theme and language choice, and plain external links. The spatial-view
+ * theme choice, and plain external links. The spatial-view
  * section is written already and stays hidden until LEGAL_FEATURES.spatialView
  * is switched on (src/views/legal/legal.ts).
  *
@@ -116,11 +116,11 @@ export const datenschutzCopy = defineCopy<LegalPageCopy>({
         blocks: [
           {
             type: 'p',
-            text: 'When you switch the colour theme or the language, your browser saves that choice in its local storage, so it is still there on your next visit. Only these settings are stored, for example “pref:theme” with the value “paper”.',
+            text: 'When you switch the colour theme, your browser saves that choice in its local storage, so it is still there on your next visit. Only this setting is stored, as “pref:theme”, for example with the value “paper”.',
           },
           {
             type: 'p',
-            text: 'They are written only when you use the switch, stay on your device and are never transmitted to me or anyone else. This storage is strictly necessary for the function you asked for (§ 25(2) no. 2 TDDDG). You can delete it at any time in your browser settings.',
+            text: 'It is written only when you use the switch, stays on your device and is never transmitted to me or anyone else. This storage is strictly necessary for the function you asked for (§ 25(2) no. 2 TDDDG). You can delete it at any time in your browser settings.',
           },
         ],
       },
@@ -279,11 +279,11 @@ export const datenschutzCopy = defineCopy<LegalPageCopy>({
         blocks: [
           {
             type: 'p',
-            text: 'Wenn Sie das Farbschema oder die Sprache umschalten, speichert Ihr Browser diese Wahl in seinem lokalen Speicher (Local Storage), damit sie beim nächsten Besuch erhalten bleibt. Gespeichert werden nur diese Einstellungen, zum Beispiel „pref:theme“ mit dem Wert „paper“.',
+            text: 'Wenn Sie das Farbschema umschalten, speichert Ihr Browser diese Wahl in seinem lokalen Speicher (Local Storage), damit sie beim nächsten Besuch erhalten bleibt. Gespeichert wird nur diese Einstellung, als „pref:theme“, zum Beispiel mit dem Wert „paper“.',
           },
           {
             type: 'p',
-            text: 'Sie werden erst geschrieben, wenn Sie den jeweiligen Schalter benutzen, bleiben auf Ihrem Gerät und werden weder an mich noch an Dritte übertragen. Diese Speicherung ist für die von Ihnen gewünschte Funktion unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG). Sie können die Einträge jederzeit in den Einstellungen Ihres Browsers löschen.',
+            text: 'Sie wird erst geschrieben, wenn Sie den Schalter benutzen, bleibt auf Ihrem Gerät und wird weder an mich noch an Dritte übertragen. Diese Speicherung ist für die von Ihnen gewünschte Funktion unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG). Sie können den Eintrag jederzeit in den Einstellungen Ihres Browsers löschen.',
           },
         ],
       },
