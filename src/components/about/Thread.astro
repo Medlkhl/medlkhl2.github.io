@@ -1,0 +1,232 @@
+---
+/**
+ * "The thread" (brief section 4): software that connects people and
+ * machines, told newest first in five steps. Each step links to its case study
+ * or to its entry on the experience page. Periods come from src/data/experience.ts
+ * (years only); HoloBox has no confirmed start date, so it shows its status.
+ * Drawn as a vertical hairline rail with square nodes; the current step is filled.
+ */
+import { experience } from '../../data/experience.ts';
+import type { Locale } from '../../i18n/config.ts';
+import { routeHref, workHref } from '../../i18n/routes.ts';
+import type { WorkSlug } from '../../schemas/data.ts';
+import type { AboutCopy } from '../../views/about/about.copy.ts';
+import Icon from '../ui/Icon.astro';
+import StatusChip from '../ui/StatusChip.astro';
+
+interface Props {
+  locale: Locale;
+  copy: AboutCopy['thread'];
+  /** Case-study titles by slug, from the work collection. */
+  workTitles: Map<string, string>;
+}
+
+const { locale, copy, workTitles } = Astro.props;
+
+function entry(id: string) {
+  const found = experience.find((item) => item.id === id);
+  if (!found) throw new Error(`Unknown experience entry "${id}"`);
+  return found;
+}
+
+type StepKey = keyof AboutCopy['thread']['steps'];
+type Link = { kind: 'work'; slug: WorkSlug } | { kind: 'experience'; id: string };
+interface Step {
+  key: StepKey;
+  /** ISO year-months; years only are shown. */
+  period?: { start: string; end?: string | null };
+  link: Link;
+}
+
+const happStart = entry('anton-haering').start;
+const happEnd = entry('anton-haering-senior').end;
+const steps: Step[] = [
+  { key: 'holobox', link: { kind: 'work', slug: 'holobox' } },
+  { key: 'happ', period: { start: happStart, end: happEnd }, link: { kind: 'work', slug: 'happ' } },
+  {
+    key: 'gomycode',
+    period: { start: entry('gomycode').start, end: entry('gomycode').end },
+    link: { kind: 'experience', id: 'gomycode' },
+  },
+  {
+    key: 'robot',
+    period: { start: entry('dot-it').start },
+    link: { kind: 'work', slug: 'humanoid-robot' },
+  },
+  {
+    key: 'whiteboard',
+    period: { start: entry('envast').start },
+    link: { kind: 'experience', id: 'envast' },
+  },
+];
+
+const year = (value: string) => value.slice(0, 4);
+
+function linkFor(link: Link): { href: string; label: string } {
+  if (link.kind === 'work') {
+    return {
+      href: workHref(locale, link.slug),
+      label: copy.caseStudy.replace('{title}', workTitles.get(link.slug) ?? link.slug),
+    };
+  }
+  return {
+    href: routeHref(locale, 'experience', link.id),
+    label: copy.experience.replace('{org}', entry(link.id).org),
+  };
+}
+
+const items = steps.map((step) => {
+  const start = step.period?.start;
+  const end = step.period?.end ?? null;
+  const showEnd = start !== undefined && end !== null && year(end) !== year(start);
+  return { ...step, start, end: showEnd ? end : null, ...linkFor(step.link) };
+});
+---
+
+<ol role="list" class="thread">
+  {items.map((step, index) => (
+    <li class:list={['thread__step', { 'thread__step--current': index === 0 }]}>
+      <p class="thread__when">
+        {step.start === undefined ? (
+          <StatusChip status="in-development" locale={locale} />
+        ) : (
+          <span class="thread__years">
+            <time datetime={step.start}>{year(step.start)}</time>
+            {step.end && (
+              <>
+                {' – '}
+                <time datetime={step.end}>{year(step.end)}</time>
+              </>
+            )}
+          </span>
+        )}
+      </p>
+      <div class="thread__body">
+        <h3 class="thread__title">{copy.steps[step.key].title}</h3>
+        <p class="thread__text">{copy.steps[step.key].text}</p>
+        <a class="thread__link" href={step.href}>
+          <span>{step.label}</span>
+          <Icon name="arrow-right" />
+        </a>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .thread {
+    --node: 0.5625rem; /* 9px square node */
+    --rail-x: calc(var(--node) / 2);
+    --node-top: 0.55rem;
+  }
+
+  .thread__step {
+    position: relative;
+    display: grid;
+    gap: var(--space-1);
+    padding-left: var(--space-5);
+    padding-bottom: var(--space-8);
+  }
+
+  /* The rail: a hairline through every node, from the first node to the last. */
+  .thread__step::before {
+    content: '';
+    position: absolute;
+    left: var(--rail-x);
+    top: 0;
+    bottom: 0;
+    border-left: var(--hairline) solid var(--color-line-strong);
+  }
+
+  .thread__step:first-child::before {
+    top: var(--node-top);
+  }
+
+  .thread__step:last-child {
+    padding-bottom: 0;
+  }
+
+  .thread__step:last-child::before {
+    bottom: auto;
+    height: var(--node-top);
+  }
+
+  /* The node: hollow for earlier steps, filled for the current one. */
+  .thread__step::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: var(--node-top);
+    width: var(--node);
+    height: var(--node);
+    border: var(--hairline) solid var(--color-line-strong);
+    background: var(--color-bg);
+    transform: translateX(0.5px);
+  }
+
+  .thread__step--current::after {
+    border-color: var(--color-text);
+    background: var(--color-text);
+  }
+
+  .thread__when {
+    min-height: 1.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.75rem;
+  }
+
+  .thread__body {
+    display: grid;
+    gap: var(--space-1);
+    max-width: var(--measure);
+  }
+
+  .thread__title {
+    font-size: var(--step-2);
+  }
+
+  .thread__text {
+    color: var(--color-text-muted);
+  }
+
+  .thread__link {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    gap: var(--space-1);
+    min-height: 2.75rem;
+    color: var(--color-accent);
+    font-size: var(--step--1);
+    font-weight: var(--weight-medium);
+    text-decoration: none;
+  }
+
+  .thread__link:hover {
+    color: var(--color-accent-hover);
+  }
+
+  .thread__link:hover span {
+    text-decoration: underline;
+    text-decoration-thickness: var(--hairline);
+    text-underline-offset: 0.22em;
+  }
+
+  @media (min-width: 48rem) {
+    .thread__step {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gutter);
+      padding-left: 0;
+    }
+
+    .thread__when {
+      grid-column: 1 / span 3;
+      padding-left: var(--space-5);
+    }
+
+    .thread__body {
+      grid-column: 4 / span 8;
+    }
+  }
+</style>
