@@ -84,5 +84,7 @@ test.describe('without JavaScript', () => {
     await page.emulateMedia({ colorScheme: 'dark' });
     const dark = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     expect(dark).toBe('rgb(16, 17, 19)');
+    // The browser bar falls back to the media pair.
+    await expect(page.locator('meta[name="theme-color"][media]')).toHaveCount(2);
   });
 });

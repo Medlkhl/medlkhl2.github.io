@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { ui } from '../../src/i18n/ui.copy.ts';
+import { colors } from '../../src/styles/tokens.ts';
 
 test.describe('theme', () => {
   test('first visit follows prefers-color-scheme', async ({ browser }) => {
@@ -73,5 +74,26 @@ test.describe('theme', () => {
     await toggle.click();
     await expect(html).toHaveAttribute('data-theme', 'graphite');
     await expect(toggle).toHaveAttribute('aria-label', ui.en.theme.toPaper);
+  });
+
+  test('theme-color follows the chosen theme, also after client-side navigation', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.goto('');
+    const metas = page.locator('meta[name="theme-color"]');
+    const contents = () =>
+      metas.evaluateAll((elements) => elements.map((meta) => meta.getAttribute('content')));
+    expect(await contents()).toEqual([colors.graphite.bg, colors.graphite.bg]);
+
+    await page.locator('[data-theme-toggle]').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'paper');
+    await expect.poll(contents).toEqual([colors.paper.bg, colors.paper.bg]);
+    // A chosen theme overrides the OS, so the media pair is gone.
+    await expect(page.locator('meta[name="theme-color"][media]')).toHaveCount(0);
+
+    await page.locator('.site-nav a[href$="/lab/"]').first().click();
+    await expect(page).toHaveURL(/\/lab\/$/);
+    await expect.poll(contents).toEqual([colors.paper.bg, colors.paper.bg]);
   });
 });

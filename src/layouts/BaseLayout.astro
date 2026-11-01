@@ -1,7 +1,9 @@
 ---
 /**
  * The one layout every page uses.
- * - Inline theme script first in <head>: no flash of the wrong theme.
+ * - Inline theme script early in <head>: no flash of the wrong theme. The
+ *   theme-color metas come just before it, so it can point them at the chosen
+ *   theme (without JavaScript their media pair follows the system).
  * - Self-hosted Geist via the Astro Fonts API; only the latin subsets are preloaded.
  * - <ClientRouter /> is the backbone of the persistent 3D canvas (Phase 3);
  *   transition:animate="none" keeps Phase 1 free of motion.
@@ -20,6 +22,7 @@ import { LOCALE_META, type Locale } from '../i18n/config.ts';
 import { ogImagePath } from '../lib/og.ts';
 import { themeScript } from '../lib/theme-script.ts';
 import { withBase } from '../lib/url.ts';
+import { colors } from '../styles/tokens.ts';
 import '../styles/tokens.css';
 import '../styles/global.css';
 
@@ -64,10 +67,10 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content={colors.graphite.bg} media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content={colors.paper.bg} media="(prefers-color-scheme: light)" />
     <script is:inline set:html={themeScript} />
     <meta name="color-scheme" content="dark light" />
-    <meta name="theme-color" content="#101113" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#f6f6f3" media="(prefers-color-scheme: light)" />
     <Fonts />
     <Seo
       locale={locale}
