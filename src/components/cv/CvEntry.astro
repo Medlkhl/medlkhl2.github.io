@@ -72,14 +72,9 @@ const datetime = (value: string) => toDateTimeAttribute(value) ?? value;
       <Rich text={org} />
     </span>
     {place && (
-      <>
-        <span class="cv-entry__sep" aria-hidden="true">
-          ·
-        </span>
-        <span class="cv-entry__place">
-          <Rich text={place} />
-        </span>
-      </>
+      <span class="cv-entry__place">
+        <Rich text={place} />
+      </span>
     )}
   </p>
   {note && (
@@ -138,7 +133,13 @@ const datetime = (value: string) => toDateTimeAttribute(value) ?? value;
     white-space: nowrap;
   }
 
+  /* Organisation · place; the middot sits in the gap and is clipped when the place wraps. */
   .cv-entry__org {
+    --cv-entry-sep: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--cv-entry-sep);
+    overflow-x: clip;
     color: var(--color-text-muted);
   }
 
@@ -147,8 +148,16 @@ const datetime = (value: string) => toDateTimeAttribute(value) ?? value;
     font-weight: var(--weight-medium);
   }
 
-  .cv-entry__sep {
-    margin-inline: 0.45em;
+  .cv-entry__place {
+    position: relative;
+  }
+
+  .cv-entry__place::before {
+    content: '·' / '';
+    position: absolute;
+    right: 100%;
+    width: var(--cv-entry-sep);
+    text-align: center;
     color: var(--color-text-subtle);
   }
 
