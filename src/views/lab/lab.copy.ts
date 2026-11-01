@@ -22,7 +22,7 @@ export const labCopy = defineCopy({
       title: 'HoloBox',
       paragraphs: [
         'A flat screen shows a conversational 3D avatar as if it stood inside a physical volume, using head-tracked off-axis projection. You speak, a local language model answers, and the avatar replies aloud with lip-sync.',
-        'It is a .NET MAUI Blazor Hybrid app with Three.js and MediaPipe in its WebView and a local Gemma model running in-process through LLamaSharp (GGUF), so it works offline with low latency. Windows comes first.',
+        'It is a .NET MAUI Blazor Hybrid app with Three.js and MediaPipe in its WebView and a local Gemma model running in-process through LLamaSharp (GGUF), so it works offline with low latency, Windows first.',
       ],
       spatial: {
         title: 'Spatial view',
@@ -79,8 +79,8 @@ export const labCopy = defineCopy({
       label: 'Vorschau',
       title: 'HoloBox',
       paragraphs: [
-        'Ein flacher Bildschirm zeigt einen 3D-Avatar, mit dem man sprechen kann – so, als stünde er in einem echten Raum hinter dem Glas. Möglich macht das eine kopfgesteuerte Off-Axis-Projektion. Sie sprechen, ein lokales Sprachmodell antwortet, und der Avatar spricht die Antwort lippensynchron aus.',
-        'Technisch ist HoloBox eine .NET-MAUI-Blazor-Hybrid-App: Three.js und MediaPipe laufen in der WebView, ein lokales Gemma-Modell läuft über LLamaSharp (GGUF) direkt im App-Prozess. So arbeitet sie offline und mit geringer Latenz, zuerst unter Windows.',
+        'Ein flacher Bildschirm zeigt einen 3D-Avatar, mit dem man sprechen kann, als stünde er in einem echten Raum hinter dem Glas – möglich macht das eine kopfgesteuerte Off-Axis-Projektion. Sie sprechen, ein lokales Sprachmodell antwortet, und der Avatar spricht die Antwort lippensynchron aus.',
+        'Technisch ist HoloBox eine .NET-MAUI-Blazor-Hybrid-App mit Three.js und MediaPipe in der WebView und einem lokalen Gemma-Modell, das über LLamaSharp (GGUF) direkt im App-Prozess läuft – offline, mit geringer Latenz und zuerst für Windows.',
       ],
       spatial: {
         title: 'Räumliche Ansicht',
