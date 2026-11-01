@@ -20,7 +20,7 @@ What the owner needs to answer or supply, most important first. Items marked **[
 7. **[CONFIRM] German copy.** All German text was written for this build and needs your review:
    - home (`src/views/home/home.copy.ts`): "Auf einen Blick", "Tech-Stack", "Stückliste", "Explosionszeichnung", "Isometrie · nicht maßstäblich", the section titles and intros, the contact line;
    - the case studies (`src/content/work/de/`), summaries and experience highlights;
-   - Experience, About, Lab and Colophon, including the headline "Seit 2018 entwickle ich Software und Hardware";
+   - Experience, About, Lab and Colophon, including the headline "Seit 2018 entwickle ich Software und Hardware", and the `/de/work/` headline "Projekte, vom Ergebnis bis zur Architektur" (`src/views/work/work.copy.ts`);
    - the CV labels: "PDF herunterladen", "Englische Fassung (PDF)", "A4, aus dieser Seite erzeugt.", "Technologien", "Fachrichtung", "Wohnort" (a screen-reader label);
    - the German skill and stack terms (`{ en, de }` pairs in `src/data/skills.ts`, `layers.ts`, `experience.ts` and `lab.ts`), for example "Authentifizierung", "Bereitstellungsumgebungen", "Behebung von Auditbefunden", "Inverse Kinematik";
    - page titles, descriptions and social-image texts (`src/i18n/meta.copy.ts`), for example "Mohamed Lakhel — Senior-Softwareentwickler in Deutschland";
