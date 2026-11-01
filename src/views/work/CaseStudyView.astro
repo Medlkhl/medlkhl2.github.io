@@ -593,7 +593,7 @@ function onlyPlaceholder(text: string): boolean {
   .crumbs__list a {
     display: inline-flex;
     align-items: center;
-    min-height: 1.5rem;
+    min-height: var(--target-min);
     color: var(--color-text-muted);
     text-decoration: none;
   }
@@ -813,7 +813,7 @@ function onlyPlaceholder(text: string): boolean {
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: var(--space-2);
-    min-height: 2.75rem;
+    min-height: var(--target);
     padding: var(--space-3);
     border: var(--hairline) solid var(--color-line);
     border-radius: var(--radius-3);
@@ -948,7 +948,7 @@ function onlyPlaceholder(text: string): boolean {
   .link-list :global(.link-list__link) {
     display: flex;
     align-items: center;
-    min-height: 2.75rem;
+    min-height: var(--target);
     padding-block: var(--space-1);
   }
 
@@ -993,7 +993,7 @@ function onlyPlaceholder(text: string): boolean {
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
-    min-height: 2.75rem;
+    min-height: var(--target);
     font-size: var(--step--1);
     font-weight: var(--weight-medium);
     text-decoration: none;

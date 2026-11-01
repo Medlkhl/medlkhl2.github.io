@@ -8,6 +8,7 @@ import {
   colors,
   motion,
   space,
+  targets,
 } from '../../src/styles/tokens.ts';
 
 const css = readFileSync('src/styles/tokens.css', 'utf8');
@@ -45,10 +46,12 @@ describe('tokens.css and tokens.ts stay in sync', () => {
     expect(noJs).toEqual(paper);
   });
 
-  it('spacing and motion match', () => {
+  it('spacing, targets and motion match', () => {
     const root = block(':root');
     for (const [name, rem] of Object.entries(space))
       expect(root[`--space-${name}`]).toBe(`${rem}rem`);
+    expect(root['--target-min']).toBe(`${targets.minRem}rem`);
+    expect(root['--target']).toBe(`${targets.controlRem}rem`);
     expect(root['--dur-micro']).toBe(`${motion.micro.ms}ms`);
     expect(root['--dur-standard']).toBe(`${motion.standard.ms}ms`);
     expect(root['--dur-emphasis']).toBe(`${motion.emphasis.ms}ms`);

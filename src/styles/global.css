@@ -286,7 +286,7 @@ a:hover {
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
-  min-height: 2.75rem; /* 44px touch target */
+  min-height: var(--target);
   padding: 0 var(--space-2);
   border: var(--hairline) solid var(--btn-border);
   border-radius: var(--radius-2);

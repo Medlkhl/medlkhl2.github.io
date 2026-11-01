@@ -185,7 +185,7 @@ const project = experience.find((entry) => entry.id === 'dot-it');
 
   .demo :global(.demo__link),
   .module :global(.module__link) {
-    min-height: 2.75rem; /* 44px target, as .btn */
+    min-height: var(--target);
     font-size: var(--step--1);
     font-weight: var(--weight-medium);
   }

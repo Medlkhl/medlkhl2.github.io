@@ -117,6 +117,9 @@ export const grid = {
 
 export const radii = { 0: 0, 1: 2, 2: 4, 3: 8, pill: 999 } as const;
 
+/** Target sizes in rem (WCAG 2.2 AA): 24px minimum for inline links, 44px for controls. */
+export const targets = { minRem: 1.5, controlRem: 2.75 } as const;
+
 export const zIndex = {
   stage: 0,
   content: 1,

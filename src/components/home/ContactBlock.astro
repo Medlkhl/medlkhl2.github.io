@@ -103,14 +103,14 @@ const { locale, copy, class: className, ...rest } = Astro.props;
   }
 
   .contact__links :global(a) {
-    min-height: 2.75rem;
+    min-height: var(--target);
   }
 
   .contact__place {
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
-    min-height: 2.75rem;
+    min-height: var(--target);
     color: var(--color-text-muted);
   }
 

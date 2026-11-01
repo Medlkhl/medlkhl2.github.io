@@ -49,7 +49,7 @@ const label = inline ? '' : (await Astro.slots.render('default')).trim();
     display: inline-flex;
     align-items: center;
     gap: var(--space-half);
-    min-height: var(--space-3); /* 24px target */
+    min-height: var(--target-min);
   }
 
   .ext-link--box :global(.ext-link__icon) {

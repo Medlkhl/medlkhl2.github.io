@@ -79,6 +79,10 @@
   --focus-width: 2px;
   --focus-offset: 3px;
 
+  /* ---- Targets (WCAG 2.2: 24px for inline links, 44px for controls) ----- */
+  --target-min: 1.5rem; /* 24px */
+  --target: 2.75rem; /* 44px */
+
   /* ---- Motion (brief §7). Phase 1 ships no motion; Phase 2 consumes these. */
   --dur-micro: 150ms;
   --ease-micro: cubic-bezier(0.215, 0.61, 0.355, 1); /* GSAP power2.out */
