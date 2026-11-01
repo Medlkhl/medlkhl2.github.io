@@ -24,6 +24,33 @@ test.describe('mobile navigation (390px)', () => {
     await expect(toggle).toBeFocused();
   });
 
+  test('Tab after opening the menu walks its links, then the language and theme controls', async ({
+    page,
+  }) => {
+    await page.goto('about/');
+    const toggle = page.locator('[data-menu-toggle]');
+    const links = page.locator('#site-nav a');
+    await toggle.focus();
+    await page.keyboard.press('Enter');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    const count = await links.count();
+    expect(count).toBeGreaterThan(0);
+    for (let index = 0; index < count; index += 1) {
+      await page.keyboard.press('Tab');
+      await expect(links.nth(index)).toBeFocused();
+    }
+    await page.keyboard.press('Tab');
+    await expect(page.locator('[data-lang-switch]')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('[data-theme-toggle]')).toBeFocused();
+
+    // The toggle still sits visually last in the row, right of the theme toggle.
+    const toggleBox = await toggle.boundingBox();
+    const themeBox = await page.locator('[data-theme-toggle]').boundingBox();
+    expect(toggleBox?.x ?? 0).toBeGreaterThan(themeBox?.x ?? Infinity);
+    expect(Math.abs((toggleBox?.y ?? 0) - (themeBox?.y ?? Infinity))).toBeLessThanOrEqual(1);
+  });
+
   test('choosing a link closes the menu and navigates', async ({ page }) => {
     await page.goto('');
     await page.locator('[data-menu-toggle]').click();

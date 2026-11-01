@@ -72,6 +72,28 @@ const items: NavItem[] = [
       <span class="brand__role">{profile.role[locale]}</span>
     </a>
 
+    {/* The toggle comes right before the nav it reveals, so the next Tab after
+        opening reaches the links (disclosure pattern); CSS order keeps it last. */}
+    <button
+      type="button"
+      class="menu-toggle js-only"
+      aria-expanded="false"
+      aria-controls="site-nav"
+      data-menu-toggle
+      data-label-open={t.nav.menu}
+      data-label-close={t.nav.closeMenu}
+    >
+      <span class="menu-toggle__icon menu-toggle__icon--open">
+        <Icon name="menu" size={20} />
+      </span>
+      <span class="menu-toggle__icon menu-toggle__icon--close">
+        <Icon name="close" size={20} />
+      </span>
+      <span class="visually-hidden" data-menu-label>
+        {t.nav.menu}
+      </span>
+    </button>
+
     <nav id="site-nav" class="site-nav" aria-label={t.nav.label} data-site-nav>
       <ul role="list" class="site-nav__list">
         {items.map((item) => (
@@ -103,25 +125,6 @@ const items: NavItem[] = [
         </a>
       )}
       <ThemeToggle locale={locale} />
-      <button
-        type="button"
-        class="menu-toggle js-only"
-        aria-expanded="false"
-        aria-controls="site-nav"
-        data-menu-toggle
-        data-label-open={t.nav.menu}
-        data-label-close={t.nav.closeMenu}
-      >
-        <span class="menu-toggle__icon menu-toggle__icon--open">
-          <Icon name="menu" size={20} />
-        </span>
-        <span class="menu-toggle__icon menu-toggle__icon--close">
-          <Icon name="close" size={20} />
-        </span>
-        <span class="visually-hidden" data-menu-label>
-          {t.nav.menu}
-        </span>
-      </button>
     </div>
   </div>
 </header>
@@ -267,6 +270,16 @@ const items: NavItem[] = [
     .site-header__inner {
       flex-wrap: wrap;
       gap: 0 var(--space-1);
+    }
+
+    /* Visual row: brand … language, theme, menu; the nav wraps below. The
+       toggle sits before the nav in the source so the tab order follows it. */
+    .site-header__controls {
+      order: 1;
+    }
+
+    .menu-toggle {
+      order: 2;
     }
 
     /* Without JavaScript the links wrap into a second row. */
