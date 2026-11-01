@@ -1,0 +1,521 @@
+/*
+ * Global base: reset, element defaults, layout primitives and the small set of
+ * shared classes (buttons, chips, labels, placeholders, prose). Component
+ * specifics live in scoped <style> blocks next to each component.
+ * Every value comes from tokens.css.
+ */
+
+/* ---- Reset ---------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-height) + var(--space-2));
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 100%;
+  line-height: var(--leading-normal);
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font-size: var(--step-0);
+  background-color: var(--color-bg);
+}
+
+main {
+  flex: 1 0 auto;
+  position: relative;
+  z-index: var(--z-content);
+}
+
+main:focus {
+  outline: none;
+}
+
+img,
+picture,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+dt,
+dd,
+figcaption,
+blockquote {
+  overflow-wrap: break-word;
+}
+
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+  padding: 0;
+}
+
+/* ---- Typography ----------------------------------------------------------- */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-heading);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--step-5);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-display);
+}
+
+h2 {
+  font-size: var(--step-3);
+}
+
+h3 {
+  font-size: var(--step-1);
+}
+
+h4 {
+  font-size: var(--step-0);
+}
+
+p {
+  text-wrap: pretty;
+}
+
+strong,
+b {
+  font-weight: var(--weight-semibold);
+}
+
+small {
+  font-size: var(--step--1);
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+time,
+.tabular,
+td,
+th,
+dd {
+  font-variant-numeric: tabular-nums;
+}
+
+abbr[title] {
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
+}
+
+hr {
+  border: 0;
+  border-top: var(--hairline) solid var(--color-line);
+}
+
+::selection {
+  background-color: var(--color-accent-soft);
+  color: var(--color-text);
+}
+
+/* ---- Links and focus ------------------------------------------------------ */
+a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: var(--hairline);
+  text-decoration-color: var(--color-line-strong);
+  text-underline-offset: 0.22em;
+  transition:
+    color var(--dur-micro) var(--ease-micro),
+    text-decoration-color var(--dur-micro) var(--ease-micro);
+}
+
+a:hover {
+  color: var(--color-accent);
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--color-accent);
+  outline-offset: var(--focus-offset);
+  border-radius: var(--radius-1);
+}
+
+/* ---- Layout primitives ---------------------------------------------------- */
+.container {
+  width: 100%;
+  max-width: calc(var(--container-max) + 2 * var(--grid-margin));
+  margin-inline: auto;
+  padding-inline: var(--grid-margin);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gutter);
+}
+
+.section {
+  padding-block: var(--section-gap);
+  border-top: var(--hairline) solid var(--color-line);
+}
+
+.stack > * + * {
+  margin-top: var(--flow-space, var(--space-2));
+}
+
+.visually-hidden:not(:focus):not(:active) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Elements that need JavaScript stay hidden until the inline script marks <html class="js">. */
+.no-js .js-only {
+  display: none !important;
+}
+
+/* ---- Blueprint grid (hero backdrop) ---------------------------------------- */
+.blueprint {
+  background-image:
+    linear-gradient(var(--color-grid-major) var(--hairline), transparent var(--hairline)),
+    linear-gradient(90deg, var(--color-grid-major) var(--hairline), transparent var(--hairline)),
+    linear-gradient(var(--color-grid) var(--hairline), transparent var(--hairline)),
+    linear-gradient(90deg, var(--color-grid) var(--hairline), transparent var(--hairline));
+  background-size:
+    calc(var(--blueprint-cell) * 4) calc(var(--blueprint-cell) * 4),
+    calc(var(--blueprint-cell) * 4) calc(var(--blueprint-cell) * 4),
+    var(--blueprint-cell) var(--blueprint-cell),
+    var(--blueprint-cell) var(--blueprint-cell);
+  background-position: -1px -1px;
+}
+
+/* ---- Shared primitives ----------------------------------------------------- */
+
+/* Monospace section label: "02 — Experience" */
+.label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6em;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.subtle {
+  color: var(--color-text-subtle);
+}
+
+/* Buttons (links styled as buttons, and real buttons) */
+.btn {
+  --btn-bg: transparent;
+  --btn-fg: var(--color-text);
+  --btn-border: var(--color-line-strong);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: 2.75rem; /* 44px touch target */
+  padding: 0 var(--space-2);
+  border: var(--hairline) solid var(--btn-border);
+  border-radius: var(--radius-2);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-size: var(--step--1);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-micro) var(--ease-micro),
+    border-color var(--dur-micro) var(--ease-micro),
+    color var(--dur-micro) var(--ease-micro);
+}
+
+.btn:hover {
+  --btn-border: var(--color-accent);
+  color: var(--btn-fg);
+  background: var(--color-accent-soft);
+}
+
+.btn--primary {
+  --btn-bg: var(--color-accent);
+  --btn-fg: var(--color-accent-ink);
+  --btn-border: var(--color-accent);
+}
+
+.btn--primary:hover {
+  --btn-bg: var(--color-accent-hover);
+  --btn-border: var(--color-accent-hover);
+  background: var(--btn-bg);
+}
+
+.btn--ghost {
+  --btn-border: transparent;
+}
+
+.btn svg {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+}
+
+/* Chips: tags and status */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.2rem 0.55rem;
+  border: var(--hairline) solid var(--color-line);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  line-height: 1.4;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.chip--status::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  border: var(--hairline) solid currentColor;
+}
+
+.chip--status[data-status='live']::before {
+  background: currentColor;
+}
+
+.chip--status[data-status='completed']::before {
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.chip--status[data-status='internal']::before {
+  background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+}
+
+/* Placeholders: hatched, dashed and monospace, so missing content is impossible to miss */
+.ph {
+  padding: 0.05em 0.35em;
+  border: var(--hairline) dashed var(--color-line-strong);
+  border-radius: var(--radius-1);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-hatch) 0 1px,
+    transparent 1px 6px
+  );
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  font-style: normal;
+  letter-spacing: 0;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.ph-block {
+  display: grid;
+  place-items: center;
+  min-height: 8rem;
+  padding: var(--space-3);
+  border: var(--hairline) dashed var(--color-line-strong);
+  border-radius: var(--radius-2);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-hatch) 0 1px,
+    transparent 1px 8px
+  );
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  text-align: center;
+}
+
+/* ---- Prose (MDX bodies, legal text) ---------------------------------------- */
+.prose {
+  max-width: var(--measure);
+  --flow-space: var(--space-2);
+}
+
+.prose > * + * {
+  margin-top: var(--flow-space);
+}
+
+.prose :is(h2, h3) {
+  --flow-space: var(--space-6);
+}
+
+.prose :is(h2, h3) + * {
+  --flow-space: var(--space-2);
+}
+
+.prose h2 {
+  font-size: var(--step-2);
+}
+
+.prose h3 {
+  font-size: var(--step-1);
+}
+
+.prose :is(ul, ol) {
+  padding-left: 1.25rem;
+}
+
+.prose li + li {
+  margin-top: var(--space-1);
+}
+
+.prose li::marker {
+  color: var(--color-text-subtle);
+}
+
+.prose a {
+  text-decoration-color: var(--color-accent);
+}
+
+.prose blockquote {
+  padding-left: var(--space-3);
+  border-left: var(--hairline) solid var(--color-line-strong);
+  color: var(--color-text-muted);
+}
+
+.prose :not(pre) > code {
+  padding: 0.1em 0.3em;
+  border-radius: var(--radius-1);
+  background: var(--color-surface-2);
+}
+
+/* Shiki dual themes: dark by default, light on paper. */
+.astro-code {
+  padding: var(--space-2) var(--space-3);
+  border: var(--hairline) solid var(--color-line);
+  border-radius: var(--radius-2);
+  overflow-x: auto;
+  font-size: var(--step--1);
+  line-height: 1.6;
+}
+
+.astro-code,
+.astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+[data-theme='paper'] .astro-code,
+[data-theme='paper'] .astro-code span {
+  color: var(--shiki-light) !important;
+  background-color: var(--shiki-light-bg) !important;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .astro-code,
+  :root:not([data-theme]) .astro-code span {
+    color: var(--shiki-light) !important;
+    background-color: var(--shiki-light-bg) !important;
+  }
+}
+
+/* ---- Reduced motion -------------------------------------------------------- */
+[data-motion='reduced'] *,
+[data-motion='reduced'] *::before,
+[data-motion='reduced'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion='full']) *,
+  :root:not([data-motion='full']) *::before,
+  :root:not([data-motion='full']) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- Print basics (the CV adds its own A4 sheet in print.css) --------------- */
+@media print {
+  #stage,
+  .site-header,
+  .site-footer,
+  .skip-link {
+    display: none !important;
+  }
+}
