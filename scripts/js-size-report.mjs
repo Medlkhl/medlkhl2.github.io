@@ -94,6 +94,20 @@ for (const row of rows) {
     `${row.page.padEnd(width)}  ${kb(row.js).padStart(8)}  ${String(row.files).padStart(5)}  ${kb(row.inline).padStart(7)}  ${kb(row.css).padStart(8)}  ${kb(row.fonts).padStart(8)}`,
   );
 }
+if (process.env.GITHUB_STEP_SUMMARY) {
+  const { appendFile } = await import('node:fs/promises');
+  const table = [
+    '# JavaScript per page (gzip)',
+    '',
+    '| Page | JS | Files | CSS | Fonts preloaded |',
+    '| --- | --: | --: | --: | --: |',
+    ...rows.map(
+      (row) => `| ${row.page} | ${kb(row.js)} | ${row.files} | ${kb(row.css)} | ${kb(row.fonts)} |`,
+    ),
+    '',
+  ];
+  await appendFile(process.env.GITHUB_STEP_SUMMARY, `${table.join('\n')}\n`);
+}
 const max = Math.max(...rows.map((row) => row.js));
 console.log(`\nLargest JS per page: ${kb(max)} gzip (budget ${kb(BUDGET)}).`);
 const over = rows.filter((row) => row.js > BUDGET);

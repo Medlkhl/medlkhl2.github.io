@@ -103,8 +103,10 @@ jobs:
         with:
           name: site
           path: dist
-      - name: Playwright
+      - name: Playwright (and gate screenshots of every route)
         run: pnpm test:e2e
+        env:
+          SCREENSHOTS: '1'
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v7

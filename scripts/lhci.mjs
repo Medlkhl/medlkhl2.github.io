@@ -85,15 +85,22 @@ try {
     const manifestPath = join(outputDir, 'manifest.json');
     if (existsSync(manifestPath)) {
       const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-      summary[preset] = manifest
-        .filter((entry) => entry.isRepresentativeRun)
-        .map((entry) => ({
+      const rows = [];
+      for (const entry of manifest.filter((item) => item.isRepresentativeRun)) {
+        const lhr = JSON.parse(await readFile(entry.jsonPath, 'utf8'));
+        const metric = (id) => lhr.audits[id]?.numericValue;
+        rows.push({
           page: new URL(entry.url).pathname.replace(BASE, '/'),
           ...Object.fromEntries(
             Object.entries(entry.summary).map(([key, value]) => [key, Math.round(value * 100)]),
           ),
-        }))
-        .sort((a, b) => a.page.localeCompare(b.page));
+          lcpMs: Math.round(metric('largest-contentful-paint') ?? 0),
+          cls: Number((metric('cumulative-layout-shift') ?? 0).toFixed(3)),
+          tbtMs: Math.round(metric('total-blocking-time') ?? 0),
+          fcpMs: Math.round(metric('first-contentful-paint') ?? 0),
+        });
+      }
+      summary[preset] = rows.sort((a, b) => a.page.localeCompare(b.page));
     }
   }
 } finally {
@@ -101,19 +108,33 @@ try {
 }
 
 await writeFile(join('reports', 'lighthouse', 'summary.json'), JSON.stringify(summary, null, 2));
-const lines = [];
+const md = ['# Lighthouse', ''];
 for (const [preset, rows] of Object.entries(summary)) {
-  lines.push(`\n${preset.toUpperCase()}`, 'page'.padEnd(28) + 'perf  a11y  bp    seo');
+  md.push(
+    `## ${preset}`,
+    '',
+    '| Page | Perf | A11y | Best pr. | SEO | LCP | CLS | TBT |',
+    '| --- | --: | --: | --: | --: | --: | --: | --: |',
+  );
   for (const row of rows) {
-    lines.push(
-      row.page.padEnd(28) +
-        [row.performance, row.accessibility, row['best-practices'], row.seo]
-          .map((v) => String(v).padEnd(6))
-          .join(''),
+    md.push(
+      `| ${row.page} | ${row.performance} | ${row.accessibility} | ${row['best-practices']} | ${row.seo} | ${(row.lcpMs / 1000).toFixed(2)} s | ${row.cls} | ${row.tbtMs} ms |`,
     );
   }
+  const min = (key) => Math.min(...rows.map((row) => row[key]));
+  const max = (key) => Math.max(...rows.map((row) => row[key]));
+  md.push(
+    '',
+    `Minimum scores: performance ${min('performance')}, accessibility ${min('accessibility')}, best practices ${min('best-practices')}, SEO ${min('seo')}. Worst LCP ${(max('lcpMs') / 1000).toFixed(2)} s, worst CLS ${max('cls')}.`,
+    '',
+  );
 }
-console.log(lines.join('\n'));
+await writeFile(join('reports', 'lighthouse', 'summary.md'), `${md.join('\n')}\n`);
+console.log(md.join('\n'));
+if (process.env.GITHUB_STEP_SUMMARY) {
+  const { appendFile } = await import('node:fs/promises');
+  await appendFile(process.env.GITHUB_STEP_SUMMARY, `${md.join('\n')}\n`);
+}
 if (failed) {
   console.error('\nLighthouse assertions failed (see above).');
   process.exit(1);
