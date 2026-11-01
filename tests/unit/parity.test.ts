@@ -2,6 +2,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { LOCALES } from '../../src/i18n/config.ts';
 import { ROUTES } from '../../src/i18n/routes.ts';
+import { placeholderRegex } from '../../src/lib/placeholders.ts';
 import { WORK_SLUGS } from '../../src/schemas/data.ts';
 import type { WorkFrontmatter } from '../../src/schemas/work.ts';
 import { WORK_DIR, readMdx, workFiles } from './helpers.ts';
@@ -13,6 +14,11 @@ const copyModules = import.meta.glob<Record<string, unknown>>('../../src/**/*.co
 });
 
 type Shape = string | number | boolean | null | Shape[] | { [key: string]: Shape };
+
+/** Any placeholder counts as equal, so each locale can word its own label ("[CONFIRM: Startdatum]"). */
+function anyPlaceholder(value: string | null | undefined): string | null | undefined {
+  return typeof value === 'string' ? value.replace(placeholderRegex(), '[PLACEHOLDER]') : value;
+}
 
 /** Collects structural differences between the English and German copy trees. */
 function diff(en: unknown, de: unknown, path: string, out: string[]): void {
@@ -104,9 +110,13 @@ describe('EN/DE parity of case studies', () => {
         order: d.order,
         featured: d.featured,
         layers: d.layers,
-        timeframe: d.timeframe,
+        timeframe: {
+          start: anyPlaceholder(d.timeframe?.start),
+          end: anyPlaceholder(d.timeframe?.end),
+        },
         platforms: d.platforms?.length,
-        stack: d.stack,
+        // Product names repeat, descriptive items are translated ("Inverse Kinematik").
+        stack: d.stack?.length,
         constraints: d.constraints?.length,
         responsibilities: d.responsibilities?.length,
         diagram: d.architecture?.diagram,
