@@ -34,6 +34,39 @@ test.describe('without JavaScript', () => {
     }
   }
 
+  for (const path of ['', 'de/']) {
+    for (const width of [320, 390]) {
+      test(`${path ? 'de' : 'en'} home at ${width}px: every header link is in view on one line`, async ({
+        page,
+      }) => {
+        await page.setViewportSize({ width, height: 844 });
+        await page.goto(path);
+        const nav = await page.locator('.site-nav').evaluate((element) => ({
+          scroll: element.scrollWidth,
+          client: element.clientWidth,
+        }));
+        expect(nav.scroll).toBeLessThanOrEqual(nav.client);
+        const links = await page.locator('.site-nav__link').evaluateAll((elements) =>
+          elements.map((element) => {
+            const range = document.createRange();
+            range.selectNodeContents(element);
+            const tops = new Set([...range.getClientRects()].map((rect) => Math.round(rect.top)));
+            const box = element.getBoundingClientRect();
+            return {
+              text: element.textContent?.trim(),
+              lines: tops.size,
+              inView: box.left >= 0 && box.right <= document.documentElement.clientWidth,
+            };
+          }),
+        );
+        for (const link of links) {
+          expect(link.lines, link.text).toBe(1);
+          expect(link.inView, link.text).toBe(true);
+        }
+      });
+    }
+  }
+
   test('every page renders its content and navigation without JavaScript', async ({ page }) => {
     for (const { path } of allPages()) {
       await page.goto(rel(path));
