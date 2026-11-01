@@ -56,6 +56,8 @@ export const ui = defineCopy({
     labels: {
       /** Chip for anything not built yet. */
       planned: 'Planned',
+      /** The open end of a date range ("Jul 2024 – Present"). */
+      present: 'Present',
     },
     footer: {
       sitemap: 'Site',
@@ -119,6 +121,7 @@ export const ui = defineCopy({
     },
     labels: {
       planned: 'Geplant',
+      present: 'heute',
     },
     footer: {
       sitemap: 'Seiten',

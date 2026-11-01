@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  PRESENT,
   formatDate,
   formatDuration,
   formatList,
@@ -10,6 +9,7 @@ import {
   monthsBetween,
   parseYearMonth,
 } from '../../src/i18n/format.ts';
+import { ui } from '../../src/i18n/ui.copy.ts';
 
 describe('locale date formatting', () => {
   it('parses ISO year-months and rejects anything else', () => {
@@ -37,7 +37,9 @@ describe('locale date formatting', () => {
   });
 
   it('splits ranges into two ends for two <time> elements', () => {
-    expect(PRESENT).toEqual({ en: 'Present', de: 'heute' });
+    // The open end is copy (ui.copy.ts), so the parity test covers it.
+    expect(ui.en.labels.present).toBe('Present');
+    expect(ui.de.labels.present).toBe('heute');
     expect(formatRangeParts('2024-07', '2025-12', 'en')).toEqual({
       from: 'Jul 2024',
       to: 'Dec 2025',
@@ -74,10 +76,13 @@ describe('locale date formatting', () => {
 
   it('counts months inclusively and formats durations', () => {
     expect(monthsBetween('2024-07', '2025-12')).toBe(18);
-    expect(formatDuration('2024-07', '2025-12', 'en')).toBe('1 yr 6 mos');
-    expect(formatDuration('2024-07', '2025-12', 'de')).toBe('1 J. 6 Mon.');
-    expect(formatDuration('2018-08', '2018-09', 'en')).toBe('2 mos');
-    expect(formatDuration('2021-08', '2024-06', 'en')).toBe('2 yrs 11 mos');
+    expect(formatDuration('2024-07', '2025-12', 'en')).toBe('1 year 6 months');
+    expect(formatDuration('2024-07', '2025-12', 'de')).toBe('1 Jahr, 6 Monate');
+    expect(formatDuration('2018-08', '2018-09', 'en')).toBe('2 months');
+    expect(formatDuration('2018-08', '2018-09', 'de')).toBe('2 Monate');
+    expect(formatDuration('2021-08', '2024-06', 'en')).toBe('2 years 11 months');
+    expect(formatDuration('2019-02', '2020-01', 'en')).toBe('1 year');
+    expect(formatDuration('2019-02', '2020-01', 'de')).toBe('1 Jahr');
   });
 
   it('formats dates and lists', () => {

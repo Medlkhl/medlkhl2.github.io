@@ -1,5 +1,6 @@
 import { hasPlaceholder } from '../lib/placeholders.ts';
 import { LOCALE_META, type Locale } from './config.ts';
+import { ui } from './ui.copy.ts';
 
 /**
  * Locale-aware formatting. Dates are stored as ISO year-month strings (YYYY-MM)
@@ -33,9 +34,6 @@ export function formatYearMonth(value: string, locale: Locale, style: DateStyle 
   return new Intl.DateTimeFormat(LOCALE_META[locale].intl, options).format(date);
 }
 
-/** The open end of a range ("Jul 2024 – Present"). */
-export const PRESENT: Record<Locale, string> = { en: 'Present', de: 'heute' };
-
 /** Machine-readable value for <time datetime>. */
 export function toDateTimeAttribute(value: string): string | undefined {
   return isYearMonth(value) ? value : undefined;
@@ -44,7 +42,7 @@ export function toDateTimeAttribute(value: string): string | undefined {
 export interface RangeParts {
   /** Formatted start: "Jul 2024", a year as is, or the placeholder itself. */
   from: string;
-  /** Formatted end, or "Present" / "heute" for an open end. */
+  /** Formatted end, or "Present" / "heute" (ui.labels.present) for an open end. */
   to: string;
   /** <time datetime> of the start; undefined for a placeholder. */
   fromDateTime: string | undefined;
@@ -72,7 +70,7 @@ export function formatRangeParts(
 ): RangeParts {
   const [from, fromDateTime] = rangeEnd(start, locale, style);
   const [to, toDateTime] =
-    end === null ? [PRESENT[locale], undefined] : rangeEnd(end, locale, style);
+    end === null ? [ui[locale].labels.present, undefined] : rangeEnd(end, locale, style);
   return { from, to, fromDateTime, toDateTime };
 }
 
@@ -94,20 +92,22 @@ export function monthsBetween(start: string, end: string): number {
   return b.year * 12 + b.month - (a.year * 12 + a.month) + 1;
 }
 
-/** "1 yr 6 mos" / "1 J. 6 Mon." for timeline metadata. */
+/**
+ * "1 year 6 months" / "1 Jahr, 6 Monate" for timeline metadata. Units and
+ * the joiner come from Intl, so no unit words live in code.
+ */
 export function formatDuration(start: string, end: string, locale: Locale): string {
   const total = monthsBetween(start, end);
   const years = Math.floor(total / 12);
   const months = total % 12;
-  const parts: string[] = [];
-  if (locale === 'de') {
-    if (years) parts.push(`${years} J.`);
-    if (months) parts.push(`${months} Mon.`);
-  } else {
-    if (years) parts.push(`${years} ${years === 1 ? 'yr' : 'yrs'}`);
-    if (months) parts.push(`${months} ${months === 1 ? 'mo' : 'mos'}`);
-  }
-  return parts.join(' ');
+  const intl = LOCALE_META[locale].intl;
+  const unit = (value: number, name: 'year' | 'month') =>
+    new Intl.NumberFormat(intl, { style: 'unit', unit: name, unitDisplay: 'long' }).format(value);
+  const parts = [
+    ...(years ? [unit(years, 'year')] : []),
+    ...(months ? [unit(months, 'month')] : []),
+  ];
+  return new Intl.ListFormat(intl, { type: 'unit', style: 'narrow' }).format(parts);
 }
 
 /** "1 November 2026" / "1. November 2026" (UTC). */
