@@ -1,0 +1,102 @@
+---
+/**
+ * HoloBox: two loops in one .NET MAUI Blazor Hybrid app. Vision (left): the
+ * webcam drives face tracking and a head-coupled, off-axis camera. Voice
+ * (right): speech to text, the local model in-process, text to speech with
+ * lip-sync, into the avatar. One <g data-step> per step of the case study.
+ */
+import type { Locale } from '../../../i18n/config.ts';
+import DBalloon from './DBalloon.astro';
+import DNode from './DNode.astro';
+import DiagramFrame from './DiagramFrame.astro';
+import { diagramCopy } from './diagrams.copy.ts';
+import { arrow, type DiagramStep, stepNumbers } from './steps.ts';
+
+interface Props {
+  steps: readonly DiagramStep[];
+  locale: Locale;
+}
+
+const { steps, locale } = Astro.props;
+const t = diagramCopy[locale].holobox;
+const no = stepNumbers('holobox', steps, [
+  'track-head',
+  'project-view',
+  'listen',
+  'generate',
+  'speak',
+  'render',
+]);
+const end = arrow('holobox');
+---
+
+<DiagramFrame name="holobox" width={360} height={600}>
+  <!-- Inputs -->
+  <DNode x={26} y={8} w={136} h={40} title={t.webcam} />
+  <DNode x={200} y={8} w={136} h={40} title={t.microphone} />
+
+  <!-- The app and its two runtimes -->
+  <rect class="d-frame" x="8" y="72" width="344" height="448"></rect>
+  <text class="d-frame-label" x="20" y="90">
+    {t.app}
+  </text>
+  <rect class="d-frame" x="14" y="104" width="160" height="340"></rect>
+  <text class="d-frame-label" x="24" y="121">
+    {t.webview}
+  </text>
+  <rect class="d-frame" x="188" y="204" width="160" height="104"></rect>
+  <text class="d-frame-label" x="198" y="221">
+    {t.dotnet}
+  </text>
+
+  <DNode x={26} y={132} w={136} h={48} title={t.faceTracking} sub={t.faceTrackingSub} />
+  <DNode x={26} y={236} w={136} h={48} title={t.offAxis} sub={t.offAxisSub} />
+  <DNode x={26} y={340} w={136} h={48} title={t.avatar} sub={t.avatarSub} />
+  <DNode x={200} y={132} w={136} h={48} title={t.stt} sub={t.sttSub} />
+  <DNode x={200} y={232} w={136} h={56} title={t.llm} sub={t.llmSub} sub2={t.llmSub2} />
+  <DNode x={200} y={340} w={136} h={48} title={t.tts} sub={t.ttsSub} />
+
+  <!-- Output -->
+  <DNode x={26} y={552} w={136} h={40} title={t.screen} />
+
+  <g class="d-step" data-step="track-head">
+    <path class="d-edge" d="M94 48V132" marker-end={end}></path>
+    <DBalloon x={74} y={88} n={no('track-head')} />
+  </g>
+
+  <g class="d-step" data-step="project-view">
+    <path class="d-edge" d="M94 180V236" marker-end={end}></path>
+    <text class="d-note" x="104" y="211">
+      {t.headPosition}
+    </text>
+    <DBalloon x={74} y={208} n={no('project-view')} />
+  </g>
+
+  <g class="d-step" data-step="listen">
+    <path class="d-edge" d="M268 48V132" marker-end={end}></path>
+    <DBalloon x={248} y={88} n={no('listen')} />
+  </g>
+
+  <g class="d-step" data-step="generate">
+    <path class="d-edge" d="M268 180V232" marker-end={end}></path>
+    <text class="d-note" x="278" y="195">
+      {t.text}
+    </text>
+    <DBalloon x={248} y={192} n={no('generate')} />
+  </g>
+
+  <g class="d-step" data-step="speak">
+    <path class="d-edge" d="M268 288V340" marker-end={end}></path>
+    <path class="d-edge" d="M200 364H162" marker-end={end}></path>
+    <text class="d-note" x="278" y="327">
+      {t.reply}
+    </text>
+    <DBalloon x={248} y={324} n={no('speak')} />
+  </g>
+
+  <g class="d-step" data-step="render">
+    <path class="d-edge" d="M94 284V340" marker-end={end}></path>
+    <path class="d-edge" d="M94 388V552" marker-end={end}></path>
+    <DBalloon x={74} y={480} n={no('render')} />
+  </g>
+</DiagramFrame>

@@ -1,0 +1,20 @@
+---
+/**
+ * A numbered balloon callout, the engineering-drawing way of pointing at a
+ * step. The number matches the case study's HTML step list.
+ */
+interface Props {
+  x: number;
+  y: number;
+  n: number;
+}
+
+const { x, y, n } = Astro.props;
+---
+
+<g class="d-balloon">
+  <circle cx={x} cy={y} r="9"></circle>
+  <text x={x} y={y} text-anchor="middle" dominant-baseline="central">
+    {n}
+  </text>
+</g>

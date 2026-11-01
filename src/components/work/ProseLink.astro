@@ -1,0 +1,29 @@
+---
+/**
+ * Replaces <a> inside case-study MDX bodies: links that leave the site get the
+ * external-link treatment (icon plus visually hidden text); internal links stay
+ * plain. The locale comes from the route.
+ */
+import { isLocale } from '../../i18n/config.ts';
+import { isExternal } from '../../lib/url.ts';
+import ExternalLink from './ExternalLink.astro';
+
+interface Props {
+  href?: string;
+  title?: string;
+}
+
+const { href = '', title } = Astro.props;
+const locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : 'en';
+const external = isExternal(href) && !/^mailto:/i.test(href);
+---
+
+{external ? (
+  <ExternalLink href={href} locale={locale}>
+    <slot />
+  </ExternalLink>
+) : (
+  <a href={href} title={title}>
+    <slot />
+  </a>
+)}

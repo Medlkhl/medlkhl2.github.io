@@ -1,0 +1,85 @@
+---
+/**
+ * Smart Humanoid Robot: six modules feed one robot controller, which moves the
+ * head, the arms and hands, and the upper body. Rows follow the step order of
+ * the case study, so the balloons always read 1 to 6 from the top.
+ */
+import type { Locale } from '../../../i18n/config.ts';
+import DBalloon from './DBalloon.astro';
+import DNode from './DNode.astro';
+import DiagramFrame from './DiagramFrame.astro';
+import { diagramCopy } from './diagrams.copy.ts';
+import { arrow, type DiagramStep, stepNumbers } from './steps.ts';
+
+interface Props {
+  steps: readonly DiagramStep[];
+  locale: Locale;
+}
+
+const { steps, locale } = Astro.props;
+const t = diagramCopy[locale].robot;
+
+const MODULES: Record<string, { title: string; sub: string; sub2?: string }> = {
+  'head-tracking': { title: t.headTracking, sub: t.headTrackingSub },
+  teleoperation: { title: t.teleoperation, sub: t.teleoperationSub, sub2: t.teleoperationSub2 },
+  speech: { title: t.speech, sub: t.speechSub },
+  'vr-head': { title: t.vrHead, sub: t.vrHeadSub },
+  'upper-body': { title: t.upperBody, sub: t.upperBodySub },
+  'remote-control': { title: t.remote, sub: t.remoteSub },
+};
+
+const no = stepNumbers('humanoid-robot', steps, Object.keys(MODULES));
+const end = arrow('humanoid-robot');
+
+const ROW = 56;
+const GAP = 20;
+const rows = steps.map((step, index) => {
+  const module = MODULES[step.id];
+  if (!module) throw new Error(`No module drawn for step "${step.id}"`);
+  const y = 8 + index * (ROW + GAP);
+  return { id: step.id, y, mid: y + ROW / 2, ...module };
+});
+const controllerBottom = 8 + steps.length * (ROW + GAP) - GAP;
+const busY = controllerBottom + 28;
+const outY = busY + 28;
+const height = outY + 48 + 12;
+---
+
+<DiagramFrame name="humanoid-robot" width={360} height={height}>
+  <DNode
+    x={232}
+    y={8}
+    w={120}
+    h={controllerBottom - 8}
+    title={t.controller}
+    title2={t.controller2}
+    sub={t.controllerSub}
+    sub2={t.controllerSub2}
+  />
+
+  {rows.map((row) => (
+    <g class="d-step" data-step={row.id}>
+      <DNode
+        x={8}
+        y={row.y}
+        w={168}
+        h={ROW}
+        align="start"
+        title={row.title}
+        sub={row.sub}
+        sub2={row.sub2}
+      />
+      <path class="d-edge" d={`M176 ${row.mid}H232`} marker-end={end} />
+      <DBalloon x={204} y={row.mid} n={no(row.id)} />
+    </g>
+  ))}
+
+  <!-- Controller to actuators -->
+  <path class="d-edge" d={`M292 ${controllerBottom}V${busY}M60 ${busY}H300`}></path>
+  <path class="d-edge" d={`M60 ${busY}V${outY}`} marker-end={end}></path>
+  <path class="d-edge" d={`M180 ${busY}V${outY}`} marker-end={end}></path>
+  <path class="d-edge" d={`M300 ${busY}V${outY}`} marker-end={end}></path>
+  <DNode x={8} y={outY} w={104} h={48} title={t.head} />
+  <DNode x={128} y={outY} w={104} h={48} title={t.arms} />
+  <DNode x={248} y={outY} w={104} h={48} title={t.body} />
+</DiagramFrame>

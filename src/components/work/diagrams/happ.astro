@@ -1,0 +1,103 @@
+---
+/**
+ * HAPP, drawn with generic names: the mobile app as a stack of layers, the
+ * identity provider, the REST API, internal services and the deployment
+ * environments. One <g data-step> per step of the case study.
+ */
+import type { Locale } from '../../../i18n/config.ts';
+import DBalloon from './DBalloon.astro';
+import DNode from './DNode.astro';
+import DiagramFrame from './DiagramFrame.astro';
+import { diagramCopy } from './diagrams.copy.ts';
+import { arrow, type DiagramStep, stepNumbers } from './steps.ts';
+
+interface Props {
+  steps: readonly DiagramStep[];
+  locale: Locale;
+}
+
+const { steps, locale } = Astro.props;
+const t = diagramCopy[locale].happ;
+const no = stepNumbers('happ', steps, [
+  'sign-in',
+  'call-api',
+  'authorise',
+  'integrate',
+  'present',
+  'release',
+]);
+const end = arrow('happ');
+const [idp1 = t.idp, idp2] = t.idp.split(' ');
+---
+
+<DiagramFrame name="happ" width={360} height={600}>
+  <!-- Mobile app: the layer stack -->
+  <rect class="d-frame" x="8" y="8" width="344" height="228"></rect>
+  <text class="d-frame-label" x="20" y="26">
+    {t.app}
+  </text>
+  <DNode x={24} y={40} w={296} h={38} align="split" title={t.ui} sub={t.uiSub} />
+  <DNode x={24} y={86} w={296} h={38} align="split" title={t.viewModels} sub={t.viewModelsSub} />
+  <DNode x={24} y={132} w={296} h={38} align="split" title={t.core} sub={t.coreSub} />
+  <DNode
+    x={24}
+    y={178}
+    w={296}
+    h={38}
+    align="split"
+    title={t.infrastructure}
+    sub={t.infrastructureSub}
+  />
+
+  <!-- Server side -->
+  <DNode x={36} y={300} w={128} h={80} title={idp1} title2={idp2} sub={t.idpSub} sub2={t.idpSub2} />
+  <DNode x={200} y={300} w={152} h={80} title={t.api} sub={t.apiSub} />
+  <DNode x={200} y={440} w={152} h={64} title={t.services} sub={t.servicesSub} />
+  <DNode x={8} y={552} w={344} h={40} align="split" title={t.deploy} sub={t.deploySub} />
+
+  <g class="d-step" data-step="sign-in">
+    <path class="d-edge" d="M88 236V300" marker-end={end}></path>
+    <path class="d-edge" d="M104 300V236" marker-end={end}></path>
+    <text class="d-note" x="114" y="263">
+      {t.signIn}
+    </text>
+    <text class="d-note" x="114" y="279">
+      {t.tokens}
+    </text>
+    <DBalloon x={64} y={268} n={no('sign-in')} />
+  </g>
+
+  <g class="d-step" data-step="call-api">
+    <path class="d-edge" d="M276 236V300" marker-end={end}></path>
+    <text class="d-note" x="266" y="272" text-anchor="end">
+      {t.accessToken}
+    </text>
+    <DBalloon x={296} y={268} n={no('call-api')} />
+  </g>
+
+  <g class="d-step" data-step="authorise">
+    <path class="d-edge d-edge--dashed" d="M200 340H164" marker-end={end}></path>
+    <DBalloon x={182} y={318} n={no('authorise')} />
+  </g>
+
+  <g class="d-step" data-step="integrate">
+    <path class="d-edge" d="M276 380V440" marker-end={end}></path>
+    <text class="d-note" x="266" y="414" text-anchor="end">
+      {t.data}
+    </text>
+    <DBalloon x={296} y={410} n={no('integrate')} />
+  </g>
+
+  <g class="d-step" data-step="present">
+    <path class="d-edge" d="M336 214V44" marker-end={end}></path>
+    <DBalloon x={336} y={129} n={no('present')} />
+  </g>
+
+  <g class="d-step" data-step="release">
+    <path class="d-edge" d="M16 552V236" marker-end={end}></path>
+    <text class="d-note" x="32" y="474">
+      {t.release}
+    </text>
+    <DBalloon x={16} y={470} n={no('release')} />
+  </g>
+</DiagramFrame>
