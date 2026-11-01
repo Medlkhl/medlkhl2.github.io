@@ -30,13 +30,19 @@ export const recommendations = z.array(recommendationSchema).parse([
       en: 'A recent recommendation from a manager',
       de: 'Eine aktuelle Empfehlung einer Führungskraft',
     },
-    placeholder: '[RECOMMENDATION: manager at Anton-Haering]',
+    placeholder: {
+      en: '[RECOMMENDATION: manager at Anton-Haering]',
+      de: '[RECOMMENDATION: Führungskraft bei Anton-Haering]',
+    },
   },
   {
     kind: 'slot',
     id: 'slot-peer',
     wanted: { en: 'From a peer engineer', de: 'Von einer Kollegin oder einem Kollegen' },
-    placeholder: '[RECOMMENDATION: peer engineer]',
+    placeholder: {
+      en: '[RECOMMENDATION: peer engineer]',
+      de: '[RECOMMENDATION: Kollegin oder Kollege aus der Entwicklung]',
+    },
   },
   {
     kind: 'slot',
@@ -45,7 +51,10 @@ export const recommendations = z.array(recommendationSchema).parse([
       en: 'From someone I coached',
       de: 'Von jemandem, den ich gecoacht habe',
     },
-    placeholder: '[RECOMMENDATION: developer you coached]',
+    placeholder: {
+      en: '[RECOMMENDATION: developer you coached]',
+      de: '[RECOMMENDATION: von dir gecoachte Person]',
+    },
   },
 ]);
 

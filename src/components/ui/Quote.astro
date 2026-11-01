@@ -33,7 +33,7 @@ const { recommendation: rec, locale, compact = false, class: className } = Astro
   <div class:list={['quote', 'quote--slot', className]}>
     <p class="quote__wanted">{rec.wanted[locale]}</p>
     <p>
-      <Rich text={rec.placeholder} />
+      <Rich text={rec.placeholder[locale]} />
     </p>
   </div>
 )}

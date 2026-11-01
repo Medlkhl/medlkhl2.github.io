@@ -134,7 +134,7 @@ export const recommendationSchema = z.discriminatedUnion('kind', [
     kind: z.literal('slot'),
     id: nonEmpty,
     wanted: l10n,
-    placeholder: placeholderString,
+    placeholder: z.strictObject({ en: placeholderString, de: placeholderString }),
   }),
 ]);
 export type Recommendation = z.infer<typeof recommendationSchema>;
