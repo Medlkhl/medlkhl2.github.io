@@ -3,6 +3,8 @@
  * Case-study card for the home page, the /work/ index and the Lab.
  * The whole card is one link (the title), so it is a single tab stop; the
  * rest of the card is reachable to pointer users through a stretched link.
+ * The link's name ends with the visible "Read the case study" (hidden text),
+ * so voice control finds it by either label.
  * variant="row" (the /work/ index) lays the card out as one wide row on large
  * screens; the default "card" layout is unchanged.
  */
@@ -54,6 +56,7 @@ const range = formatRange(data.timeframe.start, data.timeframe.end, locale);
   <Heading class="work-card__title">
     <a class="work-card__link" href={href}>
       {data.title}
+      <span class="visually-hidden"> — {ui[locale].cta.readCaseStudy}</span>
     </a>
   </Heading>
   <p class="work-card__outcome">
@@ -99,6 +102,13 @@ const range = formatRange(data.timeframe.start, data.timeframe.end, locale);
     align-items: center;
     justify-content: space-between;
     gap: var(--space-1);
+  }
+
+  /* Cards side by side: chip above the dates, so a long range never pushes one title lower. */
+  .work-card:not(.work-card--row) .work-card__meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-half);
   }
 
   .work-card__range {
