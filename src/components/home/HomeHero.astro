@@ -8,6 +8,8 @@
  *
  * data-stack-root marks the common ancestor of the figure and the list for
  * the :has() highlight rules. A faint blueprint grid sits behind it all.
+ * The list holds about 30 links, so a link that is visually hidden until
+ * focused lets keyboard users skip straight to 01 Selected work (#work).
  */
 import Icon from '../ui/Icon.astro';
 import SectionLabel from '../ui/SectionLabel.astro';
@@ -71,7 +73,12 @@ const cta = ui[locale].cta;
         </h2>
         <p class="hero__legend-intro">{copy.stack.intro}</p>
       </header>
-      <StackLegend locale={locale} copy={copy.stack} workTitles={workTitles} />
+      <div class="hero__parts">
+        <a class="hero__skip visually-hidden" href="#work">
+          {copy.stack.skip}
+        </a>
+        <StackLegend locale={locale} copy={copy.stack} workTitles={workTitles} />
+      </div>
     </section>
   </div>
 </div>
@@ -166,6 +173,36 @@ const cta = ui[locale].cta;
   .hero__legend-intro {
     max-width: 52ch;
     color: var(--color-text-muted);
+  }
+
+  .hero__parts {
+    position: relative;
+  }
+
+  /* Shown only while focused (.visually-hidden), over the top of the list. */
+  .hero__skip {
+    position: absolute;
+    top: var(--space-1);
+    left: 0;
+    z-index: var(--z-content);
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target);
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-2);
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    font-size: var(--step--1);
+    font-weight: var(--weight-medium);
+    text-decoration: none;
+  }
+
+  .hero__skip:hover {
+    color: var(--color-accent-ink);
+  }
+
+  .hero__skip:focus-visible {
+    outline-color: var(--color-text);
   }
 
   @media (min-width: 64rem) {

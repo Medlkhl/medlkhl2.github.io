@@ -12,6 +12,20 @@ test.describe('keyboard path', () => {
     await expect(page.locator('#main')).toBeFocused();
   });
 
+  test('a skip link before the parts list jumps to 01 Selected work', async ({ page }) => {
+    for (const path of ['', 'de/']) {
+      await page.goto(path);
+      const skip = page.locator('.hero__skip');
+      await skip.focus();
+      await expect(skip).toBeInViewport();
+      expect((await skip.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+      await page.keyboard.press('Enter');
+      await expect(page).toHaveURL(/#work$/);
+      await page.keyboard.press('Tab');
+      await expect(page.locator('#work a:focus')).toHaveCount(1);
+    }
+  });
+
   test('focused links show a visible focus ring', async ({ page }) => {
     await page.goto('');
     await page.keyboard.press('Tab');

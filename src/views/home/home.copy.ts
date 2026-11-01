@@ -27,6 +27,8 @@ export const homeCopy = defineCopy({
         'The stack I work across, from the interface down to delivery. Each layer links to the skills behind it and to the case studies where it matters.',
       skills: 'Skills',
       work: 'Case studies',
+      /** In-page link before the parts list (about 30 links) to 01 Selected work. */
+      skip: 'Skip the parts list',
       drawingTitle: 'Exploded architecture',
       drawingNote: 'Isometric view · not to scale',
     },
@@ -86,6 +88,7 @@ export const homeCopy = defineCopy({
         'Der Stack, in dem ich arbeite – von der Oberfläche bis zur Auslieferung. Jede Schicht verweist auf die Kenntnisse dahinter und auf die Fallstudien, in denen sie eine Rolle spielt.',
       skills: 'Kenntnisse',
       work: 'Fallstudien',
+      skip: 'Stückliste überspringen',
       drawingTitle: 'Explosionszeichnung',
       drawingNote: 'Isometrie · nicht maßstäblich',
     },
