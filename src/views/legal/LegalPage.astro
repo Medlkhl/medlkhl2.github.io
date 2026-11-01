@@ -292,7 +292,9 @@ const crumbs = [
     line-height: var(--leading-snug);
   }
 
+  /* The container LegalBlocks' term–value rows query, so they stack together. */
   .legal-section__body {
+    container: legal-body / inline-size;
     grid-column: 5 / -1;
     display: grid;
     gap: var(--space-2);

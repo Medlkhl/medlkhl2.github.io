@@ -1,17 +1,18 @@
 ---
-import { routeHref } from '../../i18n/routes.ts';
 /**
  * Renders the blocks of one legal section (see legal.ts). Strings go through
  * <Rich> so placeholders such as [NAME: full legal name] stay visible.
- * External links open in the same tab, carry the arrow icon and the visually
- * hidden "(external link)", and send no referrer.
+ * External links use ui/ExternalLink (same tab, arrow icon, visually hidden
+ * "(external link)") and send no referrer. Term–value rows (email, address
+ * reference, version) share one term column and stack together on narrow
+ * columns (a container query on LegalPage's .legal-section__body).
  */
-import Icon from '../../components/ui/Icon.astro';
+import ExternalLink from '../../components/ui/ExternalLink.astro';
 import Rich from '../../components/ui/Rich.astro';
 import { profile } from '../../data/profile.ts';
 import type { Locale } from '../../i18n/config.ts';
 import { formatYearMonth } from '../../i18n/format.ts';
-import { ui } from '../../i18n/ui.copy.ts';
+import { routeHref } from '../../i18n/routes.ts';
 import { legalCopy } from './legal.copy.ts';
 import { PRIVACY_VERSION, type LegalBlock } from './legal.ts';
 
@@ -77,11 +78,9 @@ const t = legalCopy[locale];
     case 'link':
       return (
         <p class="legal-link">
-          <a href={block.href} rel="noreferrer">
+          <ExternalLink locale={locale} href={block.href} rel="noreferrer">
             {block.label}
-            <Icon name="arrow-up-right" size={14} />
-            <span class="visually-hidden"> {ui[locale].externalLink}</span>
-          </a>
+          </ExternalLink>
         </p>
       );
     case 'version':
@@ -120,14 +119,20 @@ const t = legalCopy[locale];
   }
 
   .legal-field {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
+    display: grid;
+    grid-template-columns: var(--space-16) minmax(0, 1fr);
     gap: var(--space-half) var(--space-2);
+    align-items: baseline;
+  }
+
+  /* Narrow columns: every row of the section stacks at once, not one by one. */
+  @container legal-body (max-width: 26rem) {
+    .legal-field {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   .legal-field__term {
-    min-width: 5rem;
     font-family: var(--font-mono);
     font-size: var(--step--2);
     letter-spacing: var(--tracking-label);
@@ -137,22 +142,5 @@ const t = legalCopy[locale];
 
   .legal-field a {
     overflow-wrap: anywhere;
-  }
-
-  .legal-link a {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    min-height: 1.75rem;
-    text-decoration-color: var(--color-accent);
-  }
-
-  .legal-link a :global(svg) {
-    flex: none;
-    color: var(--color-text-subtle);
-  }
-
-  .legal-link a:hover :global(svg) {
-    color: currentColor;
   }
 </style>
