@@ -4,7 +4,7 @@ import { defineCopy } from '../../i18n/copy.ts';
  * Copy for the case-study template and the /work/ index. Case-study content
  * itself lives in src/content/work/<locale>/<slug>.mdx; shared strings (Home,
  * Work, status chips, "All work", external-link text) come from ui.copy.ts.
- * Strings with {title} are filled in by the view.
+ * Strings with {title} or {generic} are filled in by the view.
  */
 export const workCopy = defineCopy({
   en: {
@@ -44,8 +44,9 @@ export const workCopy = defineCopy({
     },
     architecture: {
       figure: 'Fig. 1',
-      caption:
-        'Architecture of {title}, drawn with generic names. The numbered markers match the steps.',
+      /** {generic} is genericNames for a confidential case study, otherwise empty. */
+      caption: 'Architecture of {title}{generic}. The numbered markers match the steps.',
+      genericNames: ', drawn with generic names',
       steps: 'Step by step',
       decisions: 'Key decisions and trade-offs',
       choice: 'Decision',
@@ -62,6 +63,8 @@ export const workCopy = defineCopy({
       outcomes: 'Outcomes',
       next: 'What I would do next',
       nextInDevelopment: 'What comes next',
+      /** Heading of the "next" text on a completed project. */
+      lookingBack: 'What I would do differently today',
     },
     proof: {
       wantedRecommendation: 'A recommendation from someone who worked with me on this project',
@@ -114,7 +117,8 @@ export const workCopy = defineCopy({
     architecture: {
       figure: 'Abb. 1',
       caption:
-        'Architektur von {title}, mit neutralen Bezeichnungen. Die nummerierten Markierungen entsprechen den Schritten.',
+        'Architektur von {title}{generic}. Die nummerierten Markierungen entsprechen den Schritten.',
+      genericNames: ', mit neutralen Bezeichnungen',
       steps: 'Schritt für Schritt',
       decisions: 'Zentrale Entscheidungen und Abwägungen',
       choice: 'Entscheidung',
@@ -131,6 +135,7 @@ export const workCopy = defineCopy({
       outcomes: 'Ergebnisse',
       next: 'Was ich als Nächstes angehen würde',
       nextInDevelopment: 'Wie es weitergeht',
+      lookingBack: 'Was ich heute anders machen würde',
     },
     proof: {
       wantedRecommendation:

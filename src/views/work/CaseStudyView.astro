@@ -62,14 +62,22 @@ const showLegend = hasPlaceholder(JSON.stringify(data)) || hasPlaceholder(entry.
 
 // 4 · Architecture
 const Diagram = DIAGRAMS[data.architecture.diagram];
-const caption = t.architecture.caption.replace('{title}', data.title);
+// Only a confidential case study (HAPP) is drawn with generic names.
+const caption = t.architecture.caption
+  .replace('{title}', data.title)
+  .replace('{generic}', data.confidentiality ? t.architecture.genericNames : '');
 
 // 5 · Hard problems
 const codeThemes = { light: 'github-light', dark: 'github-dark-dimmed' } as const;
 const isYouTube = (href: string) => /^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(href);
 
 // 6 · Results
-const nextLabel = data.status === 'in-development' ? t.results.nextInDevelopment : t.results.next;
+const nextLabel =
+  data.status === 'in-development'
+    ? t.results.nextInDevelopment
+    : data.status === 'completed'
+      ? t.results.lookingBack
+      : t.results.next;
 
 // 7 · Proof
 const recommendation = data.proof.recommendation
