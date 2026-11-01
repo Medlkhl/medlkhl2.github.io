@@ -1,6 +1,6 @@
 ---
 title: 'HoloBox'
-summary: 'Angewandte KI mit .NET MAUI Blazor Hybrid: kopfgekoppelte Off-Axis-Projektion mit Three.js und MediaPipe, Sprache und ein lokales Gemma-Modell über LLamaSharp.'
+summary: 'Angewandte KI mit .NET MAUI Blazor Hybrid: kopfgekoppelte Off-Axis-Projektion mit three.js und MediaPipe, Sprache und ein lokales Gemma-Modell über LLamaSharp.'
 outcome: 'Ein sprechender 3D-Avatar, der in einem flachen Bildschirm zu stehen scheint – ausgelegt auf Offline-Betrieb und kurze Antwortzeiten.'
 status: 'in-development'
 role: 'Architektur und Entwicklung'
@@ -9,7 +9,7 @@ timeframe:
   start: '[CONFIRM: Startdatum]'
   end: null
 platforms: ['Windows (erstes Ziel)']
-stack: ['.NET MAUI', 'Blazor Hybrid', 'Three.js', 'MediaPipe', 'LLamaSharp', 'Gemma (GGUF)', 'C#']
+stack: ['.NET MAUI', 'Blazor Hybrid', 'three.js', 'MediaPipe', 'LLamaSharp', 'Gemma (GGUF)', 'C#']
 order: 2
 featured: true
 layers: ['ui', 'domain']
@@ -20,7 +20,7 @@ constraints:
   - 'Zwei Laufzeitumgebungen: 3D-Rendering und Gesichtstracking laufen in JavaScript in einer WebView, das Sprachmodell in .NET.'
   - 'Windows zuerst: Erstes Ziel ist ein Windows-PC, das Modell läuft im Prozess der App.'
 responsibilities:
-  - 'Entwurf der Architektur: eine .NET-MAUI-Blazor-Hybrid-App mit Three.js und MediaPipe in der WebView und einem lokalen Modell in .NET.'
+  - 'Entwurf der Architektur: eine .NET-MAUI-Blazor-Hybrid-App mit three.js und MediaPipe in der WebView und einem lokalen Modell in .NET.'
   - 'Umsetzung der kopfgekoppelten Off-Axis-Projektion, die den flachen Bildschirm zum Fenster in einen Kasten macht.'
   - 'Einbindung eines Gemma-Modells im GGUF-Format direkt im Prozess über LLamaSharp, damit Gespräche auf dem Gerät bleiben.'
   - 'Aufbau der Gesprächsschleife: Spracheingabe, Antwort des Modells, Sprachausgabe mit Lippensynchronisation.'
@@ -45,13 +45,13 @@ architecture:
       detail: 'Die Antwort wird in Sprache umgewandelt, und die Lippen des Avatars bewegen sich mit. [CONFIRM: Sprachsynthese und Lip-Sync-Verfahren]'
     - id: 'render'
       label: 'Rendern'
-      detail: 'Three.js rendert den Avatar durch die kopfgekoppelte Kamera auf den flachen Bildschirm, sodass er im Display zu stehen scheint.'
+      detail: 'Der Avatar wird von three.js durch die kopfgekoppelte Kamera auf den flachen Bildschirm gerendert, sodass er im Display zu stehen scheint.'
   decisions:
     - title: 'Ein lokales Modell, im Prozess'
       choice: 'Ein Gemma-Modell im GGUF-Format läuft über LLamaSharp direkt im Prozess der App.'
       tradeoff: 'Modellgröße und Antwortqualität sind durch die Hardware begrenzt; dafür funktioniert alles offline, Gespräche bleiben auf dem Gerät, und es gibt keinen Umweg über das Netzwerk.'
     - title: 'Blazor Hybrid mit 3D in der WebView'
-      choice: 'Eine .NET-MAUI-Blazor-Hybrid-App betreibt Three.js und MediaPipe in ihrer WebView, Modell und App-Hülle laufen in .NET.'
+      choice: 'Eine .NET-MAUI-Blazor-Hybrid-App betreibt three.js und MediaPipe in ihrer WebView, Modell und App-Hülle laufen in .NET.'
       tradeoff: 'Zwei Laufzeitumgebungen und eine Interop-Grenze zwischen JavaScript und .NET, die schnell bleiben muss; dafür ausgereifte Web-Bibliotheken für 3D und Gesichtstracking neben .NET für das Modell.'
     - title: 'Kopfgekoppelte Perspektive auf einem normalen Bildschirm'
       choice: 'Eine Webcam verfolgt den Kopf des Betrachters, und eine Off-Axis-Projektion lässt einen normalen flachen Bildschirm Tiefe zeigen.'
@@ -59,7 +59,7 @@ architecture:
 problems:
   - title: 'Ein flacher Bildschirm, der sich wie ein Kasten verhält'
     challenge: 'Eine normale perspektivische Kamera erzeugt ein flaches Bild. Damit der Avatar im Display zu stehen scheint, muss das Bild dazu passen, wo die Augen des Betrachters gerade sind – und ihnen folgen, wenn er sich bewegt.'
-    approach: 'MediaPipe schätzt in der WebView die Kopfposition aus dem Webcam-Bild. Die Three.js-Kamera nutzt daraus eine Off-Axis-Projektion: ein asymmetrisches Frustum vom Auge durch die Ränder des physischen Bildschirms, nachgeführt mit jeder Kopfbewegung.'
+    approach: 'MediaPipe schätzt in der WebView die Kopfposition aus dem Webcam-Bild. Die three.js-Kamera nutzt daraus eine Off-Axis-Projektion: ein asymmetrisches Frustum vom Auge durch die Ränder des physischen Bildschirms, nachgeführt mit jeder Kopfbewegung.'
     evidence:
       type: 'placeholder'
       text: '[CODE: Auszug der Off-Axis-Projektion]'
@@ -93,7 +93,7 @@ Ein Bildschirm ist flach – Tiefe erkennen wir aber auch daran, wie sich eine S
 
 ### Wie es funktioniert
 
-Die App ist eine .NET-MAUI-Blazor-Hybrid-Anwendung. In ihrer WebView laufen Three.js für den Avatar und MediaPipe für das Gesichtstracking. Auf der .NET-Seite läuft ein Gemma-Modell über LLamaSharp direkt im Prozess, geladen aus einer GGUF-Datei. Die Spracherkennung macht aus dem Gesagten Text, das Modell antwortet, und die Sprachsynthese gibt dem Avatar eine Stimme, lippensynchron. [CONFIRM: Engines für Spracherkennung und Sprachausgabe]
+Die App ist eine .NET-MAUI-Blazor-Hybrid-Anwendung. In ihrer WebView laufen three.js für den Avatar und MediaPipe für das Gesichtstracking. Auf der .NET-Seite läuft ein Gemma-Modell über LLamaSharp direkt im Prozess, geladen aus einer GGUF-Datei. Die Spracherkennung macht aus dem Gesagten Text, das Modell antwortet, und die Sprachsynthese gibt dem Avatar eine Stimme, lippensynchron. [CONFIRM: Engines für Spracherkennung und Sprachausgabe]
 
 ### Warum alles lokal bleibt
 
