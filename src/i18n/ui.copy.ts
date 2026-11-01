@@ -20,13 +20,11 @@ export const ui = defineCopy({
       closeMenu: 'Close menu',
     },
     language: {
-      label: 'Language',
       /** Shown on English pages: link to the German version. */
       switchText: 'DE',
       switchLabel: 'Deutsch: diese Seite auf Deutsch lesen',
     },
     theme: {
-      label: 'Theme',
       toPaper: 'Switch to the paper (light) theme',
       toGraphite: 'Switch to the graphite (dark) theme',
     },
@@ -45,7 +43,6 @@ export const ui = defineCopy({
       allWork: 'All work',
       fullTimeline: 'Full timeline',
       watchVideo: 'Watch on YouTube',
-      backToTop: 'Back to top',
     },
     status: {
       live: 'Live',
@@ -66,7 +63,6 @@ export const ui = defineCopy({
       impressum: 'Legal notice (Impressum)',
       datenschutz: 'Privacy policy',
       colophon: 'Colophon',
-      rights: 'All rights reserved.',
       builtWith: 'Static HTML, no cookies, no tracking.',
     },
     externalLink: '(external link)',
@@ -88,12 +84,10 @@ export const ui = defineCopy({
       closeMenu: 'Menü schließen',
     },
     language: {
-      label: 'Sprache',
       switchText: 'EN',
       switchLabel: 'English: read this page in English',
     },
     theme: {
-      label: 'Farbschema',
       toPaper: 'Zum hellen Farbschema (Papier) wechseln',
       toGraphite: 'Zum dunklen Farbschema (Graphit) wechseln',
     },
@@ -112,7 +106,6 @@ export const ui = defineCopy({
       allWork: 'Alle Projekte',
       fullTimeline: 'Vollständiger Werdegang',
       watchVideo: 'Auf YouTube ansehen',
-      backToTop: 'Nach oben',
     },
     status: {
       live: 'Live',
@@ -131,7 +124,6 @@ export const ui = defineCopy({
       impressum: 'Impressum',
       datenschutz: 'Datenschutzerklärung',
       colophon: 'Kolophon',
-      rights: 'Alle Rechte vorbehalten.',
       builtWith: 'Statisches HTML, keine Cookies, kein Tracking.',
     },
     externalLink: '(externer Link)',

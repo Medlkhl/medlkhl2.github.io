@@ -10,16 +10,14 @@ import Rich from './Rich.astro';
 interface Props {
   recommendation: Recommendation;
   locale: Locale;
-  /** Optional heading level for the author line inside landmark regions. */
-  compact?: boolean;
   class?: string;
 }
 
-const { recommendation: rec, locale, compact = false, class: className } = Astro.props;
+const { recommendation: rec, locale, class: className } = Astro.props;
 ---
 
 {rec.kind === 'quote' ? (
-  <figure class:list={['quote', { 'quote--compact': compact }, className]}>
+  <figure class:list={['quote', className]}>
     <blockquote lang={rec.quote.lang} class="quote__text">
       <p>“{rec.quote.text}”</p>
     </blockquote>
@@ -56,10 +54,6 @@ const { recommendation: rec, locale, compact = false, class: className } = Astro
     line-height: 1.45;
     letter-spacing: -0.005em;
     text-wrap: pretty;
-  }
-
-  .quote--compact .quote__text {
-    font-size: var(--step-0);
   }
 
   .quote__caption {

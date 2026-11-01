@@ -28,7 +28,3 @@ export async function getWork(locale: Locale): Promise<WorkEntry[]> {
 export async function getFeaturedWork(locale: Locale): Promise<WorkEntry[]> {
   return (await getWork(locale)).filter((entry) => entry.data.featured);
 }
-
-export async function getWorkBySlug(locale: Locale, slug: string): Promise<WorkEntry | undefined> {
-  return (await getWork(locale)).find((entry) => workSlug(entry) === slug);
-}

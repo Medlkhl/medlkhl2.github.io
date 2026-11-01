@@ -1,5 +1,5 @@
 import { ensureTrailingSlash, withBase } from '../lib/url.ts';
-import { DEFAULT_LOCALE, LOCALES, type Locale, isLocale } from './config.ts';
+import { DEFAULT_LOCALE, type Locale, isLocale } from './config.ts';
 
 /**
  * Route registry. Every page exists in both locales with the same slug:
@@ -19,9 +19,6 @@ export const ROUTES = {
 
 export type RouteKey = keyof typeof ROUTES;
 export const ROUTE_KEYS = Object.keys(ROUTES) as RouteKey[];
-
-/** Internal, English-only pages that are excluded from the sitemap and from locale parity. */
-export const INTERNAL_ROUTES = { tokens: '/tokens/' } as const;
 
 function normalizePath(path: string): string {
   return ensureTrailingSlash(path.startsWith('/') ? path : `/${path}`);
@@ -70,11 +67,4 @@ export function routeHref(locale: Locale, key: RouteKey, hash?: string): string 
 /** Full href (with base) for a case study. */
 export function workHref(locale: Locale, slug: string): string {
   return href(locale, `/work/${slug}/`);
-}
-
-/** Paths of every registered route in every locale (without base), e.g. for tests and audits. */
-export function allLocalizedRoutePaths(): Array<{ locale: Locale; key: RouteKey; path: string }> {
-  return LOCALES.flatMap((locale) =>
-    ROUTE_KEYS.map((key) => ({ locale, key, path: localePath(locale, ROUTES[key]) })),
-  );
 }

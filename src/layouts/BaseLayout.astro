@@ -40,10 +40,6 @@ interface Props {
   sceneShot?: string;
   /** Phase 3 highlighted layer, e.g. 'layer_identity'. */
   activeLayer?: string;
-  /** Hide the header and footer (used by print-first pages if ever needed). */
-  bare?: boolean;
-  /** Overrides <html lang> (the bilingual 404 page). */
-  htmlLang?: string;
 }
 
 const {
@@ -57,13 +53,11 @@ const {
   jsonLd,
   sceneShot = NO_SCENE,
   activeLayer = NO_SCENE,
-  bare = false,
-  htmlLang = LOCALE_META[locale].htmlLang,
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang={htmlLang} class="no-js" transition:animate="none">
+<html lang={LOCALE_META[locale].htmlLang} class="no-js" transition:animate="none">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -91,11 +85,11 @@ const {
   <body data-scene-shot={sceneShot} data-active-layer={activeLayer}>
     <SkipLink locale={locale} />
     <div id="stage" aria-hidden="true" transition:persist="stage"></div>
-    {!bare && <Header locale={locale} path={path} />}
+    <Header locale={locale} path={path} />
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    {!bare && <Footer locale={locale} />}
+    <Footer locale={locale} />
   </body>
 </html>
 
