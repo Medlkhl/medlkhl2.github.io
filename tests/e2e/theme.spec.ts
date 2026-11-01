@@ -1,6 +1,18 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { ui } from '../../src/i18n/ui.copy.ts';
 import { colors } from '../../src/styles/tokens.ts';
+
+/**
+ * Follows the Lab link in the header and checks that ClientRouter swapped the
+ * page in the same document: a marker set on window before the click survives
+ * a soft navigation, but not a full page load.
+ */
+async function softNavigateToLab(page: Page) {
+  await page.evaluate(() => Reflect.set(window, '__soft', 1));
+  await page.locator('.site-nav a[href$="/lab/"]').first().click();
+  await expect(page).toHaveURL(/\/lab\/$/);
+  expect(await page.evaluate(() => Reflect.get(window, '__soft'))).toBe(1);
+}
 
 test.describe('theme', () => {
   test('first visit follows prefers-color-scheme', async ({ browser }) => {
@@ -24,8 +36,7 @@ test.describe('theme', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'paper');
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'paper');
-    await page.locator('.site-nav a[href$="/lab/"]').first().click();
-    await expect(page).toHaveURL(/\/lab\/$/);
+    await softNavigateToLab(page);
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'paper');
   });
 
@@ -42,8 +53,7 @@ test.describe('theme', () => {
     await page.goto('');
     const html = page.locator('html');
     await expect(html).toHaveAttribute('data-save-data', /^(on|off)$/);
-    await page.locator('.site-nav a[href$="/lab/"]').first().click();
-    await expect(page).toHaveURL(/\/lab\/$/);
+    await softNavigateToLab(page);
     await expect(html).toHaveAttribute('data-save-data', /^(on|off)$/);
   });
 
@@ -92,8 +102,7 @@ test.describe('theme', () => {
     // A chosen theme overrides the OS, so the media pair is gone.
     await expect(page.locator('meta[name="theme-color"][media]')).toHaveCount(0);
 
-    await page.locator('.site-nav a[href$="/lab/"]').first().click();
-    await expect(page).toHaveURL(/\/lab\/$/);
+    await softNavigateToLab(page);
     await expect.poll(contents).toEqual([colors.paper.bg, colors.paper.bg]);
   });
 });

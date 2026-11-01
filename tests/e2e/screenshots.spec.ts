@@ -4,7 +4,8 @@ import { allPages, rel } from './utils.ts';
 
 /**
  * Gate screenshots: every route, both locales, both themes, 1440×900 and
- * 390×844, full page, into reports/screenshots/ (uploaded by CI).
+ * 390×844, full page, into reports/screenshots/ (uploaded by CI). /tokens/
+ * and the bilingual 404 page go under en/.
  * Runs only with SCREENSHOTS=1 so everyday e2e runs stay fast.
  */
 const SIZES = [
@@ -27,6 +28,8 @@ test.describe('gate screenshots', () => {
         for (const { locale, path, id } of [
           ...allPages(),
           { locale: 'en', path: '/tokens/', id: 'en-tokens' },
+          // The bilingual 404 page (served for any missing URL), filed under en/.
+          { locale: 'en', path: '/missing/', id: 'en-404' },
         ]) {
           await page.goto(rel(path), { waitUntil: 'networkidle' });
           await page.evaluate(() => document.fonts.ready);

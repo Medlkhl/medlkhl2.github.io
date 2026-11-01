@@ -198,7 +198,7 @@ A dated, ADR-style log. Each entry records the decision, the alternatives and wh
   - `mobile.spec.ts`: at 390 px the menu opens and closes (Escape returns focus) and controls are at least 44 px; no page (every page in both locales, `/tokens/` and the 404) scrolls horizontally at 320 or 390 px;
   - `seo.spec.ts`: head metadata, social images, JSON-LD, unique titles and descriptions, the sitemap's hreflang set, robots.txt, the 404 and the legal pages;
   - `cv.spec.ts`: each download button serves its language's PDF (200, `application/pdf`, at most 2 pages), the other-language link carries its hreflang, and print hides the site chrome and prints on white, even in graphite;
-  - `screenshots.spec.ts`: gate screenshots of every route in both locales and themes at 1440 × 900 and 390 × 844, only with `SCREENSHOTS=1` (CI sets it and uploads them).
+  - `screenshots.spec.ts`: gate screenshots of every route in both locales and themes, plus `/tokens/` and the bilingual 404 page, at 1440 × 900 and 390 × 844, only with `SCREENSHOTS=1` (CI sets it and uploads them).
 - **Also.** Vitest adds `seo.test.ts` (JSON-LD builders and their privacy guard, meta lengths, social cards, the legal content model) and term tests in `schemas.test.ts`; `pnpm lhci` adds LCP, CLS and TBT to its summary.
 - **Why.** These are the gate's promises (brief §10–§12): a recruiter's first screen without JavaScript, zero third-party requests, both languages in step, and a CV that downloads and prints correctly. Each check is cheap enough for every run.
 
