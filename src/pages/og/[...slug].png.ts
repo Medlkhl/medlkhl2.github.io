@@ -1,86 +1,47 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
-import { profile } from '../../data/profile.ts';
-import { LOCALES, type Locale } from '../../i18n/config.ts';
-import { pageMeta } from '../../i18n/meta.copy.ts';
+import { LOCALES } from '../../i18n/config.ts';
 import { ROUTE_KEYS } from '../../i18n/routes.ts';
 import { ogImagePath } from '../../lib/og.ts';
-import { renderOgImage, type OgContent } from '../../lib/og/render.ts';
-import { absoluteUrl, stripBase } from '../../lib/url.ts';
+import { caseStudyCard, notFoundCard, pageCard, type OgCard } from '../../lib/og/cards.ts';
+import { renderOgImage } from '../../lib/og/render.ts';
+import { stripBase } from '../../lib/url.ts';
 import { getWork, workSlug } from '../../lib/work.ts';
 
-/** One social image per page and locale, generated at build time (paths from src/lib/og.ts). */
-
-function siteLabel(): string {
-  return absoluteUrl('/')
-    .replace(/^https?:\/\//, '')
-    .replace(/\/$/, '');
-}
-
-function content(locale: Locale, kicker: string, title: string, description: string): OgContent {
-  return {
-    kicker,
-    title,
-    description,
-    footer: siteLabel(),
-    byline: `${profile.name} · ${profile.role[locale]}`,
-  };
+/**
+ * One social image per page and locale, generated at build time. The paths
+ * come from src/lib/og.ts (/og/<locale>/<routeKey>.png, /og/<locale>/work-<slug>.png,
+ * /og/en/not-found.png); the text from src/lib/og/cards.ts.
+ */
+function slugOf(path: string): string {
+  return stripBase(path)
+    .replace(/^\/og\//, '')
+    .replace(/\.png$/, '');
 }
 
 export const getStaticPaths = (async () => {
-  const paths: Array<{ params: { slug: string }; props: { content: OgContent } }> = [];
-  const toSlug = (path: string) =>
-    stripBase(path)
-      .replace(/^\/og\//, '')
-      .replace(/\.png$/, '');
-
+  const paths: Array<{ params: { slug: string }; props: { card: OgCard } }> = [];
   for (const locale of LOCALES) {
     for (const key of ROUTE_KEYS) {
-      const meta = pageMeta[locale][key];
-      const title = key === 'home' ? profile.name : meta.title;
-      const description = key === 'home' ? profile.positioning[locale] : meta.description;
       paths.push({
-        params: { slug: toSlug(ogImagePath(locale, key)) },
-        props: {
-          content: content(
-            locale,
-            key === 'home' ? profile.role[locale] : meta.title,
-            title,
-            description,
-          ),
-        },
+        params: { slug: slugOf(ogImagePath(locale, key)) },
+        props: { card: pageCard(locale, key) },
       });
     }
     for (const entry of await getWork(locale)) {
-      const slug = workSlug(entry);
       paths.push({
-        params: { slug: toSlug(ogImagePath(locale, `work-${slug}`)) },
-        props: {
-          content: content(
-            locale,
-            locale === 'de' ? 'Fallstudie' : 'Case study',
-            entry.data.title,
-            entry.data.summary,
-          ),
-        },
+        params: { slug: slugOf(ogImagePath(locale, `work-${workSlug(entry)}`)) },
+        props: { card: caseStudyCard(locale, entry.data) },
       });
     }
   }
-  const nf = pageMeta;
   paths.push({
-    params: { slug: toSlug(ogImagePath('en', 'not-found')) },
-    props: {
-      content: content(
-        'en',
-        '404',
-        `${nf.en.notFound.title} · ${nf.de.notFound.title}`,
-        nf.en.notFound.description,
-      ),
-    },
+    params: { slug: slugOf(ogImagePath('en', 'not-found')) },
+    props: { card: notFoundCard() },
   });
   return paths;
 }) satisfies GetStaticPaths;
 
 export const GET: APIRoute = async ({ props }) => {
-  const png = await renderOgImage((props as { content: OgContent }).content);
+  const png = await renderOgImage((props as { card: OgCard }).card);
   return new Response(new Uint8Array(png), { headers: { 'Content-Type': 'image/png' } });
 };
