@@ -7,9 +7,10 @@
  * - Title: "<title> — Mohamed Lakhel"; a title that already contains the name
  *   is used as is. Case studies (/work/<slug>/) get "· Case study" or
  *   "· Fallstudie", so the English and German twins never share a title.
- * - Description: one that still contains a placeholder such as "[TODO: …]"
- *   is replaced by a localized template, so placeholders never reach search
- *   snippets or link previews. The page body still shows the placeholder.
+ * - Description: one that still contains a placeholder (any bracketed
+ *   "KIND: label" mark) is replaced by a localized template, so placeholders
+ *   never reach search snippets or link previews. The page body still shows
+ *   the placeholder.
  * - og:image:alt and twitter:image:alt are localized.
  * - Pages without a locale twin (path null: the 404 page, /tokens/) get no
  *   canonical and no alternates; they are noindex anyway.

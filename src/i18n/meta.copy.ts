@@ -143,7 +143,7 @@ export const metaTemplates = defineCopy({
   en: {
     /** Case-study titles, so "HAPP" and its German twin get distinct titles. */
     caseStudyTitle: '{title} · Case study',
-    /** Used while a case study's summary still contains a placeholder (never put "[TODO: …]" in a snippet). */
+    /** Used while a case study's summary still contains a placeholder (none may reach a snippet). */
     caseStudyDescription:
       '{title}: a case study by {name}, {role}, from the context and my role to the architecture and the results.',
     /** Same rule for any other page whose description still contains a placeholder. */
